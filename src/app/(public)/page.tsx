@@ -5,13 +5,12 @@ import type { Category, Dish } from '@/types';
 
 
 export default async function PublicMenuPage() {
-  const supabase = await createClient();
-
   let categories: Category[] = [];
   let dishes: Dish[] = [];
   let error = null;
 
   try {
+    const supabase = await createClient();
     const [categoriesResult, dishesResult] = await Promise.all([
       supabase.from('categories').select('*').order('sort_order'),
       supabase.from('dishes').select('*').eq('is_available', true).order('sort_order')

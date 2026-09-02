@@ -13,8 +13,9 @@ export function cn(...inputs: ClassValue[]) {
  * Formatea un número como precio en Soles peruanos.
  * @example formatPrice(25.9) => "S/ 25.90"
  */
-export function formatPrice(price: number): string {
-  return `S/ ${price.toFixed(2)}`
+export function formatPrice(price: number | string | null | undefined): string {
+  const num = typeof price === 'string' ? parseFloat(price) : (price ?? 0)
+  return `S/ ${(Number.isNaN(num) ? 0 : num).toFixed(2)}`
 }
 
 /**
