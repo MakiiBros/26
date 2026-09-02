@@ -17,14 +17,11 @@ export const dishSchema = z.object({
     .optional()
     .or(z.literal('')),
   price: z.coerce
-    .number({
-      required_error: 'El precio es obligatorio',
-      invalid_type_error: 'El precio debe ser un número',
-    })
+    .number({ message: 'El precio debe ser un número válido' })
     .positive('El precio debe ser mayor a 0')
     .multipleOf(0.01, 'El precio puede tener máximo 2 decimales'),
   category_id: z
-    .string({ required_error: 'La categoría es obligatoria' })
+    .string()
     .uuid('Categoría inválida'),
   is_available: z.coerce.boolean().default(true),
   sort_order: z.coerce

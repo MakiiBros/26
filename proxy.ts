@@ -11,7 +11,7 @@ import { updateSession } from '@/lib/supabase/middleware'
 // 4. Proteger las rutas /admin verificando rol de administrador
 // ============================================================================
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // --------------------------------------------------------------------------
   // 1. Generación del nonce CSP
   // Cada solicitud recibe un nonce único para proteger contra XSS.
