@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { MenuClient } from '@/components/menu/menu-client';
 import type { Category, Dish } from '@/types';
@@ -34,10 +35,16 @@ export default async function PublicMenuPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
             MakiiBros
           </h1>
+          <Link
+            href="/admin"
+            className="text-xs text-gray-500 hover:text-orange-600 transition-colors font-medium border border-gray-200 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-white shadow-sm"
+          >
+            Acceso Admin 🔐
+          </Link>
         </div>
       </header>
 
