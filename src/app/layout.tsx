@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Makisbros | Menú Digital",
+  title: "MakiiBros | Menú Digital",
   description: "Descubre nuestro delicioso menú de makis, rolls y más.",
 };
 

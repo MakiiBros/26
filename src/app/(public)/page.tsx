@@ -32,7 +32,7 @@ export default async function PublicMenuPage() {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-            Makisbros
+            MakiiBros
           </h1>
         </div>
       </header>
