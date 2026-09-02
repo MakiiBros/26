@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 
-export const instant = false
+
 
 export default async function NewDishPage() {
   const supabase = await createClient()

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export const instant = false;
+
 
 export const metadata = {
   title: 'Dashboard | Makisbros Admin',

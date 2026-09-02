@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { DeleteDishButton } from '@/components/admin/delete-dish-button';
 
-export const instant = false;
+
 
 export const metadata = {
   title: 'Gestión de Platos | Makisbros Admin',

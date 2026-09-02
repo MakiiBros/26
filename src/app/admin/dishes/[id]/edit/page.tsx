@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 import type { DishWithCategory, Category } from '@/types'
 
-export const instant = false
+
 
 export default async function EditDishPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
