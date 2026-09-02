@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { MenuClient } from '@/components/menu/menu-client';
 import type { Category, Dish } from '@/types';
 import type { Database } from '@/types/database';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants';
 
 export const revalidate = 0;
 
@@ -12,8 +13,8 @@ export default async function PublicMenuPage() {
 
   try {
     const supabase = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
     );
     const [categoriesResult, dishesResult] = await Promise.all([
       supabase.from('categories').select('*').order('sort_order'),
