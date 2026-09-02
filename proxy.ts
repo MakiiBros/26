@@ -26,9 +26,9 @@ export async function proxy(request: NextRequest) {
   // --------------------------------------------------------------------------
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_SUPABASE_URL};
+    img-src 'self' blob: data: ${process.env.NEXT_PUBLIC_SUPABASE_URL} https://*.googleusercontent.com;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
