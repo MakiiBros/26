@@ -455,8 +455,17 @@ export async function deleteDish(id: string): Promise<FormState> {
     if (fetchError) {
       console.error(
         '[dish-actions] Error al obtener plato para eliminar:',
-        fetchError.message
+        fetchError
       )
+      
+      // Check if it's a UUID error (meaning it's probably a mock dish)
+      if (fetchError.code === '22P02' || id.startsWith('dish-') || id.startsWith('cat-')) {
+        return {
+          success: false,
+          error: 'No se pueden eliminar los platos de prueba (Mock Data).',
+        }
+      }
+
       return {
         success: false,
         error: 'No se encontró el plato a eliminar.',
