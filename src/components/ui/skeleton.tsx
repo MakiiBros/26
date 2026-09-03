@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 // Tipos
 // ─────────────────────────────────────────────────────────────
 
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type SkeletonProps = React.HTMLAttributes<HTMLDivElement>
 
 // ─────────────────────────────────────────────────────────────
 // Componente

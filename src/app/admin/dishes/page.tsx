@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { DeleteDishButton } from '@/components/admin/delete-dish-button';
 import { Plus, Utensils } from 'lucide-react';
+import { MOCK_DISHES } from '@/lib/mock-data';
 
 export const metadata = {
   title: 'Gestión de Platos | MakiiBros Admin',
@@ -12,14 +13,25 @@ export const metadata = {
 export default async function AdminDishesPage() {
   const supabase = await createClient();
 
-  const { data: dishes, error } = await supabase
-    .from('dishes')
-    .select('*, categories(name)')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false }); 
-    
-  if (error) {
-    console.error('Error al cargar platos:', error);
+  let dishes: any[] | null = null;
+  try {
+    const { data, error } = await supabase
+      .from('dishes')
+      .select('*, categories(name)')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false }); 
+      
+    if (error) {
+      console.warn('Error al cargar platos desde Supabase:', error.message);
+    } else {
+      dishes = data;
+    }
+  } catch (err) {
+    console.warn('Fallo al conectar con base de datos:', err);
+  }
+
+  if (!dishes || dishes.length === 0) {
+    dishes = MOCK_DISHES;
   }
 
   return (

@@ -7,21 +7,41 @@ import { PromoCarousel } from '@/components/public/promo-carousel'
 import { AboutSection } from '@/components/public/about-section'
 import { Footer } from '@/components/public/footer'
 import { StoreStatusBanner } from '@/components/public/store-status-banner'
+import { MOCK_DISHES, MOCK_STORE_SETTINGS } from '@/lib/mock-data'
 import type { Dish, StoreSettings } from '@/types'
 
 export const revalidate = 0
 
 export default async function HomePage() {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  let dishes: Dish[] = []
+  let settings: StoreSettings | null = null
 
-  // Fetch data in parallel
-  const [dishesRes, settingsRes] = await Promise.all([
-    supabase.from('dishes').select('*, categories(*)').eq('is_available', true).order('sort_order'),
-    supabase.from('store_settings').select('*').limit(1).single(),
-  ])
+  try {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-  const dishes = (dishesRes.data || []) as Dish[]
-  const settings = settingsRes.data as StoreSettings | null
+    // Fetch data in parallel
+    const [dishesRes, settingsRes] = await Promise.all([
+      supabase.from('dishes').select('*, categories(*)').eq('is_available', true).order('sort_order'),
+      supabase.from('store_settings').select('*').limit(1).single(),
+    ])
+
+    if (dishesRes.data && dishesRes.data.length > 0) {
+      dishes = dishesRes.data as Dish[]
+    }
+    if (settingsRes.data) {
+      settings = settingsRes.data as StoreSettings
+    }
+  } catch (err) {
+    console.warn('[HomePage] Database query failed, using fallback data:', err)
+  }
+
+  // Fallback to sample seed data if database is unconfigured or empty
+  if (dishes.length === 0) {
+    dishes = MOCK_DISHES
+  }
+  if (!settings) {
+    settings = MOCK_STORE_SETTINGS
+  }
   
   const popularDishes = dishes.filter((d: any) => d.is_popular)
   const promoDishes = dishes.filter((d: any) => d.discount_percentage > 0)

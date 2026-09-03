@@ -30,7 +30,7 @@ export function AboutSection() {
                 MakiBros
               </h2>
               <p className="text-xl text-[#f6ad55] font-light italic">
-                "Diseño Minimalista, Sabor Máximo"
+                &ldquo;Diseño Minimalista, Sabor Máximo&rdquo;
               </p>
             </div>
             

@@ -1,0 +1,6 @@
+{
+  "name": "MakiBros",
+  "description": "Fusión Peruano-Japonesa — Los mejores makis, rolls especiales, ceviches y tiraditos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
