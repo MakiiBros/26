@@ -9,8 +9,9 @@ import { Search } from 'lucide-react'
 export function MenuPageClient({ categories, dishes }: { categories: any[], dishes: any[] }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilter, setActiveFilter] = useState<'all' | 'popular' | 'new' | 'discount'>('all')
+  const [activeFilter, setActiveFilter] = useState<'all' | 'popular' | 'new' | 'discount' | 'video360'>('all')
   const [selectedDish, setSelectedDish] = useState<any | null>(null)
+  const [initialModalView, setInitialModalView] = useState<'photo' | '360'>('photo')
 
   const filteredDishes = useMemo(() => {
     return dishes.filter(dish => {
@@ -18,9 +19,15 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
       if (searchQuery && !dish.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
       if (activeFilter === 'popular' && !dish.is_popular) return false
       if (activeFilter === 'discount' && !(dish.discount_percentage > 0)) return false
+      if (activeFilter === 'video360' && !dish.video_360_url) return false
       return true
     })
   }, [dishes, selectedCategoryId, searchQuery, activeFilter])
+
+  const handleOpenDish = (dish: any, view: 'photo' | '360' = 'photo') => {
+    setSelectedDish(dish)
+    setInitialModalView(view)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -56,6 +63,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
               <FilterPill label="Todos" active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} />
               <FilterPill label="Populares" active={activeFilter === 'popular'} onClick={() => setActiveFilter('popular')} />
               <FilterPill label="En Descuento" active={activeFilter === 'discount'} onClick={() => setActiveFilter('discount')} />
+              <FilterPill label="✨ 3D 360°" active={activeFilter === 'video360'} onClick={() => setActiveFilter('video360')} />
             </div>
           </div>
 
@@ -66,7 +74,8 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
                 <DishCard 
                   key={dish.id} 
                   dish={dish} 
-                  onClick={() => setSelectedDish(dish)} 
+                  onClick={() => handleOpenDish(dish, 'photo')} 
+                  onView360={() => handleOpenDish(dish, '360')}
                 />
               ))
             ) : (
@@ -81,6 +90,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
       <DishDetailModal 
         dish={selectedDish} 
         isOpen={!!selectedDish} 
+        initialView={initialModalView}
         onClose={() => setSelectedDish(null)} 
       />
     </div>

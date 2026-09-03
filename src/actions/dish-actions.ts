@@ -65,6 +65,7 @@ export async function createDish(
       category_id: formData.get('category_id'),
       is_available: formData.get('is_available'),
       sort_order: formData.get('sort_order'),
+      video_360_url: formData.get('video_360_url') || null,
     }
 
     // Validar con el esquema de platos
@@ -119,6 +120,46 @@ export async function createDish(
     }
 
     // ------------------------------------------------------------------
+    // Manejo de video 3D / 360: archivo o URL directa
+    // ------------------------------------------------------------------
+    let video360Url: string | null = (validatedData.video_360_url as string) || null
+    const videoFile = formData.get('video_360_file') as File | null
+
+    if (videoFile && videoFile.size > 0) {
+      if (videoFile.size > STORAGE.MAX_VIDEO_SIZE) {
+        return {
+          success: false,
+          error: 'El video 360 excede el tamaño máximo permitido de 50MB.',
+        }
+      }
+
+      const videoFileName = `video-360-${generateFileName(videoFile.name)}`
+      const arrayBuffer = await videoFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
+      const { error: videoUploadError } = await supabase.storage
+        .from(STORAGE.BUCKET)
+        .upload(videoFileName, buffer, {
+          contentType: videoFile.type || 'video/mp4',
+          upsert: true,
+        })
+
+      if (videoUploadError) {
+        console.error('[dish-actions] Error al subir video 360:', videoUploadError.message)
+        return {
+          success: false,
+          error: `Error al subir video 360: ${videoUploadError.message}.`,
+        }
+      }
+
+      const {
+        data: { publicUrl: videoPublicUrl },
+      } = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(videoFileName)
+
+      video360Url = videoPublicUrl
+    }
+
+    // ------------------------------------------------------------------
     // Insertar el plato en la base de datos
     // ------------------------------------------------------------------
     const { error: insertError } = await supabase.from('dishes').insert({
@@ -129,6 +170,7 @@ export async function createDish(
       is_available: validatedData.is_available,
       sort_order: validatedData.sort_order,
       image_url: imageUrl,
+      video_360_url: video360Url,
     } as never)
 
     if (insertError) {
@@ -182,6 +224,7 @@ export async function updateDish(
       category_id: formData.get('category_id'),
       is_available: formData.get('is_available'),
       sort_order: formData.get('sort_order'),
+      video_360_url: formData.get('video_360_url') || null,
     }
 
     // Validar con el esquema de platos
@@ -211,6 +254,11 @@ export async function updateDish(
       category_id: validatedData.category_id,
       is_available: validatedData.is_available,
       sort_order: validatedData.sort_order,
+    }
+
+    // Si viene URL directa en el texto
+    if (formData.has('video_360_url')) {
+      updateData.video_360_url = (validatedData.video_360_url as string) || null
     }
 
     // ------------------------------------------------------------------
@@ -247,13 +295,51 @@ export async function updateDish(
     }
 
     // ------------------------------------------------------------------
+    // Manejo de video 3D / 360 nuevo: subir a Storage
+    // ------------------------------------------------------------------
+    const videoFile = formData.get('video_360_file') as File | null
+
+    if (videoFile && videoFile.size > 0) {
+      if (videoFile.size > STORAGE.MAX_VIDEO_SIZE) {
+        return {
+          success: false,
+          error: 'El video 360 excede el tamaño máximo permitido de 50MB.',
+        }
+      }
+
+      const videoFileName = `video-360-${generateFileName(videoFile.name)}`
+      const arrayBuffer = await videoFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
+      const { error: videoUploadError } = await supabase.storage
+        .from(STORAGE.BUCKET)
+        .upload(videoFileName, buffer, {
+          contentType: videoFile.type || 'video/mp4',
+          upsert: true,
+        })
+
+      if (videoUploadError) {
+        console.error('[dish-actions] Error al subir video 360:', videoUploadError.message)
+        return {
+          success: false,
+          error: `Error al subir video 360: ${videoUploadError.message}.`,
+        }
+      }
+
+      const {
+        data: { publicUrl: videoPublicUrl },
+      } = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(videoFileName)
+
+      updateData.video_360_url = videoPublicUrl
+    }
+
+    // ------------------------------------------------------------------
     // Manejo de eliminación de imagen existente
     // Si se marcó 'remove_image', eliminar la imagen del Storage
     // ------------------------------------------------------------------
     const removeImage = formData.get('remove_image') === 'true'
 
     if (removeImage) {
-      // Obtener el plato actual para saber qué imagen eliminar
       const { data: currentDish } = await supabase
         .from('dishes')
         .select('image_url')
@@ -261,8 +347,6 @@ export async function updateDish(
         .single<{ image_url: string | null }>()
 
       if (currentDish?.image_url) {
-        // Extraer la ruta del archivo desde la URL pública completa
-        // Formato: .../storage/v1/object/public/dish-images/ARCHIVO
         const imagePath = currentDish.image_url.split(
           `${STORAGE.BUCKET}/`
         )[1]
@@ -277,13 +361,37 @@ export async function updateDish(
               '[dish-actions] Error al eliminar imagen:',
               deleteError.message
             )
-            // No bloqueamos la actualización por error al eliminar la imagen
           }
         }
       }
 
-      // Establecer la URL de imagen como null en la base de datos
       updateData.image_url = null
+    }
+
+    // ------------------------------------------------------------------
+    // Manejo de eliminación de video 360 existente
+    // Si se marcó 'remove_video_360', eliminar de Storage y BD
+    // ------------------------------------------------------------------
+    const removeVideo360 = formData.get('remove_video_360') === 'true'
+
+    if (removeVideo360) {
+      const { data: currentDish } = await supabase
+        .from('dishes')
+        .select('video_360_url')
+        .eq('id', id)
+        .single<{ video_360_url: string | null }>()
+
+      if (currentDish?.video_360_url) {
+        const videoPath = currentDish.video_360_url.split(
+          `${STORAGE.BUCKET}/`
+        )[1]
+
+        if (videoPath) {
+          await supabase.storage.from(STORAGE.BUCKET).remove([videoPath])
+        }
+      }
+
+      updateData.video_360_url = null
     }
 
     // ------------------------------------------------------------------
@@ -340,9 +448,9 @@ export async function deleteDish(id: string): Promise<FormState> {
     // ------------------------------------------------------------------
     const { data: dish, error: fetchError } = await supabase
       .from('dishes')
-      .select('image_url')
+      .select('image_url, video_360_url')
       .eq('id', id)
-      .single<{ image_url: string | null }>()
+      .single<{ image_url: string | null; video_360_url: string | null }>()
 
     if (fetchError) {
       console.error(
@@ -359,21 +467,19 @@ export async function deleteDish(id: string): Promise<FormState> {
     // Eliminar la imagen del Storage si existe
     // ------------------------------------------------------------------
     if (dish?.image_url) {
-      // Extraer la ruta del archivo desde la URL pública
       const imagePath = dish.image_url.split(`${STORAGE.BUCKET}/`)[1]
-
       if (imagePath) {
-        const { error: storageError } = await supabase.storage
-          .from(STORAGE.BUCKET)
-          .remove([imagePath])
+        await supabase.storage.from(STORAGE.BUCKET).remove([imagePath])
+      }
+    }
 
-        if (storageError) {
-          console.error(
-            '[dish-actions] Error al eliminar imagen del storage:',
-            storageError.message
-          )
-          // Continuamos con la eliminación del plato aunque falle el storage
-        }
+    // ------------------------------------------------------------------
+    // Eliminar el video 360 del Storage si existe
+    // ------------------------------------------------------------------
+    if (dish?.video_360_url) {
+      const videoPath = dish.video_360_url.split(`${STORAGE.BUCKET}/`)[1]
+      if (videoPath) {
+        await supabase.storage.from(STORAGE.BUCKET).remove([videoPath])
       }
     }
 

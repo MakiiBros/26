@@ -46,8 +46,10 @@ export const ROUTES = {
 /** Configuración de Storage */
 export const STORAGE = {
   BUCKET: 'dish-images',
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB para imágenes
+  MAX_VIDEO_SIZE: 50 * 1024 * 1024, // 50MB para videos 3D / 360
   ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
+  ALLOWED_VIDEO_TYPES: ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'],
 } as const
 
 /** Configuración del menú */

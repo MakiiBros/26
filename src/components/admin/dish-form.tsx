@@ -4,12 +4,11 @@ import { useActionState, useState, useRef } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
-import type { DishWithCategory, Category, FormState } from '@/types'
+import type { DishWithCategory, Category } from '@/types'
 import { createDish, updateDish } from '@/actions/dish-actions'
-import { ROUTES } from '@/lib/constants'
+import { ROUTES, STORAGE } from '@/lib/constants'
 import { useToast } from '@/components/ui/toast'
+import { RotateCw, Video, UploadCloud, Link as LinkIcon, Sparkles } from 'lucide-react'
 
 interface DishFormProps {
   initialData?: DishWithCategory
@@ -24,6 +23,13 @@ export function DishForm({ initialData, categories }: DishFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url || null)
   const [removeImage, setRemoveImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Estados para Video 3D / 360
+  const [videoPreview, setVideoPreview] = useState<string | null>(initialData?.video_360_url || null)
+  const [removeVideo360, setRemoveVideo360] = useState(false)
+  const [videoMode, setVideoMode] = useState<'file' | 'url'>('file')
+  const [videoUrlInput, setVideoUrlInput] = useState<string>(initialData?.video_360_url || '')
+  const videoFileInputRef = useRef<HTMLInputElement>(null)
 
   // Enlazar la acción al estado (bindeamos el ID si es edición)
   const action = isEditing 
@@ -54,6 +60,27 @@ export function DishForm({ initialData, categories }: DishFormProps) {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > STORAGE.MAX_VIDEO_SIZE) {
+        toast(`El video supera los ${STORAGE.MAX_VIDEO_SIZE / (1024 * 1024)}MB`, 'error')
+        if (videoFileInputRef.current) videoFileInputRef.current.value = ''
+        return
+      }
+      setVideoPreview(URL.createObjectURL(file))
+      setRemoveVideo360(false)
+      setVideoUrlInput('')
+    }
+  }
+
+  const handleRemoveVideo = () => {
+    setVideoPreview(null)
+    setRemoveVideo360(true)
+    setVideoUrlInput('')
+    if (videoFileInputRef.current) videoFileInputRef.current.value = ''
+  }
+
   return (
     <form action={formAction} encType="multipart/form-data" className="space-y-6 max-w-3xl">
       {state.error && (
@@ -64,6 +91,8 @@ export function DishForm({ initialData, categories }: DishFormProps) {
 
       {/* Flag oculto para remover imagen */}
       <input type="hidden" name="remove_image" value={removeImage.toString()} />
+      {/* Flag oculto para remover video 360 */}
+      <input type="hidden" name="remove_video_360" value={removeVideo360.toString()} />
 
       {/* Tarjeta 1: Información Principal */}
       <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 space-y-5 shadow-xl">
@@ -261,6 +290,173 @@ export function DishForm({ initialData, categories }: DishFormProps) {
               </div>
               <p className="text-xs leading-5 text-gray-500 mt-1">PNG, JPG, WebP o AVIF hasta 5MB</p>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Tarjeta 3: Video 3D / 360° del Plato */}
+      <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 space-y-4 shadow-xl">
+        <div className="border-b border-[#222222] pb-3 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <RotateCw className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '8s' }} />
+            Video 3D 360° del Plato <span className="text-xs font-normal text-gray-400">(Opcional)</span>
+          </h2>
+          <span className="text-[11px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-amber-400" />
+            Visor Interactivo
+          </span>
+        </div>
+
+        <p className="text-xs text-gray-400 leading-relaxed">
+          Ofrece a tus clientes una experiencia inmersiva. Puedes subir un video en 360° (rotación de plato o panorama esférico) 
+          en formato MP4 o WebM de hasta 50MB, o ingresar un enlace directo o de YouTube 360.
+        </p>
+
+        {/* Selector de modo: Subir Archivo vs Enlace URL */}
+        <div className="flex gap-2 p-1 bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] w-fit">
+          <button
+            type="button"
+            onClick={() => setVideoMode('file')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+              videoMode === 'file'
+                ? 'bg-[#e53e3e] text-white shadow'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+            Subir Archivo de Video
+          </button>
+          <button
+            type="button"
+            onClick={() => setVideoMode('url')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+              videoMode === 'url'
+                ? 'bg-[#e53e3e] text-white shadow'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <LinkIcon className="w-3.5 h-3.5" />
+            Enlace URL / YouTube
+          </button>
+        </div>
+
+        {/* Input de archivo SIEMPRE en el DOM para FormData */}
+        <input 
+          id="video_360_file" 
+          name="video_360_file" 
+          type="file" 
+          className="sr-only" 
+          accept="video/mp4, video/webm, video/ogg, video/quicktime"
+          onChange={handleVideoChange}
+          ref={videoFileInputRef}
+        />
+
+        {/* Modo 1: Subir Archivo */}
+        {videoMode === 'file' && (
+          <div>
+            {videoPreview && !videoUrlInput ? (
+              <div className="space-y-4">
+                <div className="relative aspect-video w-full max-w-md rounded-xl overflow-hidden border border-[#2a2a2a] bg-black shadow-inner">
+                  <video 
+                    src={videoPreview} 
+                    controls 
+                    playsInline 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-[#1a1a1a] hover:bg-[#252525] text-white border-[#2a2a2a]"
+                    onClick={() => videoFileInputRef.current?.click()}
+                  >
+                    Cambiar Video
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={handleRemoveVideo}
+                  >
+                    Eliminar Video
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div 
+                onClick={() => videoFileInputRef.current?.click()}
+                className="flex justify-center rounded-xl border-2 border-dashed border-[#2a2a2a] hover:border-amber-500 bg-[#1a1a1a]/40 px-6 py-10 cursor-pointer transition-all hover:bg-[#1a1a1a]/70 group"
+              >
+                <div className="text-center">
+                  <Video className="mx-auto h-12 w-12 text-gray-500 group-hover:text-amber-400 transition-colors" />
+                  <div className="mt-4 flex text-sm leading-6 text-gray-300 justify-center">
+                    <span className="relative font-semibold text-amber-300 group-hover:underline">
+                      Haz clic para subir un video 360°
+                    </span>
+                  </div>
+                  <p className="text-xs leading-5 text-gray-500 mt-1">MP4, WebM o MOV hasta 50MB</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Modo 2: Enlace URL */}
+        {videoMode === 'url' && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="video_360_url" className="block text-sm font-medium text-gray-200">
+                URL del Video 360° o YouTube
+              </label>
+              <input
+                id="video_360_url"
+                name="video_360_url"
+                type="url"
+                value={videoUrlInput}
+                onChange={(e) => {
+                  const url = e.target.value
+                  setVideoUrlInput(url)
+                  setVideoPreview(url ? url : null)
+                  setRemoveVideo360(false)
+                }}
+                placeholder="https://.../video.mp4 o https://youtube.com/watch?v=..."
+                className="flex h-11 w-full rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] px-3.5 py-2 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+              />
+              <p className="text-xs text-gray-400">
+                Acepta enlaces a archivos de video MP4/WebM o videos de YouTube con soporte 360°.
+              </p>
+            </div>
+
+            {videoPreview && (
+              <div className="space-y-4">
+                <div className="relative aspect-video w-full max-w-md rounded-xl overflow-hidden border border-[#2a2a2a] bg-black shadow-inner">
+                  {videoPreview.includes('youtube.com') || videoPreview.includes('youtu.be') ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 text-gray-300 text-xs gap-2">
+                      <Sparkles className="w-6 h-6 text-amber-400" />
+                      <span>Enlace de YouTube detectado. Se reproducirá con visor interactivo en el menú.</span>
+                      <span className="font-mono text-gray-400 truncate max-w-xs">{videoPreview}</span>
+                    </div>
+                  ) : (
+                    <video 
+                      src={videoPreview} 
+                      controls 
+                      playsInline 
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+                <Button 
+                  type="button" 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={handleRemoveVideo}
+                >
+                  Quitar URL
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

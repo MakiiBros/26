@@ -1,11 +1,20 @@
 'use client'
 
 import Image from 'next/image'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, RotateCw } from 'lucide-react'
 import { cn, formatPrice } from '@/lib/utils'
 
-export function DishCard({ dish, onClick }: { dish: any, onClick?: () => void }) {
+export function DishCard({ 
+  dish, 
+  onClick,
+  onView360
+}: { 
+  dish: any
+  onClick?: () => void
+  onView360?: () => void
+}) {
   const isDiscounted = dish.discount_percentage > 0;
+  const has360Video = Boolean(dish.video_360_url);
   
   return (
     <div 
@@ -31,6 +40,23 @@ export function DishCard({ dish, onClick }: { dish: any, onClick?: () => void })
       {dish.is_popular && (
         <div className={cn("absolute left-4 z-10 bg-[#e53e3e] text-white text-xs font-bold px-2 py-1 rounded shadow-md", isDiscounted ? "top-22" : "top-14")}>
           Popular
+        </div>
+      )}
+
+      {/* 360 3D Badge */}
+      {has360Video && (
+        <div 
+          onClick={(e) => {
+            if (onView360) {
+              e.stopPropagation()
+              onView360()
+            }
+          }}
+          className="absolute top-14 right-4 z-10 flex items-center gap-1.5 bg-gradient-to-r from-red-600/90 to-amber-600/90 hover:from-red-600 hover:to-amber-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-md border border-amber-300/40 transition-all hover:scale-105"
+          title="Ver en 3D 360°"
+        >
+          <RotateCw className="w-3 h-3 text-amber-200 animate-spin" style={{ animationDuration: '6s' }} />
+          <span>3D 360°</span>
         </div>
       )}
 
@@ -77,7 +103,21 @@ export function DishCard({ dish, onClick }: { dish: any, onClick?: () => void })
         </div>
 
         {/* Hover Button */}
-        <div className="absolute bottom-5 right-5 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+        <div className="absolute bottom-5 right-5 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2">
+          {has360Video && (
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onView360) onView360()
+                else if (onClick) onClick()
+              }}
+              className="bg-black/80 hover:bg-[#1a1a1a] text-amber-300 border border-amber-400/40 px-3 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1"
+            >
+              <RotateCw className="w-3 h-3" />
+              360°
+            </button>
+          )}
           <button className="bg-[#e53e3e] hover:bg-[#c53030] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-red-900/20">
             Ordenar
           </button>

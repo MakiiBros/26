@@ -24,6 +24,12 @@ export const dishSchema = z.object({
     .string()
     .uuid('Categoría inválida'),
   is_available: z.coerce.boolean().default(true),
+  video_360_url: z
+    .string()
+    .url('Debe ser una URL válida')
+    .optional()
+    .or(z.literal(''))
+    .nullable(),
   sort_order: z.coerce
     .number()
     .int('El orden debe ser un número entero')

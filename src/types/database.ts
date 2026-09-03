@@ -76,6 +76,7 @@ export interface Database {
           description: string | null
           price: number
           image_url: string | null
+          video_360_url: string | null
           is_available: boolean
           discount_percentage: number
           is_popular: boolean
@@ -91,6 +92,7 @@ export interface Database {
           description?: string | null
           price: number
           image_url?: string | null
+          video_360_url?: string | null
           is_available?: boolean
           discount_percentage?: number
           is_popular?: boolean
@@ -106,6 +108,7 @@ export interface Database {
           description?: string | null
           price?: number
           image_url?: string | null
+          video_360_url?: string | null
           is_available?: boolean
           discount_percentage?: number
           is_popular?: boolean

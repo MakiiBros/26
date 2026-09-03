@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { DeleteDishButton } from '@/components/admin/delete-dish-button';
-import { Plus, Utensils } from 'lucide-react';
+import { Plus, Utensils, RotateCw } from 'lucide-react';
 import { MOCK_DISHES } from '@/lib/mock-data';
 
 export const metadata = {
@@ -88,7 +88,14 @@ export default async function AdminDishesPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 font-semibold text-white">
-                      {dish.name}
+                      <div className="flex items-center gap-2">
+                        <span>{dish.name}</span>
+                        {dish.video_360_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30 shrink-0">
+                            <RotateCw className="w-2.5 h-2.5" /> 360°
+                          </span>
+                        )}
+                      </div>
                       {dish.description && (
                         <p className="text-xs text-gray-400 font-normal truncate max-w-xs mt-0.5">
                           {dish.description}
