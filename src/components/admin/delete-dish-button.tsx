@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { deleteDish } from '@/actions/dish-actions';
 import { useToast } from '@/components/ui/toast';
@@ -10,6 +11,7 @@ interface DeleteDishButtonProps {
 }
 
 export function DeleteDishButton({ id }: DeleteDishButtonProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
@@ -24,8 +26,9 @@ export function DeleteDishButton({ id }: DeleteDishButtonProps) {
             toast(result.error || "No se pudo eliminar el plato.", "error");
           } else {
             toast("El plato ha sido eliminado correctamente.", "success");
+            router.refresh();
           }
-        } catch (error) {
+        } catch {
           toast("Ocurrió un error inesperado al intentar eliminar el plato.", "error");
         }
       });

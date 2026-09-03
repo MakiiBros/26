@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { dishSchema } from '@/schemas/dish'
-import { CACHE_TAGS, ROUTES, STORAGE, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
+import { CACHE_TAGS, ROUTES, STORAGE, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } from '@/lib/constants'
 import { generateFileName } from '@/lib/utils'
 import type { FormState } from '@/types'
 
@@ -14,6 +14,9 @@ import type { FormState } from '@/types'
  * las operaciones de Storage y BD del panel de administración nunca fallen por RLS.
  */
 async function getAdminStorageClient() {
+  if (SUPABASE_SERVICE_ROLE_KEY) {
+    return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+  }
   try {
     const adminClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     const { data, error } = await adminClient.auth.signInWithPassword({
@@ -451,7 +454,7 @@ export async function deleteDish(id: string): Promise<FormState> {
       .delete()
       .eq('id', id)
       .select()
-      .single<{ image_url?: string | null; video_360_url?: string | null }>()
+      .maybeSingle<{ image_url?: string | null; video_360_url?: string | null }>()
 
     if (deleteError) {
       console.error(
@@ -469,6 +472,19 @@ export async function deleteDish(id: string): Promise<FormState> {
       return {
         success: false,
         error: 'No se encontró el plato a eliminar o no tienes permisos.',
+      }
+    }
+
+    if (!dish) {
+      if (id.startsWith('dish-') || id.startsWith('cat-')) {
+        return {
+          success: false,
+          error: 'No se pueden eliminar los platos de prueba (Mock Data).',
+        }
+      }
+      return {
+        success: false,
+        error: 'No se encontró el plato a eliminar o ya fue eliminado.',
       }
     }
 

@@ -69,14 +69,14 @@ export default async function AdminDishesPage() {
             </thead>
             <tbody className="divide-y divide-[#222222]">
               {dishes && dishes.length > 0 ? (
-                dishes.map((dish: any) => {
+                dishes.map((dish: any, index: number) => {
                   if (!dish) return null;
                   
                   // Evita errores con Next.js Image si la url está vacía o es inválida
                   const hasValidImage = typeof dish.image_url === 'string' && dish.image_url.trim().length > 0;
                   
                   return (
-                  <tr key={dish.id || Math.random()} className="hover:bg-[#1a1a1a]/60 transition-colors">
+                  <tr key={dish.id || index} className="hover:bg-[#1a1a1a]/60 transition-colors">
                     <td className="px-6 py-4">
                       {hasValidImage ? (
                         <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-[#2a2a2a] bg-black">
