@@ -3,22 +3,19 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { DeleteDishButton } from '@/components/admin/delete-dish-button';
-
-
+import { Plus, Utensils } from 'lucide-react';
 
 export const metadata = {
-  title: 'Gestión de Platos | Makisbros Admin',
+  title: 'Gestión de Platos | MakiiBros Admin',
 };
 
 export default async function AdminDishesPage() {
   const supabase = await createClient();
 
-  // Obtener los platos ordenados por sort_order (u otra columna si corresponde)
   const { data: dishes, error } = await supabase
     .from('dishes')
     .select('*, categories(name)')
     .order('sort_order', { ascending: true })
-    // Si no existe sort_order, puedes cambiar el fallback a 'created_at'
     .order('created_at', { ascending: false }); 
     
   if (error) {
@@ -27,37 +24,44 @@ export default async function AdminDishesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-          Platos
-        </h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <Utensils className="w-6 h-6 text-[#e53e3e]" />
+            Catálogo de Platos
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Administra los platillos disponibles en el menú de MakiiBros.
+          </p>
+        </div>
         <Link href="/admin/dishes/new">
-          <Button>
+          <Button className="bg-[#e53e3e] hover:bg-red-700 text-white font-medium flex items-center gap-2 rounded-lg px-4 h-11 shadow-lg shadow-red-950/30">
+            <Plus className="w-4 h-4" />
             Nuevo Plato
           </Button>
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+      <div className="bg-[#141414] shadow-xl rounded-xl overflow-hidden border border-[#2a2a2a]">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+          <table className="w-full text-sm text-left text-gray-300">
+            <thead className="text-xs uppercase bg-[#1a1a1a] text-gray-400 border-b border-[#2a2a2a]">
               <tr>
-                <th scope="col" className="px-6 py-3">Imagen</th>
-                <th scope="col" className="px-6 py-3">Nombre</th>
-                <th scope="col" className="px-6 py-3">Categoría</th>
-                <th scope="col" className="px-6 py-3">Precio</th>
-                <th scope="col" className="px-6 py-3">Estado</th>
-                <th scope="col" className="px-6 py-3 text-right">Acciones</th>
+                <th scope="col" className="px-6 py-4">Imagen</th>
+                <th scope="col" className="px-6 py-4">Nombre</th>
+                <th scope="col" className="px-6 py-4">Categoría</th>
+                <th scope="col" className="px-6 py-4">Precio</th>
+                <th scope="col" className="px-6 py-4">Estado</th>
+                <th scope="col" className="px-6 py-4 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#222222]">
               {dishes && dishes.length > 0 ? (
                 dishes.map((dish: any) => (
-                  <tr key={dish.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <tr key={dish.id} className="hover:bg-[#1a1a1a]/60 transition-colors">
                     <td className="px-6 py-4">
                       {dish.image_url ? (
-                        <div className="relative w-12 h-12 rounded overflow-hidden">
+                        <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-[#2a2a2a] bg-black">
                           <Image 
                             src={dish.image_url} 
                             alt={dish.name} 
@@ -66,39 +70,57 @@ export default async function AdminDishesPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-gray-400">
-                          N/A
+                        <div className="w-14 h-14 bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg flex items-center justify-center text-xs text-gray-500 font-medium">
+                          Sin foto
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                    <td className="px-6 py-4 font-semibold text-white">
                       {dish.name}
+                      {dish.description && (
+                        <p className="text-xs text-gray-400 font-normal truncate max-w-xs mt-0.5">
+                          {dish.description}
+                        </p>
+                      )}
                     </td>
                     <td className="px-6 py-4">
-                      {dish.categories?.name || 'Sin categoría'}
+                      <span className="bg-[#1f1f1f] text-gray-300 px-2.5 py-1 rounded-md text-xs font-medium border border-[#2e2e2e]">
+                        {dish.categories?.name || 'Sin categoría'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-bold text-[#f6ad55]">
+                      S/ {dish.price ? Number(dish.price).toFixed(2) : '0.00'}
                     </td>
                     <td className="px-6 py-4">
-                      S/ {dish.price?.toFixed(2) || '0.00'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${dish.is_available ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                        dish.is_available 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                          : 'bg-red-500/10 text-red-400 border-red-500/20'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${dish.is_available ? 'bg-emerald-400' : 'bg-red-400'}`} />
                         {dish.is_available ? 'Disponible' : 'Agotado'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end gap-2">
-                      <Link href={`/admin/dishes/${dish.id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          Editar
-                        </Button>
-                      </Link>
-                      <DeleteDishButton id={dish.id} />
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/admin/dishes/${dish.id}/edit`}>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="h-8 text-xs border-[#2a2a2a] bg-[#1a1a1a] hover:bg-[#252525] text-white"
+                          >
+                            Editar
+                          </Button>
+                        </Link>
+                        <DeleteDishButton id={dish.id} />
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    No se encontraron platos.
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                    No se encontraron platos registrados en el menú.
                   </td>
                 </tr>
               )}

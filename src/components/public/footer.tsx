@@ -63,7 +63,7 @@ export function Footer() {
             <ul className="space-y-3 text-[#a0a0a0] text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 text-[#e53e3e] shrink-0" />
-                <span>Av. Conquistadores 1234, San Isidro, Lima, Perú</span>
+                <span>Av. Universitaria con Retablo, Lima, Perú</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-[#e53e3e] shrink-0" />
@@ -78,7 +78,7 @@ export function Footer() {
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#e53e3e] shrink-0" />
                 <a href="mailto:hola@MakiBros.pe" className="hover:text-white transition-colors">
-                  hola@MakiBros.pe
+                  soporte@MakiBros.pe
                 </a>
               </li>
             </ul>

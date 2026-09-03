@@ -1,9 +1,9 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 import type { DishWithCategory, Category } from '@/types'
-
-
+import { ArrowLeft, Edit } from 'lucide-react'
 
 export default async function EditDishPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -24,9 +24,21 @@ export default async function EditDishPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Editar Plato</h1>
-        <p className="text-gray-500">Modifica los detalles del plato seleccionado.</p>
+      <div className="flex items-center gap-4">
+        <Link 
+          href="/admin/dishes" 
+          className="p-2 rounded-lg bg-[#141414] border border-[#2a2a2a] hover:bg-[#1f1f1f] text-gray-400 hover:text-white transition-colors"
+          title="Volver a la lista de platos"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <Edit className="w-6 h-6 text-[#f6ad55]" />
+            Editar Plato: {initialData.name}
+          </h1>
+          <p className="text-sm text-gray-400 mt-0.5">Modifica los detalles, precio o fotografía de este platillo.</p>
+        </div>
       </div>
 
       <DishForm 

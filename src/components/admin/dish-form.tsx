@@ -55,194 +55,231 @@ export function DishForm({ initialData, categories }: DishFormProps) {
   }
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="space-y-6 max-w-2xl">
+    <form action={formAction} encType="multipart/form-data" className="space-y-6 max-w-3xl">
       {state.error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-md">
-          {state.error}
+        <div className="bg-red-950/40 border border-red-500/50 text-red-200 p-4 rounded-xl text-sm flex items-center gap-2">
+          <span className="font-bold">⚠️ Error:</span> {state.error}
         </div>
       )}
 
       {/* Flag oculto para remover imagen */}
       <input type="hidden" name="remove_image" value={removeImage.toString()} />
 
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Input
-                label="Nombre del Plato"
-                id="name"
-                name="name"
-                defaultValue={initialData?.name}
-                error={state.fieldErrors?.name?.[0]}
-                required
-              />
-            </div>
+      {/* Tarjeta 1: Información Principal */}
+      <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 space-y-5 shadow-xl">
+        <h2 className="text-lg font-bold text-white border-b border-[#222222] pb-3 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#e53e3e]" />
+          Información Básica
+        </h2>
 
-            <div className="space-y-2">
-              <Input
-                label="Precio (S/)"
-                id="price"
-                name="price"
-                type="number"
-                step="0.01"
-                min="0"
-                defaultValue={initialData?.price}
-                error={state.fieldErrors?.price?.[0]}
-                required
-              />
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-200">
+              Nombre del Plato <span className="text-[#e53e3e]">*</span>
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              defaultValue={initialData?.name}
+              placeholder="Ej. Acevichado Maki"
+              className={`flex h-11 w-full rounded-lg border bg-[#1a1a1a] px-3.5 py-2 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-colors ${
+                state.fieldErrors?.name ? 'border-red-500' : 'border-[#2a2a2a]'
+              }`}
+              required
+            />
+            {state.fieldErrors?.name && (
+              <p className="text-xs text-red-400">{state.fieldErrors.name[0]}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Descripción
+            <label htmlFor="price" className="block text-sm font-medium text-gray-200">
+              Precio (S/) <span className="text-[#e53e3e]">*</span>
             </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={3}
-              className={`flex w-full rounded-md border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
-                state.fieldErrors?.description ? 'border-red-500' : 'border-gray-300'
+            <input
+              id="price"
+              name="price"
+              type="number"
+              step="0.01"
+              min="0"
+              defaultValue={initialData?.price}
+              placeholder="28.00"
+              className={`flex h-11 w-full rounded-lg border bg-[#1a1a1a] px-3.5 py-2 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-colors ${
+                state.fieldErrors?.price ? 'border-red-500' : 'border-[#2a2a2a]'
               }`}
-              defaultValue={initialData?.description || ''}
+              required
             />
-            {state.fieldErrors?.description && (
-              <p className="text-sm text-red-500">{state.fieldErrors.description[0]}</p>
+            {state.fieldErrors?.price && (
+              <p className="text-xs text-red-400">{state.fieldErrors.price[0]}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-200">
+            Descripción
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows={3}
+            className={`flex w-full rounded-lg border bg-[#1a1a1a] px-3.5 py-2.5 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-colors ${
+              state.fieldErrors?.description ? 'border-red-500' : 'border-[#2a2a2a]'
+            }`}
+            placeholder="Relleno de langostino empanizado y palta, cubierto con láminas de atún y salsa acevichada..."
+            defaultValue={initialData?.description || ''}
+          />
+          {state.fieldErrors?.description && (
+            <p className="text-xs text-red-400">{state.fieldErrors.description[0]}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <label htmlFor="category_id" className="block text-sm font-medium text-gray-200">
+              Categoría <span className="text-[#e53e3e]">*</span>
+            </label>
+            <select
+              id="category_id"
+              name="category_id"
+              className={`flex h-11 w-full rounded-lg border bg-[#1a1a1a] px-3.5 py-2 text-sm text-white focus-visible:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-colors ${
+                state.fieldErrors?.category_id ? 'border-red-500' : 'border-[#2a2a2a]'
+              }`}
+              defaultValue={initialData?.category_id || ''}
+              required
+            >
+              <option value="" disabled className="bg-[#1a1a1a] text-gray-400">Selecciona una categoría...</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id} className="bg-[#1a1a1a] text-white py-1">
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {state.fieldErrors?.category_id && (
+              <p className="text-xs text-red-400">{state.fieldErrors.category_id[0]}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
-                Categoría
-              </label>
-              <select
-                id="category_id"
-                name="category_id"
-                className={`flex h-10 w-full rounded-md border bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
-                  state.fieldErrors?.category_id ? 'border-red-500' : 'border-gray-300'
-                }`}
-                defaultValue={initialData?.category_id || ''}
-                required
-              >
-                <option value="" disabled>Selecciona una categoría...</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-              {state.fieldErrors?.category_id && (
-                <p className="text-sm text-red-500">{state.fieldErrors.category_id[0]}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <label htmlFor="sort_order" className="block text-sm font-medium text-gray-200">
+              Orden de visualización
+            </label>
+            <input
+              id="sort_order"
+              name="sort_order"
+              type="number"
+              min="0"
+              defaultValue={initialData?.sort_order ?? 0}
+              className={`flex h-11 w-full rounded-lg border bg-[#1a1a1a] px-3.5 py-2 text-sm text-white focus-visible:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-colors ${
+                state.fieldErrors?.sort_order ? 'border-red-500' : 'border-[#2a2a2a]'
+              }`}
+              required
+            />
+            {state.fieldErrors?.sort_order && (
+              <p className="text-xs text-red-400">{state.fieldErrors.sort_order[0]}</p>
+            )}
+          </div>
+        </div>
 
-            <div className="space-y-2">
-              <Input
-                label="Orden de visualización"
-                id="sort_order"
-                name="sort_order"
-                type="number"
-                min="0"
-                defaultValue={initialData?.sort_order ?? 0}
-                error={state.fieldErrors?.sort_order?.[0]}
-                required
+        <div className="flex items-center gap-3 pt-2">
+          <input
+            type="checkbox"
+            id="is_available"
+            name="is_available"
+            value="true"
+            defaultChecked={initialData ? initialData.is_available : true}
+            className="h-4 w-4 rounded border-[#3a3a3a] bg-[#1a1a1a] text-[#e53e3e] focus:ring-[#e53e3e] accent-[#e53e3e]"
+          />
+          <label htmlFor="is_available" className="text-sm font-medium text-gray-300 select-none cursor-pointer">
+            Disponible para la venta (visible en el menú)
+          </label>
+        </div>
+      </div>
+
+      {/* Tarjeta 2: Imagen del Plato */}
+      <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 space-y-4 shadow-xl">
+        <h2 className="text-lg font-bold text-white border-b border-[#222222] pb-3 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#f6ad55]" />
+          Fotografía del Plato
+        </h2>
+        
+        {/* Input de archivo SIEMPRE montado en el DOM para que viaje en FormData */}
+        <input 
+          id="image" 
+          name="image" 
+          type="file" 
+          className="sr-only" 
+          accept="image/png, image/jpeg, image/webp, image/avif"
+          onChange={handleImageChange}
+          ref={fileInputRef}
+        />
+
+        {imagePreview ? (
+          <div className="space-y-4">
+            <div className="relative aspect-video w-full max-w-md rounded-xl overflow-hidden border border-[#2a2a2a] bg-black shadow-inner">
+              <Image 
+                src={imagePreview} 
+                alt="Preview" 
+                fill 
+                className="object-cover"
               />
             </div>
-          </div>
-
-          <div className="flex items-center space-x-2 pt-2">
-            <input
-              type="checkbox"
-              id="is_available"
-              name="is_available"
-              value="true"
-              defaultChecked={initialData ? initialData.is_available : true}
-              className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-            />
-            <label htmlFor="is_available" className="text-sm font-medium text-gray-700">
-              Disponible para la venta
-            </label>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen del Plato</label>
-            
-            {/* Input de archivo SIEMPRE montado en el DOM para que viaje en FormData */}
-            <input 
-              id="image" 
-              name="image" 
-              type="file" 
-              className="sr-only" 
-              accept="image/png, image/jpeg, image/webp, image/avif"
-              onChange={handleImageChange}
-              ref={fileInputRef}
-            />
-
-            {imagePreview ? (
-              <div className="space-y-3">
-                <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 bg-black/10">
-                  <Image 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    fill 
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Cambiar Imagen
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="destructive" 
-                    size="sm" 
-                    onClick={handleRemoveImage}
-                  >
-                    Eliminar Imagen
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div 
+            <div className="flex gap-3">
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm"
+                className="bg-[#1a1a1a] hover:bg-[#252525] text-white border-[#2a2a2a]"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-700 px-6 py-10 cursor-pointer hover:border-orange-500 transition-colors"
               >
-                <div className="text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                  </svg>
-                  <div className="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
-                    <span className="relative font-semibold text-orange-600 hover:text-orange-500">
-                      Sube un archivo
-                    </span>
-                  </div>
-                  <p className="text-xs leading-5 text-gray-500">PNG, JPG, WebP hasta 5MB</p>
-                </div>
-              </div>
-            )}
+                Cambiar Imagen
+              </Button>
+              <Button 
+                type="button" 
+                variant="destructive" 
+                size="sm" 
+                onClick={handleRemoveImage}
+              >
+                Eliminar Imagen
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        ) : (
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex justify-center rounded-xl border-2 border-dashed border-[#2a2a2a] hover:border-[#e53e3e] bg-[#1a1a1a]/40 px-6 py-10 cursor-pointer transition-all hover:bg-[#1a1a1a]/70 group"
+          >
+            <div className="text-center">
+              <svg className="mx-auto h-12 w-12 text-gray-500 group-hover:text-[#e53e3e] transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+              </svg>
+              <div className="mt-4 flex text-sm leading-6 text-gray-300 justify-center">
+                <span className="relative font-semibold text-[#f6ad55] group-hover:underline">
+                  Haz clic para subir una imagen
+                </span>
+              </div>
+              <p className="text-xs leading-5 text-gray-500 mt-1">PNG, JPG, WebP o AVIF hasta 5MB</p>
+            </div>
+          </div>
+        )}
+      </div>
 
-      <div className="flex gap-4 justify-end">
+      <div className="flex gap-4 justify-end pt-2">
         <Button 
           type="button" 
           variant="outline" 
           onClick={() => router.push(ROUTES.ADMIN_DISHES)}
           disabled={isPending}
+          className="border-[#2a2a2a] bg-[#1a1a1a] hover:bg-[#252525] text-white h-11 px-6 rounded-lg"
         >
           Cancelar
         </Button>
-        <Button type="submit" isLoading={isPending}>
+        <Button 
+          type="submit" 
+          isLoading={isPending}
+          className="bg-[#e53e3e] hover:bg-red-700 text-white font-semibold h-11 px-8 rounded-lg shadow-lg shadow-red-950/30"
+        >
           {isEditing ? 'Guardar Cambios' : 'Crear Plato'}
         </Button>
       </div>
