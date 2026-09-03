@@ -19,12 +19,15 @@ export const SUPABASE_ANON_KEY =
 /** Rutas de la aplicación */
 export const ROUTES = {
   HOME: '/',
+  MENU: '/menu',
+  ABOUT: '/about',
   LOGIN: '/auth/login',
-  AUTH_CALLBACK: '/auth/callback',
+  REGISTER: '/auth/register',
+  CHECKOUT: '/checkout',
   ADMIN: '/admin',
   ADMIN_DISHES: '/admin/dishes',
-  ADMIN_DISHES_NEW: '/admin/dishes/new',
-  adminDishEdit: (id: string) => `/admin/dishes/${id}/edit` as const,
+  ADMIN_ORDERS: '/admin/orders',
+  ADMIN_SETTINGS: '/admin/settings',
 } as const
 
 /** Configuración de Storage */

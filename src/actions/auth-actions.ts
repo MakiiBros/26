@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { loginSchema } from '@/schemas/dish'
+import { registerSchema } from '@/schemas/auth'
 import { ROUTES } from '@/lib/constants'
 import type { FormState } from '@/types'
 
@@ -131,5 +132,79 @@ export async function logout(): Promise<void> {
 
   // Redirigir al inicio tras cerrar sesión.
   // redirect() va fuera del try/catch porque lanza una excepción interna de Next.js.
+  redirect(ROUTES.HOME)
+}
+
+/**
+ * Registra una nueva cuenta de usuario.
+ *
+ * @param prevState - Estado anterior del formulario
+ * @param formData - Datos del formulario (full_name, email, phone, password, confirmPassword)
+ * @returns Estado del formulario con errores o redirige si es exitoso
+ */
+export async function register(
+  prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  try {
+    const rawData = {
+      full_name: formData.get('full_name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      password: formData.get('password') as string,
+      confirmPassword: formData.get('confirmPassword') as string,
+    }
+
+    const validationResult = registerSchema.safeParse(rawData)
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: 'Por favor, corrige los errores del formulario.',
+        fieldErrors: validationResult.error.flatten().fieldErrors as Record<string, string[]>,
+      }
+    }
+
+    const { email, password, full_name, phone } = validationResult.data
+    const supabase = await createClient()
+
+    const { error: signUpError, data } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name,
+          phone,
+        },
+      },
+    })
+
+    if (signUpError) {
+      return {
+        success: false,
+        error: signUpError.message || 'Error al registrar usuario.',
+      }
+    }
+
+    // Profile is auto-created via trigger, but we update it if needed. 
+    // In this case, passing options.data during signUp should handle trigger.
+    if (data.user) {
+      const updateData = { full_name, phone: phone || null }
+      // @ts-expect-error — Los campos full_name y phone se agregaron en la migración 002
+      const { error: updateError } = await supabase.from('profiles').update(updateData).eq('id', data.user.id)
+        
+      if (updateError) {
+        console.error('[auth-actions] Error al actualizar perfil:', updateError)
+      }
+    }
+
+  } catch (error) {
+    console.error('[auth-actions] Error en register:', error)
+    return {
+      success: false,
+      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+    }
+  }
+
   redirect(ROUTES.HOME)
 }

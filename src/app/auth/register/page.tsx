@@ -1,32 +1,22 @@
 'use client'
 
 import { useActionState, Suspense } from 'react'
-import { login, loginWithGoogle } from '@/actions/auth-actions'
+import { register, loginWithGoogle } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
-function LoginForm() {
-  const [state, formAction, isPending] = useActionState(login, { success: false })
-  const searchParams = useSearchParams()
-  const errorParam = searchParams.get('error')
+function RegisterForm() {
+  const [state, formAction, isPending] = useActionState(register, { success: false })
 
   return (
     <div className="flex flex-col justify-center w-full max-w-md mx-auto space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-white">¡Bienvenido de vuelta!</h1>
-        <p className="text-[#a0a0a0]">Ingresa a tu cuenta para continuar</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Crear cuenta</h1>
+        <p className="text-[#a0a0a0]">Únete a MakiiBros para disfrutar de beneficios exclusivos</p>
       </div>
 
-      {errorParam && (
-        <div className="rounded-md bg-red-900/50 border border-red-500/50 p-4 text-sm text-red-200">
-          {errorParam === 'GoogleOAuthFailed' 
-            ? 'No se pudo conectar con Google. Por favor intenta de nuevo.' 
-            : 'Ocurrió un error de autenticación.'}
-        </div>
-      )}
       {state.error && (
         <div className="rounded-md bg-red-900/50 border border-red-500/50 p-4 text-sm text-red-200">
           {state.error}
@@ -46,7 +36,7 @@ function LoginForm() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
             </svg>
-            Continuar con Google
+            Registrarse con Google
           </Button>
         </form>
 
@@ -55,11 +45,23 @@ function LoginForm() {
             <span className="w-full border-t border-[#2a2a2a]" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-[#0a0a0a] px-2 text-[#a0a0a0]">O ingresa con email</span>
+            <span className="bg-[#0a0a0a] px-2 text-[#a0a0a0]">O regístrate con email</span>
           </div>
         </div>
 
         <form action={formAction} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="full_name" className="text-sm font-medium text-white">Nombre Completo</label>
+            <Input
+              id="full_name"
+              name="full_name"
+              type="text"
+              placeholder="Juan Pérez"
+              error={state.fieldErrors?.full_name?.[0]}
+              className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
+            />
+          </div>
+          
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-white">Correo Electrónico</label>
             <Input
@@ -72,28 +74,54 @@ function LoginForm() {
               className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
             />
           </div>
+
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-white">Contraseña</label>
+            <label htmlFor="phone" className="text-sm font-medium text-white">Teléfono (Opcional)</label>
             <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              error={state.fieldErrors?.password?.[0]}
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="987654321"
+              error={state.fieldErrors?.phone?.[0]}
               className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
             />
           </div>
-          <Button type="submit" className="w-full bg-[#e53e3e] hover:bg-[#c53030] text-white h-12 mt-2" isLoading={isPending}>
-            Iniciar Sesión
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-white">Contraseña</label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                error={state.fieldErrors?.password?.[0]}
+                className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium text-white">Confirmar</label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                error={state.fieldErrors?.confirmPassword?.[0]}
+                className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
+              />
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full bg-[#e53e3e] hover:bg-[#c53030] text-white h-12 mt-4" isLoading={isPending}>
+            Crear cuenta
           </Button>
         </form>
 
         <div className="text-center mt-6">
           <p className="text-[#a0a0a0] text-sm">
-            ¿No tienes cuenta?{' '}
-            <Link href="/auth/register" className="text-[#f6ad55] hover:text-white transition-colors font-medium">
-              Regístrate aquí
+            ¿Ya tienes cuenta?{' '}
+            <Link href="/auth/login" className="text-[#f6ad55] hover:text-white transition-colors font-medium">
+              Inicia sesión
             </Link>
           </p>
         </div>
@@ -102,15 +130,15 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
       {/* Left side: Image and Branding */}
       <div className="hidden lg:flex w-1/2 relative flex-col justify-between overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=2070&auto=format&fit=crop" 
-            alt="Makis Background" 
+            src="https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1925&auto=format&fit=crop" 
+            alt="Sushi Preparation" 
             fill 
             className="object-cover"
             priority
@@ -125,18 +153,21 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 p-12 mt-auto">
+          <div className="inline-flex items-center rounded-full bg-[#e53e3e]/20 border border-[#e53e3e]/50 px-4 py-1.5 text-sm font-semibold text-[#f6ad55] mb-6">
+            ✨ -15% en tu primer pedido
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight leading-tight">
-            Tus makis <br />
-            <span className="text-[#e53e3e]">favoritos</span>, <br />
-            en un solo lugar.
+            El sabor que <br />
+            te mereces, <br />
+            <span className="text-[#e53e3e]">más rápido.</span>
           </h2>
           <p className="text-gray-300 text-lg max-w-md">
-            Descubre nuestra variedad de sabores y disfruta de la mejor experiencia gastronómica.
+            Regístrate ahora, guarda tus favoritos y acumula puntos en cada compra.
           </p>
         </div>
       </div>
 
-      {/* Right side: Login Form */}
+      {/* Right side: Register Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-16 relative">
         {/* Mobile branding */}
         <div className="absolute top-8 left-8 lg:hidden">
@@ -146,7 +177,7 @@ export default function LoginPage() {
         </div>
         
         <Suspense fallback={<div className="text-[#a0a0a0]">Cargando formulario...</div>}>
-          <LoginForm />
+          <RegisterForm />
         </Suspense>
       </div>
     </div>

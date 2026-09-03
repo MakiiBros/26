@@ -1,4 +1,4 @@
-export type { Database, Profile, Category, Dish, DishInsert, DishUpdate, DishWithCategory } from './database'
+export type { Database, Profile, Category, Dish, DishInsert, DishUpdate, DishWithCategory, StoreSettings } from './database'
 
 /** Resultado genérico de Server Actions */
 export type ActionResult = {

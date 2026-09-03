@@ -9,8 +9,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MakiiBros | Menú Digital",
-  description: "Descubre nuestro delicioso menú de makis, rolls y más.",
+  title: "MakiiBros — Fusión Peruano-Japonesa",
+  description: "Los mejores makis, rolls especiales, ceviches y tiraditos. Pide online y recibe en tu puerta o recoge en local.",
+  keywords: ["makis", "sushi", "ceviche", "tiradito", "comida japonesa", "fusión peruano japonesa", "delivery", "MakiiBros"],
+  openGraph: {
+    title: "MakiiBros — Fusión Peruano-Japonesa",
+    description: "Los mejores makis, rolls especiales, ceviches y tiraditos. Pide online.",
+    siteName: "MakiiBros",
+    type: "website",
+    locale: "es_PE",
+    url: "https://makibros.me",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MakiiBros — Fusión Peruano-Japonesa",
+    description: "Los mejores makis, rolls especiales, ceviches y tiraditos.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -19,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-50 text-gray-900`}>
+    <html lang="es" className="dark">
+      <body className={`${inter.variable} antialiased font-sans min-h-screen flex flex-col`}>
         <ToastProvider>
           {children}
         </ToastProvider>

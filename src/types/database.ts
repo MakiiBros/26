@@ -23,16 +23,25 @@ export interface Database {
         Row: {
           id: string
           role: 'user' | 'admin'
+          full_name: string | null
+          phone: string | null
+          avatar_url: string | null
           created_at: string
         }
         Insert: {
           id: string
           role?: 'user' | 'admin'
+          full_name?: string | null
+          phone?: string | null
+          avatar_url?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           role?: 'user' | 'admin'
+          full_name?: string | null
+          phone?: string | null
+          avatar_url?: string | null
           created_at?: string
         }
       }
@@ -68,6 +77,9 @@ export interface Database {
           price: number
           image_url: string | null
           is_available: boolean
+          discount_percentage: number
+          is_popular: boolean
+          is_promoted: boolean
           sort_order: number
           created_at: string
           updated_at: string
@@ -80,6 +92,9 @@ export interface Database {
           price: number
           image_url?: string | null
           is_available?: boolean
+          discount_percentage?: number
+          is_popular?: boolean
+          is_promoted?: boolean
           sort_order?: number
           created_at?: string
           updated_at?: string
@@ -92,8 +107,70 @@ export interface Database {
           price?: number
           image_url?: string | null
           is_available?: boolean
+          discount_percentage?: number
+          is_popular?: boolean
+          is_promoted?: boolean
           sort_order?: number
           created_at?: string
+          updated_at?: string
+        }
+      }
+      store_settings: {
+        Row: {
+          id: string
+          is_open: boolean
+          open_days: string[]
+          open_time: string
+          close_time: string
+          allows_reservations: boolean
+          delivery_enabled: boolean
+          phone: string | null
+          whatsapp: string | null
+          email: string | null
+          address: string | null
+          tiktok_url: string | null
+          instagram_url: string | null
+          facebook_url: string | null
+          about_text: string | null
+          hero_image_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          is_open?: boolean
+          open_days?: string[]
+          open_time?: string
+          close_time?: string
+          allows_reservations?: boolean
+          delivery_enabled?: boolean
+          phone?: string | null
+          whatsapp?: string | null
+          email?: string | null
+          address?: string | null
+          tiktok_url?: string | null
+          instagram_url?: string | null
+          facebook_url?: string | null
+          about_text?: string | null
+          hero_image_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          is_open?: boolean
+          open_days?: string[]
+          open_time?: string
+          close_time?: string
+          allows_reservations?: boolean
+          delivery_enabled?: boolean
+          phone?: string | null
+          whatsapp?: string | null
+          email?: string | null
+          address?: string | null
+          tiktok_url?: string | null
+          instagram_url?: string | null
+          facebook_url?: string | null
+          about_text?: string | null
+          hero_image_url?: string | null
           updated_at?: string
         }
       }
@@ -116,9 +193,9 @@ export type Category = Database['public']['Tables']['categories']['Row']
 export type Dish = Database['public']['Tables']['dishes']['Row']
 export type DishInsert = Database['public']['Tables']['dishes']['Insert']
 export type DishUpdate = Database['public']['Tables']['dishes']['Update']
+export type StoreSettings = Database['public']['Tables']['store_settings']['Row']
 
 /** Plato con su categoría embebida (para JOINs) */
 export type DishWithCategory = Dish & {
   categories: Category
 }
-

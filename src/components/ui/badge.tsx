@@ -1,59 +1,31 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-// ─────────────────────────────────────────────────────────────
-// Variantes
-// ─────────────────────────────────────────────────────────────
-
-/** Mapa de clases para cada variante de color del badge */
-const badgeVariants = {
-  default: 'bg-orange-100 text-orange-800',
-  success: 'bg-green-100 text-green-800',
-  destructive: 'bg-red-100 text-red-800',
-  secondary: 'bg-gray-100 text-gray-800',
-} as const
-
-// ─────────────────────────────────────────────────────────────
-// Tipos
-// ─────────────────────────────────────────────────────────────
-
-/** Variantes de color disponibles para el badge */
-export type BadgeVariant = keyof typeof badgeVariants
-
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /** Variante de color del badge */
-  variant?: BadgeVariant
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "discount" | "popular" | "new" | "unavailable" | "success" | "warning";
 }
 
-// ─────────────────────────────────────────────────────────────
-// Componente
-// ─────────────────────────────────────────────────────────────
+function Badge({ className, variant = "default", ...props }: BadgeProps) {
+  const variants = {
+    default: "bg-[#141414] text-white border border-[#2a2a2a]",
+    discount: "bg-yellow-500/20 text-yellow-400 border-transparent",
+    popular: "bg-[#dc2626]/20 text-[#dc2626] border-transparent",
+    new: "bg-green-500/20 text-green-400 border-transparent",
+    unavailable: "bg-red-900/30 text-red-400 border-transparent",
+    success: "bg-green-500/20 text-green-400 border-transparent",
+    warning: "bg-yellow-500/20 text-yellow-400 border-transparent",
+  };
 
-/**
- * Badge (etiqueta) pequeña tipo "pill" para mostrar estados,
- * categorías o conteos de forma compacta.
- *
- * @example
- * ```tsx
- * <Badge variant="success">Disponible</Badge>
- * <Badge variant="destructive">Agotado</Badge>
- * ```
- */
-const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = 'default', ...props }, ref) => (
-    <span
-      ref={ref}
+  return (
+    <div
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
-        'transition-colors',
-        badgeVariants[variant],
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#dc2626] focus:ring-offset-2",
+        variants[variant],
         className
       )}
       {...props}
     />
-  )
-)
+  );
+}
 
-Badge.displayName = 'Badge'
-
-export { Badge, badgeVariants }
+export { Badge };
