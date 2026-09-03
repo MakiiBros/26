@@ -24,7 +24,7 @@ function RegisterForm() {
       )}
 
       <div className="space-y-6">
-        <form action={loginWithGoogle}>
+        {/* <form action={loginWithGoogle}>
           <Button 
             type="submit" 
             variant="outline" 
@@ -47,7 +47,7 @@ function RegisterForm() {
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-[#0a0a0a] px-2 text-[#a0a0a0]">O regístrate con email</span>
           </div>
-        </div>
+        </div> */}
 
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
