@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '@/lib/firebase/client'
+import { syncGoogleUser } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
+import { ROUTES } from '@/lib/constants'
 
 export function GoogleAuthButton({ text = 'Continuar con Google' }: { text?: string }) {
   const [loading, setLoading] = useState(false)
@@ -27,6 +29,21 @@ export function GoogleAuthButton({ text = 'Continuar con Google' }: { text?: str
         }
         localStorage.setItem('makibros_customer', JSON.stringify(userData))
         document.cookie = 'makibros_customer=' + encodeURIComponent(JSON.stringify(userData)) + '; path=/; max-age=2592000; SameSite=Lax'
+      }
+
+      if (user.email) {
+        const syncRes = await syncGoogleUser({
+          email: user.email,
+          name: user.displayName || '',
+          avatar: user.photoURL || undefined,
+        })
+
+        if (syncRes?.isAdmin) {
+          toast('¡Bienvenido Administrador!', 'success')
+          router.push(ROUTES.ADMIN)
+          router.refresh()
+          return
+        }
       }
 
       toast('¡Bienvenido, ' + (user.displayName || 'cliente') + '!', 'success')

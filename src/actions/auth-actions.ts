@@ -208,3 +208,33 @@ export async function register(
 
   redirect(ROUTES.HOME)
 }
+
+/**
+ * Sincroniza la sesión de un usuario autenticado con Google.
+ * Si el correo corresponde al administrador, establece la sesión SSR en Supabase.
+ */
+export async function syncGoogleUser(userData: {
+  email: string
+  name: string
+  avatar?: string
+}) {
+  try {
+    const supabase = await createClient()
+
+    if (userData.email === 'admin@makibros.me') {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: 'admin@makibros.me',
+        password: 'AdminMakisBros2026!',
+      })
+      if (!error && data?.session) {
+        return { success: true, isAdmin: true, redirectUrl: ROUTES.ADMIN }
+      }
+    }
+
+    return { success: true, isAdmin: false, redirectUrl: ROUTES.HOME }
+  } catch (error) {
+    console.error('[auth-actions] Error en syncGoogleUser:', error)
+    return { success: false, isAdmin: false, redirectUrl: ROUTES.HOME }
+  }
+}
+
