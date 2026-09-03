@@ -12,7 +12,7 @@ import Image from 'next/image'
 function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, { success: false })
   const searchParams = useSearchParams()
-  const errorParam = searchParams.get('error')
+  const errorParam = searchParams?.get('error')
 
   return (
     <div className="flex flex-col justify-center w-full max-w-md mx-auto space-y-8">

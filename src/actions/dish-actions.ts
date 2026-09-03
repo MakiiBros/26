@@ -444,31 +444,31 @@ export async function deleteDish(id: string): Promise<FormState> {
     const supabase = await getAdminStorageClient()
 
     // ------------------------------------------------------------------
-    // Obtener el plato para saber si tiene imagen que eliminar
+    // Eliminar el plato de la base de datos y obtener sus datos
     // ------------------------------------------------------------------
-    const { data: dish, error: fetchError } = await supabase
+    const { data: dish, error: deleteError } = await supabase
       .from('dishes')
-      .select('image_url, video_360_url')
+      .delete()
       .eq('id', id)
-      .single<{ image_url: string | null; video_360_url: string | null }>()
+      .select()
+      .single<{ image_url?: string | null; video_360_url?: string | null }>()
 
-    if (fetchError) {
+    if (deleteError) {
       console.error(
-        '[dish-actions] Error al obtener plato para eliminar:',
-        fetchError
+        '[dish-actions] Error al eliminar plato:',
+        deleteError
       )
       
       // Check if it's a UUID error (meaning it's probably a mock dish)
-      if (fetchError.code === '22P02' || id.startsWith('dish-') || id.startsWith('cat-')) {
+      if (deleteError.code === '22P02' || id.startsWith('dish-') || id.startsWith('cat-')) {
         return {
           success: false,
           error: 'No se pueden eliminar los platos de prueba (Mock Data).',
         }
       }
-
       return {
         success: false,
-        error: 'No se encontró el plato a eliminar.',
+        error: 'No se encontró el plato a eliminar o no tienes permisos.',
       }
     }
 
@@ -489,25 +489,6 @@ export async function deleteDish(id: string): Promise<FormState> {
       const videoPath = dish.video_360_url.split(`${STORAGE.BUCKET}/`)[1]
       if (videoPath) {
         await supabase.storage.from(STORAGE.BUCKET).remove([videoPath])
-      }
-    }
-
-    // ------------------------------------------------------------------
-    // Eliminar el plato de la base de datos
-    // ------------------------------------------------------------------
-    const { error: deleteError } = await supabase
-      .from('dishes')
-      .delete()
-      .eq('id', id)
-
-    if (deleteError) {
-      console.error(
-        '[dish-actions] Error al eliminar plato:',
-        deleteError.message
-      )
-      return {
-        success: false,
-        error: 'Error al eliminar el plato. Intenta de nuevo.',
       }
     }
 

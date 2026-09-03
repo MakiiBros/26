@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 
 export default function ErrorBoundary({
   error,
@@ -27,12 +26,18 @@ export default function ErrorBoundary({
           </div>
         )}
         <div className="flex gap-2 justify-center">
-          <Button onClick={() => reset()}>
+          <button 
+            onClick={() => reset()}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626] disabled:pointer-events-none disabled:opacity-50 bg-[#dc2626] text-white hover:bg-[#b91c1c] shadow-sm h-10 px-4 py-2"
+          >
             Intentar nuevamente
-          </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/'}>
+          </button>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626] disabled:pointer-events-none disabled:opacity-50 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-100 h-10 px-4 py-2"
+          >
             Ir al Inicio
-          </Button>
+          </button>
         </div>
       </div>
     </div>

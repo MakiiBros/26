@@ -69,14 +69,20 @@ export default async function AdminDishesPage() {
             </thead>
             <tbody className="divide-y divide-[#222222]">
               {dishes && dishes.length > 0 ? (
-                dishes.map((dish: any) => (
-                  <tr key={dish.id} className="hover:bg-[#1a1a1a]/60 transition-colors">
+                dishes.map((dish: any) => {
+                  if (!dish) return null;
+                  
+                  // Evita errores con Next.js Image si la url está vacía o es inválida
+                  const hasValidImage = typeof dish.image_url === 'string' && dish.image_url.trim().length > 0;
+                  
+                  return (
+                  <tr key={dish.id || Math.random()} className="hover:bg-[#1a1a1a]/60 transition-colors">
                     <td className="px-6 py-4">
-                      {dish.image_url ? (
+                      {hasValidImage ? (
                         <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-[#2a2a2a] bg-black">
                           <Image 
                             src={dish.image_url} 
-                            alt={dish.name} 
+                            alt={dish.name || 'Plato'} 
                             fill 
                             className="object-cover" 
                           />
@@ -89,7 +95,7 @@ export default async function AdminDishesPage() {
                     </td>
                     <td className="px-6 py-4 font-semibold text-white">
                       <div className="flex items-center gap-2">
-                        <span>{dish.name}</span>
+                        <span>{dish.name || 'Sin nombre'}</span>
                         {dish.video_360_url && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30 shrink-0">
                             <RotateCw className="w-2.5 h-2.5" /> 360°
@@ -122,7 +128,7 @@ export default async function AdminDishesPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link href={`/admin/dishes/${dish.id}/edit`}>
+                        <Link href={`/admin/dishes/${dish.id || ''}/edit`}>
                           <Button 
                             variant="outline" 
                             size="sm"
@@ -131,11 +137,12 @@ export default async function AdminDishesPage() {
                             Editar
                           </Button>
                         </Link>
-                        <DeleteDishButton id={dish.id} />
+                        {dish.id && <DeleteDishButton id={dish.id} />}
                       </div>
                     </td>
                   </tr>
-                ))
+                );
+              })
               ) : (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
