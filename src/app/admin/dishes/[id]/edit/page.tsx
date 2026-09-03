@@ -4,21 +4,43 @@ import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 import type { DishWithCategory, Category } from '@/types'
 import { ArrowLeft, Edit } from 'lucide-react'
+import { MOCK_DISHES, MOCK_CATEGORIES } from '@/lib/mock-data'
 
 export default async function EditDishPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
   
   // Obtenemos los datos del plato y las categorías en paralelo
-  const [dishResponse, categoriesResponse] = await Promise.all([
-    supabase.from('dishes').select('*, categories(*)').eq('id', id).single(),
-    supabase.from('categories').select('*').order('sort_order')
-  ])
+  let initialData: DishWithCategory | null = null
+  let categories: Category[] = []
 
-  const initialData = dishResponse.data as unknown as DishWithCategory
-  const categories = (categoriesResponse.data || []) as Category[]
+  try {
+    const dishResponse: any = await supabase.from('dishes').select('*, categories(*)').eq('id', id).single()
+    const categoriesResponse: any = await supabase.from('categories').select('*').order('sort_order')
 
-  if (dishResponse.error || !initialData) {
+    if (dishResponse?.data) {
+      initialData = dishResponse.data as unknown as DishWithCategory
+    }
+    if (categoriesResponse?.data && categoriesResponse.data.length > 0) {
+      categories = categoriesResponse.data as Category[]
+    }
+  } catch (err) {
+    console.warn('Error al cargar plato para editar:', err)
+  }
+
+  // Fallback si no está en la base de datos o si es un plato de prueba
+  if (!initialData) {
+    const mockDish = MOCK_DISHES.find(d => d.id === id)
+    if (mockDish) {
+      initialData = mockDish as unknown as DishWithCategory
+    }
+  }
+
+  if (categories.length === 0) {
+    categories = MOCK_CATEGORIES
+  }
+
+  if (!initialData) {
     notFound()
   }
 

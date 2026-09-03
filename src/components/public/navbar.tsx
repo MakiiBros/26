@@ -9,6 +9,7 @@ import { ROUTES } from '@/lib/constants';
 import { auth } from '@/lib/firebase/client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { createClient } from '@/lib/supabase/client';
+import { useCart } from '@/context/cart-context';
 
 interface UserProfile {
   name: string;
@@ -18,6 +19,7 @@ interface UserProfile {
 }
 
 export function Navbar() {
+  const { totalItems } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -214,7 +216,7 @@ export function Navbar() {
             >
               <ShoppingCart className="h-4 w-4" />
               Ordenar
-              <span className="bg-black/20 px-1.5 py-0.5 rounded-full text-xs ml-1">0</span>
+              <span className="bg-black/20 px-1.5 py-0.5 rounded-full text-xs ml-1">{totalItems}</span>
             </Link>
           </div>
 
@@ -223,7 +225,7 @@ export function Navbar() {
             <Link href={ROUTES.CHECKOUT} className="relative text-white p-2">
               <ShoppingCart className="h-6 w-6" />
               <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-[#e53e3e] rounded-full">
-                0
+                {totalItems}
               </span>
             </Link>
             <button

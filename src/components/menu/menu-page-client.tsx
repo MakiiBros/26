@@ -1,13 +1,27 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { CategoryTabs } from './category-tabs'
 import { DishCard } from './dish-card'
 import { DishDetailModal } from './dish-detail-modal'
 import { Search } from 'lucide-react'
 
 export function MenuPageClient({ categories, dishes }: { categories: any[], dishes: any[] }) {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all')
+  const searchParams = useSearchParams()
+  const catParam = searchParams.get('category')
+  
+  const initialCategory = useMemo(() => {
+    if (!catParam) return 'all'
+    const matched = categories.find((c) =>
+      c.id === catParam ||
+      c.name.toLowerCase().includes(catParam.toLowerCase())
+    )
+    return matched ? matched.id : 'all'
+  }, [catParam, categories])
+
+  const [userSelectedCategory, setUserSelectedCategory] = useState<string | null>(null)
+  const selectedCategoryId = userSelectedCategory ?? initialCategory
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<'all' | 'popular' | 'new' | 'discount' | 'video360'>('all')
   const [selectedDish, setSelectedDish] = useState<any | null>(null)
@@ -39,7 +53,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
             <CategoryTabs 
               categories={categories}
               selectedCategoryId={selectedCategoryId}
-              onSelectCategory={setSelectedCategoryId}
+              onSelectCategory={setUserSelectedCategory}
             />
           </div>
         </aside>

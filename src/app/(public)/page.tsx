@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
 import { Navbar } from '@/components/public/navbar'
@@ -91,10 +92,12 @@ export default async function HomePage() {
               </p>
             </div>
             
-            <MenuPageClient 
-              categories={categories} 
-              dishes={dishes} 
-            />
+            <Suspense fallback={<div className="py-12 text-center text-gray-500">Cargando menú...</div>}>
+              <MenuPageClient 
+                categories={categories} 
+                dishes={dishes} 
+              />
+            </Suspense>
           </div>
         </section>
 

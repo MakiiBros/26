@@ -7,6 +7,8 @@ import Image from 'next/image'
 import { formatPrice } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Viewer360 } from './viewer-360'
+import { useCart } from '@/context/cart-context'
+import { useToast } from '@/components/ui/toast'
 
 interface DishDetailModalProps {
   dish: any
@@ -35,7 +37,14 @@ function DishDetailContent({
     ? dish.price * (1 - dish.discount_percentage / 100)
     : dish.price
 
+  const { addItem } = useCart()
+  const { toast } = useToast()
+
   const handleAdd = () => {
+    if (dish) {
+      addItem(dish, quantity)
+      toast(`¡${dish.name} (${quantity}) agregado al carrito!`, 'success')
+    }
     onClose()
   }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
+import { CartProvider } from "@/context/cart-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,9 +40,11 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body className={`${inter.variable} antialiased font-sans min-h-screen flex flex-col`}>
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <CartProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </CartProvider>
       </body>
     </html>
   );

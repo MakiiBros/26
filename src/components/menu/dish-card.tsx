@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { ShoppingCart, RotateCw } from 'lucide-react'
 import { cn, formatPrice } from '@/lib/utils'
+import { useCart } from '@/context/cart-context'
+import { useToast } from '@/components/ui/toast'
 
 export function DishCard({ 
   dish, 
@@ -13,6 +15,8 @@ export function DishCard({
   onClick?: () => void
   onView360?: () => void
 }) {
+  const { addItem } = useCart()
+  const { toast } = useToast()
   const isDiscounted = dish.discount_percentage > 0;
   const has360Video = Boolean(dish.video_360_url);
   
@@ -26,9 +30,18 @@ export function DishCard({
         <span className="text-[10px] font-black tracking-widest text-white/80 bg-black/40 px-2 py-1 rounded backdrop-blur-sm">
           MakiBros
         </span>
-        <div className="bg-black/40 p-2 rounded-full backdrop-blur-sm text-white group-hover:bg-[#e53e3e] transition-colors">
+        <button 
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            addItem(dish, 1)
+            toast(`¡${dish.name} agregado al pedido!`, 'success')
+          }}
+          className="bg-black/40 p-2 rounded-full backdrop-blur-sm text-white hover:bg-[#e53e3e] transition-colors"
+          title="Agregar al pedido"
+        >
           <ShoppingCart className="w-4 h-4" />
-        </div>
+        </button>
       </div>
 
       {isDiscounted && (
@@ -118,7 +131,15 @@ export function DishCard({
               360°
             </button>
           )}
-          <button className="bg-[#e53e3e] hover:bg-[#c53030] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-red-900/20">
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              addItem(dish, 1)
+              toast(`¡${dish.name} agregado al pedido!`, 'success')
+            }}
+            className="bg-[#e53e3e] hover:bg-[#c53030] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-red-900/20 active:scale-95 transition-transform"
+          >
             Ordenar
           </button>
         </div>

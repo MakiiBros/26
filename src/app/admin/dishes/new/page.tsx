@@ -2,15 +2,28 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 import { ArrowLeft, Plus } from 'lucide-react'
+import { MOCK_CATEGORIES } from '@/lib/mock-data'
 
 export default async function NewDishPage() {
   const supabase = await createClient()
   
   // Obtenemos las categorías para el select del formulario
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .order('sort_order')
+  let categories: any[] = []
+  try {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .order('sort_order')
+    if (data && data.length > 0) {
+      categories = data
+    }
+  } catch (err) {
+    console.warn('Error al cargar categorías en nuevo plato:', err)
+  }
+
+  if (categories.length === 0) {
+    categories = MOCK_CATEGORIES
+  }
 
   return (
     <div className="space-y-6">
@@ -31,7 +44,7 @@ export default async function NewDishPage() {
         </div>
       </div>
 
-      <DishForm categories={categories || []} />
+      <DishForm categories={categories} />
     </div>
   )
 }
