@@ -30,20 +30,16 @@ export function AboutSection() {
                 MakiBros
               </h2>
               <p className="text-xl text-[#f6ad55] font-light italic">
-                &ldquo;Diseño Minimalista, Sabor Máximo&rdquo;
+                &ldquo;Diseño Banderilla, Sabor Máximo&rdquo;
               </p>
             </div>
             
             <div className="space-y-4 text-[#a0a0a0] leading-relaxed">
               <p>
-                En MakiBros fusionamos la milenaria técnica de la cocina japonesa con 
-                la audacia y frescura de los ingredientes peruanos. Cada plato es una 
-                obra de arte diseñada para sorprender tu paladar.
+                En MakiBros le metemos el verdadero flow peruano a los makis. Nacimos para romperla con nuestras innovadoras banderillas crocantes y rolls bien taypá, combinando el crunch del panko con las salsas más bravas y adictivas de Lima.
               </p>
               <p>
-                Nuestros itamaes seleccionan diariamente los pescados más frescos para 
-                asegurar una calidad inigualable. Sumérgete en una experiencia donde 
-                el umami se encuentra con el ají amarillo.
+                Aquí no hay floro: seleccionamos la mejor pesca del día, le ponemos harto fuego y nuestra inconfundible salsa acevichada para armar una verdadera fiesta nikkei. ¡Puro sabor crujiente para bajonear y disfrutar con los brothers!
               </p>
             </div>
             

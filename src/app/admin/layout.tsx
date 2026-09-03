@@ -16,7 +16,7 @@ export default function AdminLayout({
         <div className="p-6 border-b border-[#222222] flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2">
             <span className="text-xl font-extrabold tracking-wider text-white">
-              MakiiBr<span className="text-[#e53e3e]">o</span>s
+              MakiBr<span className="text-[#e53e3e]">o</span>s
             </span>
             <span className="text-[10px] uppercase font-bold tracking-widest bg-[#f6ad55]/20 text-[#f6ad55] px-2 py-0.5 rounded border border-[#f6ad55]/30">
               Admin
@@ -88,7 +88,7 @@ export default function AdminLayout({
         <header className="md:hidden flex items-center justify-between px-5 py-3.5 bg-[#111111] border-b border-[#222222]">
           <Link href="/admin" className="flex items-center gap-1.5">
             <span className="text-lg font-bold text-white">
-              MakiiBr<span className="text-[#e53e3e]">o</span>s
+              MakiBr<span className="text-[#e53e3e]">o</span>s
             </span>
             <span className="text-[9px] uppercase font-bold bg-[#f6ad55]/20 text-[#f6ad55] px-1.5 py-0.5 rounded">
               Admin

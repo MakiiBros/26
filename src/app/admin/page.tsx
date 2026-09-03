@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Utensils, Grid, Plus, ExternalLink, Sparkles } from 'lucide-react';
 
 export const metadata = {
-  title: 'Dashboard | MakiiBros Admin',
+  title: 'Dashboard | MakiBros Admin',
 };
 
 export default async function AdminDashboardPage() {
@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
           </span>
         </h1>
         <p className="text-sm text-gray-400 mt-1">
-          Gestiona el catálogo, platillos y contenido de la plataforma MakiiBros.
+          Gestiona el catálogo, platillos y contenido de la plataforma MakiBros.
         </p>
       </div>
 

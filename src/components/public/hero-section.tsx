@@ -1,6 +1,3 @@
-import Link from 'next/link';
-import { ROUTES } from '@/lib/constants';
-
 export function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
@@ -32,18 +29,18 @@ export function HeroSection() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-            <Link 
-              href={ROUTES.MENU}
-              className="w-full sm:w-auto px-8 py-4 text-white font-medium bg-[#e53e3e] hover:bg-red-700 rounded-md transition-all hover:scale-105"
+            <a 
+              href="#menu"
+              className="w-full sm:w-auto px-8 py-4 text-white font-medium bg-[#e53e3e] hover:bg-red-700 rounded-md transition-all hover:scale-105 inline-flex items-center justify-center"
             >
               Ordenar Ahora
-            </Link>
-            <Link 
-              href={ROUTES.MENU}
-              className="w-full sm:w-auto px-8 py-4 text-white font-medium border border-white/20 hover:border-white/50 hover:bg-white/5 rounded-md transition-all"
+            </a>
+            <a 
+              href="#menu"
+              className="w-full sm:w-auto px-8 py-4 text-white font-medium border border-white/20 hover:border-white/50 hover:bg-white/5 rounded-md transition-all inline-flex items-center justify-center"
             >
               Ver Menú
-            </Link>
+            </a>
           </div>
         </div>
       </div>

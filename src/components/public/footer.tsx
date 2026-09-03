@@ -14,11 +14,11 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="inline-block">
               <span className="text-2xl font-bold tracking-tighter text-white">
-                MakiiBr<span className="text-[#e53e3e]">o</span>s
+                MakiBr<span className="text-[#e53e3e]">o</span>s
               </span>
             </Link>
             <p className="text-[#a0a0a0] text-sm leading-relaxed">
-              La mejor experiencia de sushi fusión peruano-japonesa. Ingredientes frescos, sabores audaces y diseño minimalista.
+              La mejor experiencia de sushi peruano-japonesa. Ingredientes frescos, sabores audaces y diseño Banderilla.
             </p>
             <div className="flex gap-4 pt-2">
               <a href="#" className="text-gray-400 hover:text-white transition-colors bg-[#1a1a1a] p-2 rounded-full">

@@ -103,7 +103,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Inicio', href: '/' },
-    { name: 'Menú', href: ROUTES.MENU },
+    { name: 'Menú', href: '/#menu' },
     { name: 'Promociones', href: '/#promociones' },
     { name: 'Nosotros', href: '/#nosotros' },
     { name: 'Contacto', href: '/#contacto' },
@@ -122,7 +122,7 @@ export function Navbar() {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-1">
               <span className="text-2xl font-bold tracking-tighter text-white">
-                MakiiBr<span className="text-[#e53e3e]">o</span>s
+                MakiBr<span className="text-[#e53e3e]">o</span>s
               </span>
             </Link>
           </div>

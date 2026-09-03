@@ -135,7 +135,7 @@ export default function RegisterPage() {
         
         <div className="relative z-10 p-12">
           <Link href="/" className="text-3xl font-black tracking-tighter text-white inline-block">
-            MAKII<span className="text-[#e53e3e]">BROS</span>
+            MAKI<span className="text-[#e53e3e]">BROS</span>
           </Link>
         </div>
 

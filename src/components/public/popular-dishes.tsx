@@ -1,9 +1,7 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { Dish } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { ShoppingCart } from 'lucide-react';
-import { ROUTES } from '@/lib/constants';
 
 interface PopularDishesProps {
   dishes: Dish[];
@@ -72,13 +70,13 @@ export function PopularDishes({ dishes }: PopularDishesProps) {
                     )}
                   </div>
                   
-                  <Link
-                    href={`${ROUTES.MENU}?dish=${dish.id}`}
+                  <a
+                    href="#menu"
                     className="flex items-center gap-2 bg-[#2a2a2a] hover:bg-[#e53e3e] text-white p-2 rounded-full transition-colors"
-                    aria-label="Agregar al carrito"
+                    aria-label="Ver en el menú"
                   >
                     <ShoppingCart className="w-5 h-5" />
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
@@ -86,12 +84,12 @@ export function PopularDishes({ dishes }: PopularDishesProps) {
         </div>
         
         <div className="mt-12 text-center">
-          <Link 
-            href={ROUTES.MENU}
+          <a 
+            href="#menu"
             className="inline-block px-8 py-3 border border-white/20 text-white font-medium hover:bg-white/5 rounded-md transition-colors"
           >
             Ver Menú Completo
-          </Link>
+          </a>
         </div>
       </div>
     </section>

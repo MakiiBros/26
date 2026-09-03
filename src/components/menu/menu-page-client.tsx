@@ -28,7 +28,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
         {/* Sidebar */}
         <aside className="w-full md:w-64 flex-shrink-0">
           <div className="sticky top-24">
-            <h2 className="text-xl font-bold mb-4 text-white">Menú</h2>
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-3 text-[#a0a0a0]">Categorías</h3>
             <CategoryTabs 
               categories={categories}
               selectedCategoryId={selectedCategoryId}
