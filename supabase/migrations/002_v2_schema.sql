@@ -1,4 +1,4 @@
--- MakiiBros v2.0 — Migración de esquema
+-- MakiBros v2.0 — Migración de esquema
 -- Nuevos campos para dishes, profiles, y tabla store_settings
 
 -- Agregar campos a dishes para descuentos y destacados
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
   tiktok_url TEXT DEFAULT 'https://www.tiktok.com/@makibros.of',
   instagram_url TEXT,
   facebook_url TEXT,
-  about_text TEXT DEFAULT 'MakiiBros — Fusión peruano-japonesa que despierta tus sentidos. Los mejores makis, rolls, ceviches y tiraditos de la ciudad.',
+  about_text TEXT DEFAULT 'MakiBros — Fusión peruano-japonesa que despierta tus sentidos. Los mejores makis, rolls, ceviches y tiraditos de la ciudad.',
   hero_image_url TEXT,
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -55,7 +55,7 @@ INSERT INTO public.store_settings (
 ) VALUES (
   '', '', '', '',
   'https://www.tiktok.com/@makibros.of',
-  'MakiiBros — Fusión peruano-japonesa que despierta tus sentidos. Nuestros makis, rolls especiales, ceviches y tiraditos están hechos con ingredientes frescos y la pasión de combinar lo mejor de la cocina peruana y japonesa.'
+  'MakiBros — Fusión peruano-japonesa que despierta tus sentidos. Nuestros makis, rolls especiales, ceviches y tiraditos están hechos con ingredientes frescos y la pasión de combinar lo mejor de la cocina peruana y japonesa.'
 );
 
 -- Índices adicionales

@@ -15,7 +15,7 @@ export function DishCard({ dish, onClick }: { dish: any, onClick?: () => void })
       {/* Top badges */}
       <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
         <span className="text-[10px] font-black tracking-widest text-white/80 bg-black/40 px-2 py-1 rounded backdrop-blur-sm">
-          MAKIIBROS
+          MakiBros
         </span>
         <div className="bg-black/40 p-2 rounded-full backdrop-blur-sm text-white group-hover:bg-[#e53e3e] transition-colors">
           <ShoppingCart className="w-4 h-4" />

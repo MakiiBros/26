@@ -9,20 +9,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MakiiBros — Fusión Peruano-Japonesa",
+  title: "MakiBros — Fusión Peruano-Japonesa",
   description: "Los mejores makis, rolls especiales, ceviches y tiraditos. Pide online y recibe en tu puerta o recoge en local.",
-  keywords: ["makis", "sushi", "ceviche", "tiradito", "comida japonesa", "fusión peruano japonesa", "delivery", "MakiiBros"],
+  keywords: ["makis", "sushi", "ceviche", "tiradito", "comida japonesa", "fusión peruano japonesa", "delivery", "MakiBros"],
   openGraph: {
-    title: "MakiiBros — Fusión Peruano-Japonesa",
+    title: "MakiBros — Fusión Peruano-Japonesa",
     description: "Los mejores makis, rolls especiales, ceviches y tiraditos. Pide online.",
-    siteName: "MakiiBros",
+    siteName: "MakiBros",
     type: "website",
     locale: "es_PE",
     url: "https://makibros.me",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MakiiBros — Fusión Peruano-Japonesa",
+    title: "MakiBros — Fusión Peruano-Japonesa",
     description: "Los mejores makis, rolls especiales, ceviches y tiraditos.",
   },
   robots: {

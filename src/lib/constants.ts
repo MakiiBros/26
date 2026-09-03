@@ -15,6 +15,19 @@ export const SUPABASE_URL =
 export const SUPABASE_ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_7YQxGQBsq6Sy1fPiMn85SA_uWAdyoso'
 
+export const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_RRZavO895LZIsK0TGbIaSA_ezwZJinw'
+
+export const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAqJ3Mm_fCrOkgiTVlX9YUIt3B5GZTBd6g",
+  authDomain: "makibros-75b7b.firebaseapp.com",
+  projectId: "makibros-75b7b",
+  storageBucket: "makibros-75b7b.firebasestorage.app",
+  messagingSenderId: "927240760074",
+  appId: "1:927240760074:web:3577f579068fd017ec68f3",
+  measurementId: "G-FEH1BKX4R2"
+} as const
+
 
 /** Rutas de la aplicación */
 export const ROUTES = {

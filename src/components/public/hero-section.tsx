@@ -17,7 +17,7 @@ export function HeroSection() {
       <div className="container relative z-10 px-4 py-32 mx-auto text-center">
         <div className="animate-fade-in-up space-y-6 max-w-4xl mx-auto">
           <p className="text-[#e53e3e] font-semibold tracking-widest uppercase text-sm md:text-base">
-            MakiiBros — Fusión Peruano-Japonesa
+            MakiBros — Fusión Peruano-Japonesa
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-tight">
             Descubre el <br className="hidden md:block" />

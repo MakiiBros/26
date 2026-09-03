@@ -27,7 +27,7 @@ export function AboutSection() {
                 Restaurante de Cocina Fusión
               </h3>
               <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                MakiiBros
+                MakiBros
               </h2>
               <p className="text-xl text-[#f6ad55] font-light italic">
                 "Diseño Minimalista, Sabor Máximo"
@@ -36,7 +36,7 @@ export function AboutSection() {
             
             <div className="space-y-4 text-[#a0a0a0] leading-relaxed">
               <p>
-                En MakiiBros fusionamos la milenaria técnica de la cocina japonesa con 
+                En MakiBros fusionamos la milenaria técnica de la cocina japonesa con 
                 la audacia y frescura de los ingredientes peruanos. Cada plato es una 
                 obra de arte diseñada para sorprender tu paladar.
               </p>

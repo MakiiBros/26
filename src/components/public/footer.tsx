@@ -77,8 +77,8 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#e53e3e] shrink-0" />
-                <a href="mailto:hola@makiibros.pe" className="hover:text-white transition-colors">
-                  hola@makiibros.pe
+                <a href="mailto:hola@MakiBros.pe" className="hover:text-white transition-colors">
+                  hola@MakiBros.pe
                 </a>
               </li>
             </ul>
@@ -88,7 +88,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-[#1a1a1a] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[#666] text-xs text-center md:text-left">
-            © {currentYear} MakiiBros. Todos los derechos reservados. | <Link href="/privacidad" className="hover:text-gray-400">Política de Privacidad</Link>
+            © {currentYear} MakiBros. Todos los derechos reservados. | <Link href="/privacidad" className="hover:text-gray-400">Política de Privacidad</Link>
           </p>
           
           <div className="flex items-center gap-3 text-[#666] text-xs font-bold">
