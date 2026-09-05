@@ -15,14 +15,14 @@ export default async function EditDishPage({ params }: { params: Promise<{ id: s
   let categories: Category[] = []
 
   try {
-    const dishResponse: any = await supabase.from('dishes').select('*, categories(*)').eq('id', id).single()
-    const categoriesResponse: any = await supabase.from('categories').select('*').order('sort_order')
+    const { data: dishData } = await supabase.from('dishes').select('*, categories(*)').eq('id', id).single()
+    const { data: categoriesData } = await supabase.from('categories').select('*').order('sort_order')
 
-    if (dishResponse?.data) {
-      initialData = dishResponse.data as unknown as DishWithCategory
+    if (dishData) {
+      initialData = dishData as unknown as DishWithCategory
     }
-    if (categoriesResponse?.data && categoriesResponse.data.length > 0) {
-      categories = categoriesResponse.data as Category[]
+    if (categoriesData && categoriesData.length > 0) {
+      categories = categoriesData as Category[]
     }
   } catch (err) {
     console.warn('Error al cargar plato para editar:', err)

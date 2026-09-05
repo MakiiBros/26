@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ShoppingCart, User as UserIcon, LogOut, Shield, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -80,7 +81,9 @@ export function Navbar() {
               });
               return;
             }
-          } catch (e) {}
+          } catch {
+            // Ignorar error de parsing en localStorage
+          }
           setCurrentUser(null);
         }
       });
@@ -90,8 +93,8 @@ export function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    try { await signOut(auth); } catch (e) {}
-    try { const supabase = createClient(); await supabase.auth.signOut(); } catch (e) {}
+    try { await signOut(auth); } catch {}
+    try { const supabase = createClient(); await supabase.auth.signOut(); } catch {}
     if (typeof window !== 'undefined') {
       localStorage.removeItem('makibros_customer');
       document.cookie = 'makibros_customer=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -158,9 +161,11 @@ export function Navbar() {
                   className="flex items-center gap-2 text-sm font-medium text-white border border-[#2a2a2a] px-3 py-1.5 rounded-md hover:bg-[#1a1a1a] transition-colors"
                 >
                   {currentUser.avatar ? (
-                    <img
+                    <Image
                       src={currentUser.avatar}
                       alt={currentUser.name}
+                      width={28}
+                      height={28}
                       className="w-7 h-7 rounded-full object-cover border border-[#3a3a3a]"
                     />
                   ) : (
@@ -262,9 +267,11 @@ export function Navbar() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 p-2 bg-[#141414] rounded-lg border border-[#2a2a2a]">
                     {currentUser.avatar ? (
-                      <img
+                      <Image
                         src={currentUser.avatar}
                         alt={currentUser.name}
+                        width={36}
+                        height={36}
                         className="w-9 h-9 rounded-full object-cover"
                       />
                     ) : (

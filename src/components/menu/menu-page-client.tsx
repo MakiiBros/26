@@ -6,8 +6,9 @@ import { CategoryTabs } from './category-tabs'
 import { DishCard } from './dish-card'
 import { DishDetailModal } from './dish-detail-modal'
 import { Search } from 'lucide-react'
+import type { Category, Dish } from '@/types'
 
-export function MenuPageClient({ categories, dishes }: { categories: any[], dishes: any[] }) {
+export function MenuPageClient({ categories, dishes }: { categories: Category[], dishes: Dish[] }) {
   const searchParams = useSearchParams()
   const catParam = searchParams.get('category')
   
@@ -24,7 +25,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
   const selectedCategoryId = userSelectedCategory ?? initialCategory
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<'all' | 'popular' | 'new' | 'discount' | 'video360'>('all')
-  const [selectedDish, setSelectedDish] = useState<any | null>(null)
+  const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
   const [initialModalView, setInitialModalView] = useState<'photo' | '360'>('photo')
 
   const filteredDishes = useMemo(() => {
@@ -38,7 +39,7 @@ export function MenuPageClient({ categories, dishes }: { categories: any[], dish
     })
   }, [dishes, selectedCategoryId, searchQuery, activeFilter])
 
-  const handleOpenDish = (dish: any, view: 'photo' | '360' = 'photo') => {
+  const handleOpenDish = (dish: Dish, view: 'photo' | '360' = 'photo') => {
     setSelectedDish(dish)
     setInitialModalView(view)
   }

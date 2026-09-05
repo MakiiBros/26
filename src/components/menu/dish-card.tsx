@@ -5,13 +5,14 @@ import { ShoppingCart, RotateCw } from 'lucide-react'
 import { cn, formatPrice } from '@/lib/utils'
 import { useCart } from '@/context/cart-context'
 import { useToast } from '@/components/ui/toast'
+import type { Dish } from '@/types'
 
 export function DishCard({ 
   dish, 
   onClick,
   onView360
 }: { 
-  dish: any
+  dish: Dish
   onClick?: () => void
   onView360?: () => void
 }) {

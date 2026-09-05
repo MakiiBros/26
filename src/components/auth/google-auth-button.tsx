@@ -49,10 +49,11 @@ export function GoogleAuthButton({ text = 'Continuar con Google' }: { text?: str
       toast('¡Bienvenido, ' + (user.displayName || 'cliente') + '!', 'success')
       router.push('/')
       router.refresh()
-    } catch (error: any) {
+    } catch (error) {
       console.error('[Firebase Google Auth Error]', error)
-      if (error && error.code !== 'auth/popup-closed-by-user') {
-        toast('Error al iniciar sesión con Google: ' + (error.message || 'Intenta de nuevo'), 'error')
+      const err = error as { code?: string; message?: string }
+      if (err && err.code !== 'auth/popup-closed-by-user') {
+        toast('Error al iniciar sesión con Google: ' + (err.message || 'Intenta de nuevo'), 'error')
       }
     } finally {
       setLoading(false)

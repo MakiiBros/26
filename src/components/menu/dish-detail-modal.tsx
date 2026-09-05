@@ -9,9 +9,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Viewer360 } from './viewer-360'
 import { useCart } from '@/context/cart-context'
 import { useToast } from '@/components/ui/toast'
+import type { Dish, Category } from '@/types'
+
+type DishDetailModalItem = Dish & { category?: Category; categories?: Category }
 
 interface DishDetailModalProps {
-  dish: any
+  dish: DishDetailModalItem | null
   isOpen: boolean
   onClose: () => void
   initialView?: 'photo' | '360'
@@ -22,7 +25,7 @@ function DishDetailContent({
   onClose,
   initialView = 'photo',
 }: {
-  dish: any
+  dish: DishDetailModalItem
   onClose: () => void
   initialView?: 'photo' | '360'
 }) {
@@ -93,8 +96,8 @@ function DishDetailContent({
 
         {activeMedia === '360' && has360Video ? (
           <Viewer360
-            videoUrl={dish.video_360_url}
-            posterUrl={dish.image_url}
+            videoUrl={dish.video_360_url!}
+            posterUrl={dish.image_url ?? undefined}
             dishName={dish.name}
             className="w-full h-full"
           />
