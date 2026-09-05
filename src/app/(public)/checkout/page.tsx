@@ -320,16 +320,18 @@ export default function CheckoutPage() {
                         Método de Pago
                       </label>
                       <div className="grid grid-cols-2 gap-2 pt-1">
-                        {[
-                          { id: 'yape', label: '💜 Yape' },
-                          { id: 'plin', label: '🩵 Plin' },
-                          { id: 'card', label: '💳 Tarjeta (POS)' },
-                          { id: 'cash', label: '💵 Efectivo' },
-                        ].map((m) => (
+                        {(
+                          [
+                            { id: 'yape', label: '💜 Yape' },
+                            { id: 'plin', label: '🩵 Plin' },
+                            { id: 'card', label: '💳 Tarjeta (POS)' },
+                            { id: 'cash', label: '💵 Efectivo' },
+                          ] as const
+                        ).map((m) => (
                           <button
                             key={m.id}
                             type="button"
-                            onClick={() => setPaymentMethod(m.id as any)}
+                            onClick={() => setPaymentMethod(m.id)}
                             className={`py-2 px-3 rounded-lg border text-xs font-semibold text-left transition-all ${
                               paymentMethod === m.id
                                 ? 'border-[#e53e3e] bg-[#e53e3e]/10 text-white'

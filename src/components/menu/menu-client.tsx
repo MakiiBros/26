@@ -1,8 +1,9 @@
 'use client'
 
 import { DishCard } from './dish-card'
+import type { Dish } from '@/types'
 
-export function MenuClient({ dishes }: { dishes: any[] }) {
+export function MenuClient({ dishes }: { dishes: Dish[] }) {
   if (!dishes || dishes.length === 0) {
     return (
       <div className="text-center py-12 text-[#a0a0a0]">

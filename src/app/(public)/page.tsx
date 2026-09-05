@@ -53,8 +53,8 @@ export default async function HomePage() {
     settings = MOCK_STORE_SETTINGS
   }
   
-  const popularDishes = dishes.filter((d: any) => d.is_popular)
-  const promoDishes = dishes.filter((d: any) => d.discount_percentage > 0)
+  const popularDishes = dishes.filter((d: Dish) => d.is_popular)
+  const promoDishes = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
 
   return (
     <>

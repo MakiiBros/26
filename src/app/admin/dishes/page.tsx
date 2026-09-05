@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { DeleteDishButton } from '@/components/admin/delete-dish-button';
 import { Plus, Utensils, RotateCw } from 'lucide-react';
 import { MOCK_DISHES } from '@/lib/mock-data';
+import type { Dish } from '@/types';
+
+type AdminDishItem = Dish & { categories?: { name: string } | null };
 
 export const metadata = {
   title: 'Gestión de Platos | MakiiBros Admin',
@@ -13,7 +16,7 @@ export const metadata = {
 export default async function AdminDishesPage() {
   const supabase = await createClient();
 
-  let dishes: any[] | null = null;
+  let dishes: AdminDishItem[] | null = null;
   try {
     const { data, error } = await supabase
       .from('dishes')
@@ -24,14 +27,14 @@ export default async function AdminDishesPage() {
     if (error) {
       console.warn('Error al cargar platos desde Supabase:', error.message);
     } else {
-      dishes = data;
+      dishes = data as AdminDishItem[];
     }
   } catch (err) {
     console.warn('Fallo al conectar con base de datos:', err);
   }
 
   if (!dishes || dishes.length === 0) {
-    dishes = MOCK_DISHES;
+    dishes = MOCK_DISHES as AdminDishItem[];
   }
 
   return (
@@ -69,7 +72,7 @@ export default async function AdminDishesPage() {
             </thead>
             <tbody className="divide-y divide-[#222222]">
               {dishes && dishes.length > 0 ? (
-                dishes.map((dish: any, index: number) => {
+                dishes.map((dish: AdminDishItem, index: number) => {
                   if (!dish) return null;
                   
                   // Evita errores con Next.js Image si la url está vacía o es inválida
@@ -81,7 +84,7 @@ export default async function AdminDishesPage() {
                       {hasValidImage ? (
                         <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-[#2a2a2a] bg-black">
                           <Image 
-                            src={dish.image_url} 
+                            src={dish.image_url!}
                             alt={dish.name || 'Plato'} 
                             fill 
                             className="object-cover" 

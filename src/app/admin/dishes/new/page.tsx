@@ -3,19 +3,20 @@ import { createClient } from '@/lib/supabase/server'
 import { DishForm } from '@/components/admin/dish-form'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { MOCK_CATEGORIES } from '@/lib/mock-data'
+import type { Category } from '@/types'
 
 export default async function NewDishPage() {
   const supabase = await createClient()
   
   // Obtenemos las categorías para el select del formulario
-  let categories: any[] = []
+  let categories: Category[] = []
   try {
     const { data } = await supabase
       .from('categories')
       .select('*')
       .order('sort_order')
     if (data && data.length > 0) {
-      categories = data
+      categories = data as Category[]
     }
   } catch (err) {
     console.warn('Error al cargar categorías en nuevo plato:', err)

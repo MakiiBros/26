@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function ErrorBoundary({
   error,
@@ -9,6 +10,7 @@ export default function ErrorBoundary({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const router = useRouter()
   useEffect(() => {
     console.error('Error Boundary caught:', error)
   }, [error])
@@ -33,7 +35,7 @@ export default function ErrorBoundary({
             Intentar nuevamente
           </button>
           <button 
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
             className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626] disabled:pointer-events-none disabled:opacity-50 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-100 h-10 px-4 py-2"
           >
             Ir al Inicio

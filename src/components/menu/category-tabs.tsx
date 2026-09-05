@@ -2,9 +2,10 @@
 
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { Category } from '@/types'
 
 interface CategoryTabsProps {
-  categories: any[];
+  categories: Category[];
   selectedCategoryId: string;
   onSelectCategory: (id: string) => void;
 }
