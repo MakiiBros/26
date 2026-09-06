@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { CategoryTabs } from './category-tabs'
 import { DishCard } from './dish-card'
 import { DishDetailModal } from './dish-detail-modal'
-import { Search } from 'lucide-react'
+import { Search, X, UtensilsCrossed, Sparkles } from 'lucide-react'
 import type { Category, Dish } from '@/types'
 
 export function MenuPageClient({ categories, dishes }: { categories: Category[], dishes: Dish[] }) {
@@ -44,13 +44,19 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
     setInitialModalView(view)
   }
 
+  const handleResetFilters = () => {
+    setUserSelectedCategory('all')
+    setSearchQuery('')
+    setActiveFilter('all')
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-10">
+        
         {/* Sidebar */}
-        <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="sticky top-24">
-            <h3 className="text-sm font-bold uppercase tracking-wider mb-3 text-[#a0a0a0]">Categorías</h3>
+        <aside className="w-full md:w-64 lg:w-72 shrink-0">
+          <div className="sticky top-24 space-y-3">
             <CategoryTabs 
               categories={categories}
               selectedCategoryId={selectedCategoryId}
@@ -61,29 +67,55 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
 
         {/* Content */}
         <div className="flex-1 flex flex-col gap-6">
-          {/* Top Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="relative w-full sm:w-96">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a0a0a0]" />
+          {/* Top Bar: Search & Quick Filters */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between p-4 rounded-2xl bg-[#121217] border border-white/[0.08]">
+            <div className="relative w-full lg:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <input 
                 type="text"
-                placeholder="Buscar platos..."
+                placeholder="Buscar makis, rolls, ceviches..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-full py-2 pl-10 pr-4 text-white focus:outline-none focus:border-[#e53e3e] transition-colors"
+                className="w-full bg-[#09090c] border border-white/10 rounded-full py-2.5 pl-10 pr-9 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/40 transition-all"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Limpiar búsqueda"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
             
-            <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
+            {/* Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 hide-scrollbar">
               <FilterPill label="Todos" active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} />
-              <FilterPill label="Populares" active={activeFilter === 'popular'} onClick={() => setActiveFilter('popular')} />
-              <FilterPill label="En Descuento" active={activeFilter === 'discount'} onClick={() => setActiveFilter('discount')} />
+              <FilterPill label="🔥 Populares" active={activeFilter === 'popular'} onClick={() => setActiveFilter('popular')} />
+              <FilterPill label="⚡ Descuentos" active={activeFilter === 'discount'} onClick={() => setActiveFilter('discount')} />
               <FilterPill label="✨ 3D 360°" active={activeFilter === 'video360'} onClick={() => setActiveFilter('video360')} />
             </div>
           </div>
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Results Header */}
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
+              Mostrando <strong className="text-white tabular-nums">{filteredDishes.length}</strong> {filteredDishes.length === 1 ? 'plato' : 'platos'}
+            </span>
+            {(searchQuery || activeFilter !== 'all' || selectedCategoryId !== 'all') && (
+              <button 
+                onClick={handleResetFilters}
+                className="text-xs text-[#e53e3e] hover:text-[#f59e0b] font-mono transition-colors"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          {/* Dishes Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredDishes.length > 0 ? (
               filteredDishes.map(dish => (
                 <DishCard 
@@ -94,8 +126,23 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
                 />
               ))
             ) : (
-              <div className="col-span-full py-12 text-center text-[#a0a0a0]">
-                No se encontraron platos que coincidan con la búsqueda.
+              <div className="col-span-full py-16 px-4 text-center rounded-3xl bg-[#121217] border border-white/[0.06] flex flex-col items-center justify-center space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-neutral-500">
+                  <UtensilsCrossed className="w-7 h-7" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-bold text-base">No se encontraron platos</h4>
+                  <p className="text-neutral-400 text-sm max-w-sm">
+                    No encontramos ningún plato con los filtros actuales o tu término de búsqueda.
+                  </p>
+                </div>
+                <button
+                  onClick={handleResetFilters}
+                  className="btn-press inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#e53e3e] hover:bg-[#c53030] text-white font-semibold text-xs transition-colors shadow-md shadow-[#e53e3e]/20"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Ver toda la carta
+                </button>
               </div>
             )}
           </div>
@@ -116,11 +163,14 @@ function FilterPill({ label, active, onClick }: { label: string, active: boolean
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-1.5 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
-        active ? 'bg-[#e53e3e] text-white' : 'bg-[#1a1a1a] text-[#a0a0a0] hover:bg-[#2a2a2a]'
+      className={`btn-press px-3.5 py-1.5 rounded-full whitespace-nowrap text-xs font-semibold tracking-wide transition-all border shrink-0 ${
+        active 
+          ? 'bg-[#e53e3e] border-[#e53e3e] text-white shadow-md shadow-[#e53e3e]/25' 
+          : 'bg-[#09090c] border-white/10 text-neutral-300 hover:text-white hover:border-white/20'
       }`}
     >
       {label}
     </button>
   )
 }
+

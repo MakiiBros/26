@@ -10,6 +10,7 @@ import { Footer } from '@/components/public/footer'
 import { StoreStatusBanner } from '@/components/public/store-status-banner'
 import { MenuPageClient } from '@/components/menu/menu-page-client'
 import { MOCK_CATEGORIES, MOCK_DISHES, MOCK_STORE_SETTINGS } from '@/lib/mock-data'
+import { ArrowDown, Flame, MessageCircle, Sparkles } from 'lucide-react'
 import type { Category, Dish, StoreSettings } from '@/types'
 
 export const revalidate = 0
@@ -57,7 +58,7 @@ export default async function HomePage() {
   const promoDishes = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
 
   return (
-    <>
+    <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#e53e3e] selection:text-white">
       <StoreStatusBanner 
         isOpen={settings?.is_open ?? true}
         openTime={settings?.open_time ?? '12:00'}
@@ -78,21 +79,26 @@ export default async function HomePage() {
         )}
 
         {/* Menú Completo Integrado */}
-        <section id="menu" className="py-20 px-4 scroll-mt-20 border-t border-[#1a1a1a]">
+        <section id="menu" className="py-20 sm:py-28 px-4 sm:px-6 scroll-mt-20 border-t border-white/[0.06] relative">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-10 text-center sm:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e53e3e]/10 border border-[#e53e3e]/20 text-[#e53e3e] text-xs font-semibold uppercase tracking-wider mb-3">
-                Carta Completa
+            <div className="mb-12 text-center sm:text-left space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e53e3e]/10 border border-[#e53e3e]/20 text-[#e53e3e] text-xs font-mono uppercase tracking-widest font-semibold">
+                <Sparkles className="w-3.5 h-3.5" />
+                Carta Completa Digital
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-                NUESTRO MENÚ
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+                NUESTRO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MENÚ</span>
               </h2>
-              <p className="text-[#a0a0a0] mt-1 text-base">
-                Filtra por categoría, busca tus favoritos o descubre nuestras especialidades nikkei.
+              <p className="text-neutral-400 text-sm sm:text-base max-w-2xl">
+                Filtra por categoría, visualiza cada roll en 3D 360° y arma tu pedido con la frescura que mereces.
               </p>
             </div>
             
-            <Suspense fallback={<div className="py-12 text-center text-gray-500">Cargando menú...</div>}>
+            <Suspense fallback={
+              <div className="py-24 text-center text-neutral-400 font-mono text-sm">
+                Cargando carta de makis...
+              </div>
+            }>
               <MenuPageClient 
                 categories={categories} 
                 dishes={dishes} 
@@ -102,22 +108,50 @@ export default async function HomePage() {
         </section>
 
         {/* Sobre Nosotros */}
-        <section id="nosotros" className="py-20 px-4">
-          <AboutSection />
-        </section>
+        <AboutSection />
 
-        {/* CTA final */}
-        <section className="py-20 px-4 bg-[#0f0f0f] text-center border-t border-[#1a1a1a]">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">¿Listo para ordenar?</h2>
-            <p className="text-[#a0a0a0] mb-8">Elige tus makis y platos favoritos de nuestro menú en minutos</p>
-            <a href="#menu" className="inline-flex items-center justify-center px-8 py-4 bg-[#e53e3e] text-white font-semibold rounded-lg hover:bg-[#c53030] transition-colors text-lg">
-              Explorar Menú
-            </a>
+        {/* CTA final Gastronómico */}
+        <section className="py-24 sm:py-32 px-4 sm:px-6 bg-gradient-to-b from-[#09090c] to-[#121217] text-center border-t border-white/[0.06] relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#e53e3e]/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="max-w-3xl mx-auto relative z-10 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-mono">
+              <Flame className="w-3.5 h-3.5 text-[#e53e3e]" />
+              <span>Lima Norte • Delivery & Salón</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+              ¿Listo para vivir la verdadera fiesta <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">Nikkei</span>?
+            </h2>
+
+            <p className="text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+              Elige tus banderillas crocantes y makis favoritos. Te lo preparamos al instante con el mejor crunch de Lima.
+            </p>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+              <a 
+                href="#menu" 
+                className="btn-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#e53e3e] hover:bg-[#c53030] text-white font-bold rounded-full transition-all shadow-xl shadow-[#e53e3e]/25 text-sm sm:text-base"
+              >
+                <span>Explorar Carta</span>
+                <ArrowDown className="w-4 h-4" />
+              </a>
+
+              <a 
+                href="https://wa.me/51987654321?text=Hola%20MakiBros!%20Deseo%20hacer%20un%20pedido." 
+                target="_blank"
+                rel="noreferrer"
+                className="btn-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold rounded-full transition-all text-sm sm:text-base"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Pedir por WhatsApp</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
+

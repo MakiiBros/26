@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "run-migration.js",
     "verify-db.js",
+    ".agent/**",
+    ".gemini/**",
   ]),
   {
     rules: {

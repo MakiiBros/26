@@ -39,10 +39,14 @@ export default async function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
+    <div className="min-h-screen bg-[#09090c] text-white flex flex-col selection:bg-[#e53e3e] selection:text-white">
       <Navbar />
-      <main className="flex-1">
-        <Suspense fallback={<div className="py-16 text-center text-gray-500">Cargando menú...</div>}>
+      <main className="flex-1 py-4">
+        <Suspense fallback={
+          <div className="py-24 text-center text-neutral-400 font-mono text-sm">
+            Cargando carta de makis...
+          </div>
+        }>
           <MenuPageClient 
             categories={categories} 
             dishes={dishes} 

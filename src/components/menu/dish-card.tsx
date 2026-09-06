@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { ShoppingCart, RotateCw } from 'lucide-react'
-import { cn, formatPrice } from '@/lib/utils'
+import { ShoppingCart, RotateCw, Flame, Plus } from 'lucide-react'
+import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/context/cart-context'
 import { useToast } from '@/components/ui/toast'
 import type { Dish } from '@/types'
@@ -20,17 +20,30 @@ export function DishCard({
   const { toast } = useToast()
   const isDiscounted = dish.discount_percentage > 0;
   const has360Video = Boolean(dish.video_360_url);
+  const discountedPrice = isDiscounted ? dish.price * (1 - dish.discount_percentage / 100) : dish.price;
   
   return (
     <div 
       onClick={onClick}
-      className="group relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#2a2a2a] hover:border-[#e53e3e]/50 transition-all duration-300 cursor-pointer flex flex-col h-full"
+      className="group relative bg-[#121217] rounded-2xl overflow-hidden border border-white/[0.08] hover:border-[#e53e3e]/40 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-lg shadow-black/40 hover:shadow-2xl hover:shadow-[#e53e3e]/10"
     >
-      {/* Top badges */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-        <span className="text-[10px] font-black tracking-widest text-white/80 bg-black/40 px-2 py-1 rounded backdrop-blur-sm">
-          MakiBros
-        </span>
+      {/* Top badges bar */}
+      <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10 pointer-events-none">
+        <div className="flex flex-col gap-1.5 pointer-events-auto">
+          {dish.is_popular && (
+            <span className="inline-flex items-center gap-1 bg-[#e53e3e] text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md shadow-[#e53e3e]/30">
+              <Flame className="w-3 h-3 fill-white" />
+              Popular
+            </span>
+          )}
+          {isDiscounted && (
+            <span className="inline-flex items-center bg-[#f59e0b] text-neutral-950 text-[11px] font-black px-2.5 py-1 rounded-full shadow-md">
+              -{dish.discount_percentage}%
+            </span>
+          )}
+        </div>
+
+        {/* Quick Add Button */}
         <button 
           type="button"
           onClick={(e) => {
@@ -38,100 +51,75 @@ export function DishCard({
             addItem(dish, 1)
             toast(`¡${dish.name} agregado al pedido!`, 'success')
           }}
-          className="bg-black/40 p-2 rounded-full backdrop-blur-sm text-white hover:bg-[#e53e3e] transition-colors"
+          className="btn-press pointer-events-auto bg-black/60 hover:bg-[#e53e3e] text-white p-2.5 rounded-full backdrop-blur-md border border-white/10 shadow-lg transition-all duration-200"
           title="Agregar al pedido"
+          aria-label={`Agregar ${dish.name} al pedido`}
         >
-          <ShoppingCart className="w-4 h-4" />
+          <Plus className="w-4 h-4" />
         </button>
       </div>
 
-      {isDiscounted && (
-        <div className="absolute top-14 left-4 z-10 bg-[#f6ad55] text-black text-xs font-bold px-2 py-1 rounded shadow-md">
-          -{dish.discount_percentage}%
-        </div>
-      )}
-      
-      {dish.is_popular && (
-        <div className={cn("absolute left-4 z-10 bg-[#e53e3e] text-white text-xs font-bold px-2 py-1 rounded shadow-md", isDiscounted ? "top-22" : "top-14")}>
-          Popular
-        </div>
-      )}
-
       {/* 360 3D Badge */}
       {has360Video && (
-        <div 
+        <button 
+          type="button"
           onClick={(e) => {
             if (onView360) {
               e.stopPropagation()
               onView360()
             }
           }}
-          className="absolute top-14 right-4 z-10 flex items-center gap-1.5 bg-gradient-to-r from-red-600/90 to-amber-600/90 hover:from-red-600 hover:to-amber-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-md border border-amber-300/40 transition-all hover:scale-105"
+          className="btn-press absolute bottom-3 left-3 z-10 flex items-center gap-1.5 bg-black/75 hover:bg-black/90 text-[#f59e0b] text-[11px] font-mono font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-md border border-[#f59e0b]/40 transition-all"
           title="Ver en 3D 360°"
         >
-          <RotateCw className="w-3 h-3 text-amber-200 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>3D 360°</span>
-        </div>
+          <RotateCw className="w-3 h-3 text-[#f59e0b] animate-spin" style={{ animationDuration: '6s' }} />
+          <span>Vista 360°</span>
+        </button>
       )}
 
-      {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#0a0a0a]">
+      {/* Image Container */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#0a0a0e]">
         {dish.image_url ? (
           <Image 
             src={dish.image_url} 
             alt={dish.name} 
             fill 
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[#a0a0a0]">
+          <div className="w-full h-full flex items-center justify-center text-neutral-500 text-xs font-mono">
             Sin imagen
           </div>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121217] via-transparent to-black/20" />
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-1 relative">
-        <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">{dish.name}</h3>
-        {dish.description && (
-          <p className="text-sm text-[#a0a0a0] line-clamp-2 mb-4">{dish.description}</p>
-        )}
+      <div className="p-4 sm:p-5 flex flex-col flex-1 relative justify-between">
+        <div>
+          <h3 className="text-base sm:text-lg font-bold text-white mb-1.5 line-clamp-1 group-hover:text-[#e53e3e] transition-colors">
+            {dish.name}
+          </h3>
+          {dish.description && (
+            <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2 leading-relaxed mb-4">
+              {dish.description}
+            </p>
+          )}
+        </div>
         
-        <div className="mt-auto pt-4 flex items-end justify-between">
-          <div>
-            {isDiscounted ? (
-              <div className="flex flex-col">
-                <span className="text-xs text-[#a0a0a0] line-through">
-                  {formatPrice(dish.price)}
-                </span>
-                <span className="text-lg font-bold text-[#f6ad55]">
-                  {formatPrice(dish.price * (1 - dish.discount_percentage / 100))}
-                </span>
-              </div>
-            ) : (
-              <span className="text-lg font-bold text-[#f6ad55]">
+        <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+          <div className="flex flex-col">
+            {isDiscounted && (
+              <span className="text-[11px] text-neutral-500 line-through font-mono tabular-nums">
                 {formatPrice(dish.price)}
               </span>
             )}
+            <span className="text-base sm:text-lg font-bold font-mono tabular-nums text-[#f59e0b]">
+              {formatPrice(discountedPrice)}
+            </span>
           </div>
-        </div>
 
-        {/* Hover Button */}
-        <div className="absolute bottom-5 right-5 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2">
-          {has360Video && (
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                if (onView360) onView360()
-                else if (onClick) onClick()
-              }}
-              className="bg-black/80 hover:bg-[#1a1a1a] text-amber-300 border border-amber-400/40 px-3 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1"
-            >
-              <RotateCw className="w-3 h-3" />
-              360°
-            </button>
-          )}
           <button 
             type="button"
             onClick={(e) => {
@@ -139,12 +127,14 @@ export function DishCard({
               addItem(dish, 1)
               toast(`¡${dish.name} agregado al pedido!`, 'success')
             }}
-            className="bg-[#e53e3e] hover:bg-[#c53030] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-red-900/20 active:scale-95 transition-transform"
+            className="btn-press inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e53e3e] hover:bg-[#c53030] text-white text-xs font-bold shadow-md shadow-[#e53e3e]/20 transition-all"
           >
-            Ordenar
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span>Pedir</span>
           </button>
         </div>
       </div>
     </div>
   )
 }
+

@@ -1,48 +1,112 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
   /* MakiBros Brand Colors */
-  --color-brand-red: #dc2626;
-  --color-brand-red-hover: #b91c1c;
-  --color-brand-gold: #f6ad55;
-  --color-brand-gold-hover: #ed8936;
+  --color-brand-red: #e53e3e;
+  --color-brand-red-hover: #c53030;
+  --color-brand-red-dark: #9b1c1c;
+  --color-brand-red-light: #f87171;
+  --color-brand-gold: #f59e0b;
+  --color-brand-gold-hover: #d97706;
+  --color-brand-gold-light: #fbbf24;
   
-  /* Dark Theme */
-  --color-dark-bg: #0a0a0a;
-  --color-dark-surface: #141414;
-  --color-dark-card: #1a1a1a;
-  --color-dark-border: #2a2a2a;
-  --color-dark-hover: #252525;
-  --color-dark-text: #ffffff;
-  --color-dark-text-secondary: #a0a0a0;
-  --color-dark-text-muted: #6b7280;
+  /* Modern Nikkei Dark Theme Palette (Rich warm charcoal/obsidian base) */
+  --color-dark-bg: #09090c;
+  --color-dark-surface: #121217;
+  --color-dark-card: #17171f;
+  --color-dark-card-hover: #1f1f2a;
+  --color-dark-border: #262633;
+  --color-dark-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-dark-hover: #22222f;
+  --color-dark-text: #f8fafc;
+  --color-dark-text-secondary: #94a3b8;
+  --color-dark-text-muted: #64748b;
 }
 
 /* Base styles */
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
+  background-color: #09090c;
+  color: #f8fafc;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
-/* Scrollbar styling */
+/* Emil Kowalski's Tactile Press and Physical Feedback */
+.btn-press {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 160ms ease, 
+              border-color 160ms ease, 
+              box-shadow 160ms ease;
+}
+
+.btn-press:active {
+  transform: scale(0.97) !important;
+}
+
+/* Modern Card Hover Elevation */
+.card-interactive {
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 260ms ease, 
+              box-shadow 260ms ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6), 0 0 20px -4px rgba(229, 62, 62, 0.15);
+}
+
+/* Refined Glassmorphism Panel */
+.glass-nikkei {
+  background: rgba(18, 18, 24, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-nikkei-subtle {
+  background: rgba(23, 23, 31, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Typography polish (impeccable + taste-skill) */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--color-dark-bg);
+  background: #09090c;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--color-dark-border);
+  background: #262633;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a3a;
+  background: #38384a;
 }
 
 /* Hide scrollbar utility */
@@ -61,43 +125,61 @@ body {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.45); }
+  50% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes reverse-spin-slow {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-slide-up {
-  animation: slideUp 0.6s ease-out;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-slide-down {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.3s ease-out;
+  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2s infinite;
+  animation: pulse-glow 2.2s infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 24s linear infinite;
+}
+
+.animate-reverse-spin-slow {
+  animation: reverse-spin-slow 30s linear infinite;
 }
 
 /* Stagger animation delays for children */
@@ -121,3 +203,16 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
