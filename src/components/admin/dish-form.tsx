@@ -82,7 +82,7 @@ export function DishForm({ initialData, categories }: DishFormProps) {
   }
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="space-y-6 max-w-3xl">
+    <form action={formAction} className="space-y-6 max-w-3xl">
       {state.error && (
         <div className="bg-red-950/40 border border-red-500/50 text-red-200 p-4 rounded-xl text-sm flex items-center gap-2">
           <span className="font-bold">⚠️ Error:</span> {state.error}
