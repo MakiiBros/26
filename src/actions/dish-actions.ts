@@ -180,17 +180,18 @@ export async function createDish(
       console.error('[dish-actions] Error al insertar plato:', insertError.message)
       return {
         success: false,
-        error: 'Error al crear el plato. Intenta de nuevo.',
+        error: `Error al crear el plato: ${insertError.message}`,
       }
     }
 
     // Revalidar el caché de platos para que la lista se actualice
     updateTag(CACHE_TAGS.DISHES)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[dish-actions] Error inesperado en createDish:', error)
+    const errMessage = error instanceof Error ? error.message : 'Error desconocido'
     return {
       success: false,
-      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      error: `Ocurrió un error inesperado: ${errMessage}`,
     }
   }
 
@@ -412,17 +413,18 @@ export async function updateDish(
       )
       return {
         success: false,
-        error: 'Error al actualizar el plato. Intenta de nuevo.',
+        error: `Error al actualizar el plato: ${updateError.message}`,
       }
     }
 
     // Revalidar el caché de platos
     updateTag(CACHE_TAGS.DISHES)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[dish-actions] Error inesperado en updateDish:', error)
+    const errMessage = error instanceof Error ? error.message : 'Error desconocido'
     return {
       success: false,
-      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      error: `Ocurrió un error inesperado: ${errMessage}`,
     }
   }
 
@@ -514,11 +516,12 @@ export async function deleteDish(id: string): Promise<FormState> {
     return {
       success: true,
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[dish-actions] Error inesperado en deleteDish:', error)
+    const errMessage = error instanceof Error ? error.message : 'Error desconocido'
     return {
       success: false,
-      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      error: `Ocurrió un error inesperado: ${errMessage}`,
     }
   }
 }
@@ -600,11 +603,12 @@ export async function uploadDishImage(
       url: publicUrl,
       error: null,
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[dish-actions] Error inesperado en uploadDishImage:', error)
+    const errMessage = error instanceof Error ? error.message : 'Error desconocido'
     return {
       url: null,
-      error: 'Ocurrió un error inesperado al subir la imagen.',
+      error: `Ocurrió un error inesperado al subir la imagen: ${errMessage}`,
     }
   }
 }
