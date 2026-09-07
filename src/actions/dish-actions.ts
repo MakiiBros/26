@@ -14,7 +14,7 @@ import type { FormState } from '@/types'
  * las operaciones de Storage y BD del panel de administración nunca fallen por RLS.
  */
 async function getAdminStorageClient() {
-  if (SUPABASE_SERVICE_ROLE_KEY) {
+  if (SUPABASE_SERVICE_ROLE_KEY && !SUPABASE_SERVICE_ROLE_KEY.startsWith('sb_secret_')) {
     return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
   }
   try {
@@ -180,7 +180,7 @@ export async function createDish(
       console.error('[dish-actions] Error al insertar plato:', insertError.message)
       return {
         success: false,
-        error: 'Error al crear el plato. Intenta de nuevo.',
+        error: `Error al crear el plato: ${insertError.message}`,
       }
     }
 
@@ -412,7 +412,7 @@ export async function updateDish(
       )
       return {
         success: false,
-        error: 'Error al actualizar el plato. Intenta de nuevo.',
+        error: `Error al actualizar el plato: ${updateError.message}`,
       }
     }
 
@@ -570,7 +570,7 @@ export async function uploadDishImage(
       }
     }
 
-    const supabase = await createClient()
+    const supabase = await getAdminStorageClient()
     const fileName = generateFileName(file.name)
 
     // ------------------------------------------------------------------

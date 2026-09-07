@@ -25,7 +25,11 @@ export default async function MenuPage() {
       categories = catRes.data as Category[]
     }
     if (dishRes.data && dishRes.data.length > 0) {
-      dishes = dishRes.data as Dish[]
+      dishes = (dishRes.data as any[]).map((d) => ({
+        ...d,
+        category: d.category || d.categories || null,
+        categories: d.categories || d.category || null,
+      })) as Dish[]
     }
   } catch (err) {
     console.warn('[MenuPage] Database query failed, using fallback data:', err)

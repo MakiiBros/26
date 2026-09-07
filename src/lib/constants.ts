@@ -16,7 +16,7 @@ export const SUPABASE_ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_7YQxGQBsq6Sy1fPiMn85SA_uWAdyoso'
 
 export const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_RRZavO895LZIsK0TGbIaSA_ezwZJinw'
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 export const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAqJ3Mm_fCrOkgiTVlX9YUIt3B5GZTBd6g",

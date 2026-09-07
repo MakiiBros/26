@@ -27,11 +27,15 @@ export default async function HomePage() {
     const [dishesRes, categoriesRes, settingsRes] = await Promise.all([
       supabase.from('dishes').select('*, categories(*)').eq('is_available', true).order('sort_order'),
       supabase.from('categories').select('*').order('sort_order', { ascending: true }),
-      supabase.from('store_settings').select('*').limit(1).single(),
+      supabase.from('store_settings').select('*').limit(1).maybeSingle(),
     ])
 
     if (dishesRes.data && dishesRes.data.length > 0) {
-      dishes = dishesRes.data as Dish[]
+      dishes = (dishesRes.data as any[]).map((d) => ({
+        ...d,
+        category: d.category || d.categories || null,
+        categories: d.categories || d.category || null,
+      })) as Dish[]
     }
     if (categoriesRes.data && categoriesRes.data.length > 0) {
       categories = categoriesRes.data as Category[]
@@ -54,8 +58,10 @@ export default async function HomePage() {
     settings = MOCK_STORE_SETTINGS
   }
   
-  const popularDishes = dishes.filter((d: Dish) => d.is_popular)
-  const promoDishes = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
+  const dbPopular = dishes.filter((d: Dish) => d.is_popular)
+  const popularDishes = dbPopular.length > 0 ? dbPopular : (dishes.length > 0 ? dishes.slice(0, 4) : MOCK_DISHES.filter(d => d.is_popular))
+  const dbPromos = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
+  const promoDishes = dbPromos.length > 0 ? dbPromos : MOCK_DISHES.filter(d => (d.discount_percentage ?? 0) > 0)
 
   return (
     <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#e53e3e] selection:text-white">
