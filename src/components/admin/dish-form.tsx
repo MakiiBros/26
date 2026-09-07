@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState, useRef } from 'react'
+import { useActionState, useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -24,10 +24,10 @@ export function DishForm({ initialData, categories }: DishFormProps) {
   const [removeImage, setRemoveImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Estados para Video 3D / 360
+  // Estados para Video 3D / 360 - url por defecto para máxima compatibilidad
   const [videoPreview, setVideoPreview] = useState<string | null>(initialData?.video_360_url || null)
   const [removeVideo360, setRemoveVideo360] = useState(false)
-  const [videoMode, setVideoMode] = useState<'file' | 'url'>('file')
+  const [videoMode, setVideoMode] = useState<'file' | 'url'>('url')
   const [videoUrlInput, setVideoUrlInput] = useState<string>(initialData?.video_360_url || '')
   const videoFileInputRef = useRef<HTMLInputElement>(null)
 
@@ -38,14 +38,20 @@ export function DishForm({ initialData, categories }: DishFormProps) {
 
   const [state, formAction, isPending] = useActionState(action, { success: false })
 
-  // Si el formAction se completa y tiene éxito, no redirigimos aquí porque 
-  // la redirección se hace en el server action con `redirect()`.
+  // Navegación limpia al completar sin provocar errores de renderizado Server Action
+  useEffect(() => {
+    if (state.success) {
+      toast(isEditing ? 'Plato actualizado exitosamente' : 'Plato creado exitosamente', 'success')
+      router.push(ROUTES.ADMIN_DISHES)
+      router.refresh()
+    }
+  }, [state.success, isEditing, router, toast])
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast('La imagen supera los 5MB', 'error')
+      if (file.size > 4 * 1024 * 1024) {
+        toast('La imagen supera los 4MB (límite recomendado para carga rápida)', 'error')
         if (fileInputRef.current) fileInputRef.current.value = ''
         return
       }
@@ -93,6 +99,8 @@ export function DishForm({ initialData, categories }: DishFormProps) {
       <input type="hidden" name="remove_image" value={removeImage.toString()} />
       {/* Flag oculto para remover video 360 */}
       <input type="hidden" name="remove_video_360" value={removeVideo360.toString()} />
+      {/* Valor de video 360 persistente */}
+      <input type="hidden" name="video_360_url_val" value={videoUrlInput} />
 
       {/* Tarjeta 1: Información Principal */}
       <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-6 space-y-5 shadow-xl">

@@ -1,6 +1,6 @@
 'use server'
 
-import { updateTag } from 'next/cache'
+import { updateTag, revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
@@ -68,7 +68,7 @@ export async function createDish(
       category_id: formData.get('category_id'),
       is_available: formData.get('is_available'),
       sort_order: formData.get('sort_order'),
-      video_360_url: formData.get('video_360_url') || null,
+      video_360_url: formData.get('video_360_url') || formData.get('video_360_url_val') || null,
     }
 
     // Validar con el esquema de platos
@@ -149,9 +149,12 @@ export async function createDish(
 
       if (videoUploadError) {
         console.error('[dish-actions] Error al subir video 360:', videoUploadError.message)
+        const isMime = videoUploadError.message.toLowerCase().includes('mime type')
         return {
           success: false,
-          error: `Error al subir video 360: ${videoUploadError.message}.`,
+          error: isMime
+            ? 'El bucket de Supabase solo admite imágenes. Para videos 360°, por favor usa la pestaña "Enlace URL / YouTube" e ingresa el link de tu video (YouTube 360, Drive, Cloudinary o MP4).'
+            : `Error al subir video 360: ${videoUploadError.message}.`,
         }
       }
 
@@ -184,18 +187,26 @@ export async function createDish(
       }
     }
 
-    // Revalidar el caché de platos para que la lista se actualice
-    updateTag(CACHE_TAGS.DISHES)
+    // Revalidar el caché de platos
+    try {
+      revalidatePath('/admin/dishes')
+      revalidatePath('/menu')
+      revalidatePath('/')
+      updateTag(CACHE_TAGS.DISHES)
+    } catch {
+      // safe fallback
+    }
+
+    return {
+      success: true,
+    }
   } catch (error) {
     console.error('[dish-actions] Error inesperado en createDish:', error)
     return {
       success: false,
-      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      error: error instanceof Error ? error.message : 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
     }
   }
-
-  // redirect() va fuera del try/catch porque lanza una excepción interna de Next.js
-  redirect(ROUTES.ADMIN_DISHES)
 }
 
 /**
@@ -227,7 +238,7 @@ export async function updateDish(
       category_id: formData.get('category_id'),
       is_available: formData.get('is_available'),
       sort_order: formData.get('sort_order'),
-      video_360_url: formData.get('video_360_url') || null,
+      video_360_url: formData.get('video_360_url') || formData.get('video_360_url_val') || null,
     }
 
     // Validar con el esquema de platos
@@ -323,9 +334,12 @@ export async function updateDish(
 
       if (videoUploadError) {
         console.error('[dish-actions] Error al subir video 360:', videoUploadError.message)
+        const isMime = videoUploadError.message.toLowerCase().includes('mime type')
         return {
           success: false,
-          error: `Error al subir video 360: ${videoUploadError.message}.`,
+          error: isMime
+            ? 'El bucket de Supabase solo admite imágenes. Para videos 360°, por favor usa la pestaña "Enlace URL / YouTube" e ingresa el link de tu video (YouTube 360, Drive, Cloudinary o MP4).'
+            : `Error al subir video 360: ${videoUploadError.message}.`,
         }
       }
 
@@ -417,17 +431,25 @@ export async function updateDish(
     }
 
     // Revalidar el caché de platos
-    updateTag(CACHE_TAGS.DISHES)
+    try {
+      revalidatePath('/admin/dishes')
+      revalidatePath('/menu')
+      revalidatePath('/')
+      updateTag(CACHE_TAGS.DISHES)
+    } catch {
+      // safe fallback
+    }
+
+    return {
+      success: true,
+    }
   } catch (error) {
     console.error('[dish-actions] Error inesperado en updateDish:', error)
     return {
       success: false,
-      error: 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
+      error: error instanceof Error ? error.message : 'Ocurrió un error inesperado. Intenta de nuevo más tarde.',
     }
   }
-
-  // redirect() va fuera del try/catch porque lanza una excepción interna de Next.js
-  redirect(ROUTES.ADMIN_DISHES)
 }
 
 /**
