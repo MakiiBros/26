@@ -19,6 +19,45 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      orders: {
+        Row: {
+          id: string
+          customer_name: string
+          customer_phone: string
+          customer_address: string | null
+          items: Json
+          total_price: number
+          payment_method: string
+          payment_status: string
+          preference_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          customer_name: string
+          customer_phone: string
+          customer_address?: string | null
+          items?: Json
+          total_price: number
+          payment_method: string
+          payment_status?: string
+          preference_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          customer_name?: string
+          customer_phone?: string
+          customer_address?: string | null
+          items?: Json
+          total_price?: number
+          payment_method?: string
+          payment_status?: string
+          preference_id?: string | null
+          created_at?: string
+        }
+      }
+
       profiles: {
         Row: {
           id: string
