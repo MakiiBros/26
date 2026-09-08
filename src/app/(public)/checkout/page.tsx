@@ -22,40 +22,56 @@ export default function CheckoutPage() {
   const [customerAddress, setCustomerAddress] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash'>('online')
+  const [preferenceId, setPreferenceId] = useState<string | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const onSubmitBrick = async (formData: any) => {
+  
+  const handleGeneratePreference = async () => {
+    if (!customerName.trim() || !customerPhone.trim()) {
+      toast('Por favor, ingresa tu nombre y teléfono.', 'error')
+      return
+    }
+    if (deliveryType === 'delivery' && !customerAddress.trim()) {
+      toast('Por favor, ingresa la dirección.', 'error')
+      return
+    }
+
     setIsProcessing(true);
     try {
-      const res = await fetch('/api/process_payment', {
+      const res = await fetch('/api/create_preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderData: {
-            items,
-            customerName,
-            customerPhone,
-            customerAddress,
-            deliveryType,
-            totalPrice: finalTotal,
-            paymentMethod: formData.payment_method_id,
-          },
-          paymentData: formData,
+          items,
+          customerName,
+          customerPhone,
+          customerAddress,
+          deliveryType,
+          totalPrice: finalTotal,
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        router.push('/checkout/success');
+      if (data.success && data.preferenceId) {
+        setPreferenceId(data.preferenceId);
       } else {
-        toast('Error al procesar el pago: ' + (data.details || ''), 'error');
-        setIsProcessing(false);
+        toast('Error al generar el panel de pago', 'error');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
       toast('Error de conexión', 'error');
-      setIsProcessing(false);
     }
+    setIsProcessing(false);
+  };
+
+
+  
+  const onSubmitBrick = async (formData: any) => {
+    // Si se inicializó con preferenceId, el Brick ya envió el pago.
+    // Solo mostramos éxito:
+    return new Promise((resolve) => {
+      resolve(true);
+      router.push('/checkout/success');
+    });
   };
 
   const router = useRouter()
@@ -437,13 +453,23 @@ export default function CheckoutPage() {
 
                   {/* WhatsApp Action Button */}
                   
+                  
                   {/* MP Brick or WhatsApp Button */}
                   {paymentMethod !== 'cash' ? (
                     <div className="mt-6 pt-4 border-t border-white/[0.06]">
-                      {customerName && customerPhone && (deliveryType !== 'delivery' || customerAddress) ? (
+                      {!preferenceId ? (
+                        <button
+                          type="button"
+                          onClick={handleGeneratePreference}
+                          disabled={isProcessing}
+                          className="btn-press w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full transition-all flex items-center justify-center disabled:opacity-50"
+                        >
+                          {isProcessing ? 'Cargando panel seguro...' : 'Generar Panel de Pago Seguro'}
+                        </button>
+                      ) : (
                         <div className="bg-[#1a1a1a] rounded-xl p-2">
                           <Payment 
-                            initialization={{ amount: finalTotal }}
+                            initialization={{ preferenceId }}
                             customization={{
                               paymentMethods: {
                                 ticket: "all",
@@ -457,7 +483,10 @@ export default function CheckoutPage() {
                             onReady={() => console.log("Brick Ready")}
                           />
                         </div>
-                      ) : (
+                      )}
+                    </div>
+                  ) : (
+
                         <p className="text-sm text-yellow-500 bg-yellow-500/10 p-4 rounded-xl border border-yellow-500/20 text-center">
                           Completa tus datos (Nombre, Teléfono y Dirección si aplica) para habilitar el pago seguro online.
                         </p>
