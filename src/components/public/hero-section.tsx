@@ -3,7 +3,7 @@ import { Flame, ArrowRight, Star, Clock, Sparkles, Utensils } from 'lucide-react
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#09090c] pt-8 pb-20">
+    <section id="inicio" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#09090c] pt-8 pb-20 scroll-mt-24">
       {/* Glow ambiental de brasa y carbón */}
       <div 
         className="absolute inset-0 pointer-events-none z-0"

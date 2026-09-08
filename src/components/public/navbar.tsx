@@ -23,6 +23,7 @@ export function Navbar() {
   const { totalItems } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('inicio');
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const pathname = usePathname();
@@ -32,10 +33,59 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      if (pathname === '/') {
+        if (window.scrollY < 200) {
+          setActiveSection('inicio');
+          return;
+        }
+
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
+          setActiveSection('contacto');
+          return;
+        }
+
+        const sections = ['contacto', 'nosotros', 'menu', 'promociones'];
+        const navOffset = 120;
+
+        for (const id of sections) {
+          const el = document.getElementById(id);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= navOffset && rect.bottom > navOffset) {
+              setActiveSection(id);
+              return;
+            }
+          }
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
+    if (pathname === '/' && typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '');
+      if (['inicio', 'menu', 'promociones', 'nosotros', 'contacto'].includes(hash)) {
+        setActiveSection(hash);
+      }
+    }
+
+    const handleHashChange = () => {
+      if (pathname === '/') {
+        const hash = window.location.hash.replace('#', '');
+        if (['inicio', 'menu', 'promociones', 'nosotros', 'contacto'].includes(hash)) {
+          setActiveSection(hash);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('hashchange', handleHashChange);
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -107,12 +157,48 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Menú', href: '/#menu' },
-    { name: 'Promociones', href: '/#promociones' },
-    { name: 'Nosotros', href: '/#nosotros' },
-    { name: 'Contacto', href: '/#contacto' },
+    { name: 'Inicio', href: '/', id: 'inicio' },
+    { name: 'Menú', href: '/#menu', id: 'menu' },
+    { name: 'Promociones', href: '/#promociones', id: 'promociones' },
+    { name: 'Nosotros', href: '/#nosotros', id: 'nosotros' },
+    { name: 'Contacto', href: '/#contacto', id: 'contacto' },
   ];
+
+  const isLinkActive = (link: (typeof navLinks)[0]) => {
+    if (pathname === '/') {
+      return activeSection === link.id;
+    }
+    if (link.id === 'inicio') {
+      return pathname === '/';
+    }
+    return pathname === link.href || pathname === `/${link.id}` || pathname?.startsWith(`/${link.id}`);
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: (typeof navLinks)[0]) => {
+    if (pathname === '/') {
+      if (link.id === 'inicio') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.history.pushState(null, '', '/');
+        setActiveSection('inicio');
+      } else {
+        const targetElement = document.getElementById(link.id);
+        if (targetElement) {
+          e.preventDefault();
+          const navHeight = 75;
+          const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = elementPosition - navHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+          window.history.pushState(null, '', link.href);
+          setActiveSection(link.id);
+        }
+      }
+    }
+  };
 
   return (
     <nav
@@ -141,11 +227,12 @@ export function Navbar() {
           <div className="hidden md:block">
             <div className="flex items-center space-x-1 lg:space-x-2 bg-white/[0.03] border border-white/[0.06] p-1.5 rounded-full backdrop-blur-md">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
+                const isActive = isLinkActive(link);
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
+                    onClick={(e) => handleNavClick(e, link)}
                     className={cn(
                       'px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 btn-press',
                       isActive
@@ -267,21 +354,27 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-[#09090c]/95 backdrop-blur-2xl border-b border-white/[0.08] animate-slide-down">
           <div className="px-4 pt-3 pb-6 space-y-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={cn(
-                  'block px-4 py-2.5 rounded-xl text-sm font-semibold tracking-wide transition-colors',
-                  pathname === link.href
-                    ? 'text-white bg-[#e53e3e] shadow-[0_2px_12px_rgba(229,62,62,0.3)]'
-                    : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
-                )}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link);
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={cn(
+                    'block px-4 py-2.5 rounded-xl text-sm font-semibold tracking-wide transition-colors',
+                    isActive
+                      ? 'text-white bg-[#e53e3e] shadow-[0_2px_12px_rgba(229,62,62,0.3)]'
+                      : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
+                  )}
+                  onClick={(e) => {
+                    handleNavClick(e, link);
+                    setIsOpen(false);
+                  }}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
             <div className="mt-4 pt-4 border-t border-white/[0.08] flex flex-col gap-2.5">
               {currentUser ? (
                 <div className="space-y-2">
