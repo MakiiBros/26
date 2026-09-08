@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { Utensils, Grid, Plus, ExternalLink, Sparkles } from 'lucide-react';
+import { Utensils, Grid, Plus, ExternalLink, Sparkles, ShoppingBag } from 'lucide-react';
 
 export const metadata = {
   title: 'Dashboard | MakiBros Admin',
@@ -12,14 +12,17 @@ export default async function AdminDashboardPage() {
 
   let dishesCount: number | null = null;
   let categoriesCount: number | null = null;
+  let ordersCount: number | null = null;
 
   try {
-    const [{ count: dCount }, { count: cCount }] = await Promise.all([
+    const [{ count: dCount }, { count: cCount }, { count: oCount }] = await Promise.all([
       supabase.from('dishes').select('*', { count: 'exact', head: true }),
       supabase.from('categories').select('*', { count: 'exact', head: true }),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('payment_status', 'pending'),
     ]);
     dishesCount = dCount;
     categoriesCount = cCount;
+    ordersCount = oCount;
   } catch (err) {
     console.warn('[AdminDashboard] Database count error:', err);
   }
@@ -27,6 +30,7 @@ export default async function AdminDashboardPage() {
   // Fallback if not connected or empty
   if (dishesCount === null) dishesCount = 8;
   if (categoriesCount === null) categoriesCount = 6;
+  if (ordersCount === null) ordersCount = 0;
 
   return (
     <div className="space-y-8">
@@ -43,7 +47,23 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Tarjetas de Métricas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Card Órdenes Pendientes */}
+        <div className="p-6 bg-[#141414] rounded-xl border border-[#2a2a2a] shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-400">Órdenes Pendientes</h3>
+            <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+          </div>
+          <p className="text-3xl font-extrabold text-white mt-3">{ordersCount ?? 0}</p>
+          <div className="mt-4 pt-4 border-t border-[#222222]">
+            <Link href="/admin/orders" className="text-xs text-blue-400 hover:underline flex items-center gap-1 font-medium">
+              Revisar órdenes &rarr;
+            </Link>
+          </div>
+        </div>
         <div className="p-6 bg-[#141414] rounded-xl border border-[#2a2a2a] shadow-lg relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#e53e3e] to-red-700" />
           <div className="flex items-center justify-between">
@@ -101,6 +121,12 @@ export default async function AdminDashboardPage() {
       <div className="p-6 bg-[#141414] rounded-xl border border-[#2a2a2a] shadow-xl space-y-4">
         <h2 className="text-lg font-bold text-white">Acciones Rápidas</h2>
         <div className="flex flex-wrap gap-4">
+          <Link href="/admin/orders">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium flex items-center gap-2 h-11 px-5 rounded-lg shadow-lg shadow-blue-900/30">
+              <ShoppingBag className="w-4 h-4" />
+              Ver Órdenes
+            </Button>
+          </Link>
           <Link href="/admin/dishes/new">
             <Button className="bg-[#e53e3e] hover:bg-red-700 text-white font-medium flex items-center gap-2 h-11 px-5 rounded-lg shadow-lg shadow-red-950/30">
               <Plus className="w-4 h-4" />

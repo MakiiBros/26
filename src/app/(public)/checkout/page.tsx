@@ -21,11 +21,13 @@ export default function CheckoutPage() {
   const [orderNotes, setOrderNotes] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'yape' | 'plin' | 'card' | 'cash'>('yape')
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const router = useRouter()
 
   const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0
   const finalTotal = totalPrice + deliveryFee
 
-  const handleSendWhatsAppOrder = (e: React.FormEvent) => {
+  const handleSendWhatsAppOrder = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!customerName.trim()) {
@@ -41,6 +43,40 @@ export default function CheckoutPage() {
     if (deliveryType === 'delivery' && !customerAddress.trim()) {
       toast('Por favor, ingresa la dirección de entrega.', 'error')
       return
+    }
+
+    // MercadoPago Flow
+    if (paymentMethod === 'yape' || paymentMethod === 'plin' || paymentMethod === 'card') {
+      try {
+        setIsProcessing(true)
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items,
+            customerName,
+            customerPhone,
+            customerAddress,
+            deliveryType,
+            totalPrice: finalTotal,
+            paymentMethod,
+          }),
+        })
+        const data = await res.json()
+        if (data.init_point) {
+          window.location.href = data.init_point
+          return
+        } else {
+          toast('Error al iniciar el pago', 'error')
+          setIsProcessing(false)
+          return
+        }
+      } catch (err) {
+        console.error(err)
+        toast('Error de conexión', 'error')
+        setIsProcessing(false)
+        return
+      }
     }
 
     // Build the WhatsApp message
@@ -393,10 +429,11 @@ export default function CheckoutPage() {
                   {/* WhatsApp Action Button */}
                   <button
                     type="submit"
-                    className="btn-press w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-full transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
+                    disabled={isProcessing}
+                    className="btn-press w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-full transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Enviar Pedido por WhatsApp</span>
+                    <span>{isProcessing ? 'Procesando...' : (paymentMethod === 'cash' ? 'Enviar Pedido por WhatsApp' : 'Pagar Ahora')}</span>
                   </button>
 
                   <p className="text-[11px] text-center text-neutral-500 leading-relaxed">

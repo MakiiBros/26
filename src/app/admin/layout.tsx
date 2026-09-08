@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { logout } from '@/actions/auth-actions';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Utensils, Globe, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, Utensils, Globe, LogOut, Shield, ShoppingBag } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -35,6 +35,15 @@ export default function AdminLayout({
           >
             <LayoutDashboard className="w-4 h-4 text-gray-400" />
             Dashboard
+          </Link>
+
+
+          <Link 
+            href="/admin/orders" 
+            className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
+          >
+            <ShoppingBag className="w-4 h-4 text-gray-400" />
+            Órdenes y Pagos
           </Link>
 
           <Link 
@@ -96,6 +105,12 @@ export default function AdminLayout({
           </Link>
           
           <div className="flex items-center gap-2">
+            <Link 
+              href="/admin/orders"
+              className="text-xs text-gray-300 hover:text-white px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-[#2a2a2a]"
+            >
+              Órdenes
+            </Link>
             <Link 
               href="/admin/dishes"
               className="text-xs text-gray-300 hover:text-white px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-[#2a2a2a]"
