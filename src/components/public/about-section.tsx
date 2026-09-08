@@ -57,7 +57,7 @@ export function AboutSection() {
                 Cocina Fusión Urbana
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                El verdadero flow <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] via-red-500 to-[#f59e0b]">Nikkei Peruano</span>
+                El verdadero flow <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] via-red-500 to-[#f59e0b]">Peruano</span>
               </h2>
               <p className="text-lg sm:text-xl text-[#f59e0b] font-medium italic">
                 &ldquo;Diseño Banderilla, Sabor Máximo&rdquo;

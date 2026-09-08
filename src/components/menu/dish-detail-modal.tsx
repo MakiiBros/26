@@ -172,7 +172,7 @@ function DishDetailContent({
         </div>
 
         <Dialog.Description className="text-neutral-300 leading-relaxed text-sm sm:text-base">
-          {dish.description || 'Delicioso roll preparado con ingredientes frescos y el inconfundible toque Nikkei de MakiBros.'}
+          {dish.description || 'Delicioso roll preparado con ingredientes frescos y el inconfundible toque de MakiBros.'}
         </Dialog.Description>
 
         {/* Quick 360 Tip if active */}

@@ -4,8 +4,8 @@ import { Footer } from '@/components/public/footer'
 import { Flame, Sparkles, Award, Heart, ArrowRight, MessageCircle } from 'lucide-react'
 
 export const metadata = {
-  title: 'Sobre Nosotros — MakiBros | Sabor Nikkei Peruano',
-  description: 'Conoce la historia, el flow nikkei y la propuesta gastronómica de MakiBros. Fusión peruano-japonesa con diseño banderilla y sabor máximo.',
+  title: 'Sobre Nosotros — MakiBros | Sabor Peruano',
+  description: 'Conoce la historia, el flow y la propuesta gastronómica de MakiBros. Fusión peruano-japonesa con diseño banderilla y sabor máximo.',
 }
 
 export default function NosotrosPage() {
@@ -85,7 +85,7 @@ export default function NosotrosPage() {
                 <div className="w-12 h-12 bg-purple-500/15 text-purple-400 border border-purple-500/30 rounded-2xl flex items-center justify-center">
                   <Heart className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white">Flow Nikkei Puro</h3>
+                <h3 className="text-lg font-bold text-white">Flow Puro</h3>
                 <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
                   Nuestra inconfundible salsa acevichada, reducciones de maracuyá y toques picantes de ají amarillo unen lo mejor del Perú y Japón.
                 </p>

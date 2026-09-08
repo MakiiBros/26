@@ -85,7 +85,7 @@ export const MOCK_DISHES: (Dish & { category?: Category; categories?: Category }
   {
     id: 'dish-lomo',
     category_id: 'cat-rolls',
-    name: 'Lomo Saltado Nikkei Roll',
+    name: 'Lomo Saltado Roll',
     description: 'Fusión insignia: relleno de palta y queso crema, cubierto con finas tiras de lomo flambeado al wok con cebolla morada, tomate y reducción de soya.',
     price: 35.0,
     image_url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop',

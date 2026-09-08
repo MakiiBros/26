@@ -12,7 +12,7 @@
   --color-brand-gold-hover: #d97706;
   --color-brand-gold-light: #fbbf24;
   
-  /* Modern Nikkei Dark Theme Palette (Rich warm charcoal/obsidian base) */
+  /* Modern Dark Theme Palette (Rich warm charcoal/obsidian base) */
   --color-dark-bg: #09090c;
   --color-dark-surface: #121217;
   --color-dark-card: #17171f;
@@ -63,7 +63,7 @@ body {
 }
 
 /* Refined Glassmorphism Panel */
-.glass-nikkei {
+.glass-{
   background: rgba(18, 18, 24, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

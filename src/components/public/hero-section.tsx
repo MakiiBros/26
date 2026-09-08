@@ -4,7 +4,7 @@ import { Flame, ArrowRight, Star, Clock, Sparkles, Utensils } from 'lucide-react
 export function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#09090c] pt-8 pb-20">
-      {/* Glow ambiental de brasa y carbón nikkei */}
+      {/* Glow ambiental de brasa y carbón */}
       <div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{
@@ -101,7 +101,7 @@ export function HeroSection() {
               <div className="absolute -inset-4 bg-gradient-to-tr from-[#e53e3e]/30 via-[#f59e0b]/20 to-transparent rounded-3xl blur-2xl opacity-70 pointer-events-none"></div>
 
               {/* Tarjeta de platillo estrella */}
-              <div className="relative glass-nikkei rounded-3xl overflow-hidden shadow-2xl border border-white/[0.12] group">
+              <div className="relative glass-rounded-3xl overflow-hidden shadow-2xl border border-white/[0.12] group">
                 {/* Imagen del plato estrella */}
                 <div className="relative h-72 sm:h-80 w-full overflow-hidden bg-black/40">
                   <Image

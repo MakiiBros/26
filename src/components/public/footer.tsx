@@ -123,7 +123,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/[0.06] flex flex-col md:flex-row items-center justify-between gap-5">
           <p className="text-neutral-500 text-xs text-center md:text-left">
-            © {currentYear} MakiBros. Todos los derechos reservados. Sabor Nikkei Peruano.
+            © {currentYear} MakiBros. Todos los derechos reservados. Sabor Peruano.
           </p>
           
           {/* Payment Badges */}

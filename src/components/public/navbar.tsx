@@ -125,7 +125,7 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo con sello Nikkei */}
+          {/* Logo con sello */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-2 group">
               <span className="text-2xl font-black tracking-tight text-white transition-transform group-hover:scale-[1.02]">
