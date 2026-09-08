@@ -70,7 +70,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-nikkei-subtle {
+.glass--subtle {
   background: rgba(23, 23, 31, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

@@ -127,7 +127,7 @@ export default async function HomePage() {
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-              ¿Listo para vivir la verdadera fiesta <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">Nikkei</span>?
+              ¿Listo para vivir la verdadera fiesta <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]"></span>?
             </h2>
 
             <p className="text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">

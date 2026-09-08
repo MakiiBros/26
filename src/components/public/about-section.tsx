@@ -18,7 +18,7 @@ export function AboutSection() {
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#121218]">
                 <Image
                   src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1000&auto=format&fit=crop"
-                  alt="MakiBros Experiencia Gastronómica Nikkei"
+                  alt="MakiBros Experiencia Gastronómica "
                   fill
                   className="object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-out"
                   sizes="(max-width: 768px) 100vw, 500px"
@@ -38,7 +38,7 @@ export function AboutSection() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[10px] uppercase font-mono tracking-wider text-neutral-400">Filosofía de Cocina</p>
-                      <p className="text-sm font-bold text-white tracking-wide">Crunch Panko & Fuego Nikkei</p>
+                      <p className="text-sm font-bold text-white tracking-wide">Crunch Panko & Fuego </p>
                     </div>
                     <div className="w-10 h-10 rounded-lg bg-[#e53e3e]/20 border border-[#e53e3e]/30 flex items-center justify-center text-[#e53e3e]">
                       <Flame className="w-5 h-5 fill-[#e53e3e]" />

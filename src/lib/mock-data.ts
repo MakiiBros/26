@@ -119,9 +119,9 @@ export const MOCK_DISHES: (Dish & { category?: Category; categories?: Category }
     categories: MOCK_CATEGORIES[1],
   },
   {
-    id: 'dish-ceviche-nikkei',
+    id: 'dish-ceviche-',
     category_id: 'cat-ceviches',
-    name: 'Ceviche Clásico Nikkei',
+    name: 'Ceviche Clásico ',
     description: 'Cubos de pescado blanco del día marinados en leche de tigre al ají amarillo y toques de kion y shoyu, servido con camote glaseado y choclo tierno.',
     price: 38.0,
     image_url: 'https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?q=80&w=800&auto=format&fit=crop',
@@ -157,7 +157,7 @@ export const MOCK_DISHES: (Dish & { category?: Category; categories?: Category }
   {
     id: 'dish-maracuya',
     category_id: 'cat-bebidas',
-    name: 'Infusión Maracuyá Nikkei',
+    name: 'Infusión Maracuyá ',
     description: 'Bebida artesanal refrescante de pulpa natural de maracuyá con hierbaluisa aromática y un toque sutil de kion.',
     price: 12.0,
     image_url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=800&auto=format&fit=crop',

@@ -28,7 +28,7 @@ export function HeroSection() {
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] backdrop-blur-md text-xs font-semibold tracking-wider text-slate-200 shadow-sm">
               <span className="flex h-2 w-2 rounded-full bg-[#e53e3e] animate-pulse"></span>
-              <span className="text-[#f59e0b] font-bold">FUSIÓN NIKKEI</span>
+              <span className="text-[#f59e0b] font-bold">FUSIÓN </span>
               <span className="text-white/30">•</span>
               <span className="text-slate-300">Banderillas Crocantes & Rolls Taypá</span>
             </div>
@@ -37,7 +37,7 @@ export function HeroSection() {
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] uppercase text-balance">
               El verdadero <br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
-                flow nikkei
+                flow 
               </span>{' '}
               en cada bocado
             </h1>

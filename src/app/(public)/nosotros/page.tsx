@@ -46,7 +46,7 @@ export default function NosotrosPage() {
                 ¿Por qué elegir <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MakiBros</span>?
               </h2>
               <p className="text-neutral-400 text-sm sm:text-base max-w-lg mx-auto">
-                Los 4 pilares artesanales que hacen única e inconfundible nuestra propuesta nikkei.
+                Los 4 pilares artesanales que hacen única e inconfundible nuestra propuesta .
               </p>
             </div>
 
