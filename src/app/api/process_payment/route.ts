@@ -56,9 +56,36 @@ export async function POST(request: Request) {
     const cleanPhone = (orderData.customerPhone || '').replace(/\D/g, '');
     const payerEmail = paymentData?.payer?.email || orderData.customerEmail || `${cleanPhone || 'cliente'}@makibros.pe`;
 
+    // Si es Yape, debemos tokenizar el OTP antes de procesar el pago
+    let finalToken = paymentData?.token;
+    if (paymentData?.payment_method_id === 'yape') {
+      const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+      if (!publicKey) {
+        return NextResponse.json({ success: false, error: 'Falta configurar NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY' }, { status: 500 });
+      }
+      
+      const yapeTokenRes = await fetch(`https://api.mercadopago.com/platforms/pci/yape/v1/payment?public_key=${publicKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          otp: finalToken, // el frontend envía el código OTP aquí
+          phoneNumber: cleanPhone,
+          email: payerEmail,
+          totalAmount: Number(orderData.totalPrice)
+        })
+      });
+      
+      const yapeTokenData = await yapeTokenRes.json();
+      if (!yapeTokenRes.ok || !yapeTokenData.id) {
+        throw new Error(yapeTokenData.message || yapeTokenData.error || 'Error al validar el código de Yape (OTP).');
+      }
+      finalToken = yapeTokenData.id;
+    }
+
     const paymentResult = await payment.create({
       body: {
         ...paymentData,
+        token: finalToken,
         payer: {
           ...paymentData?.payer,
           email: payerEmail,
