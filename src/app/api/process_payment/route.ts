@@ -47,6 +47,7 @@ export async function POST(request: Request) {
     const host = request.headers.get('host') || 'localhost:3000';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${host}`;
+    const notificationUrl = host.includes('localhost') ? 'https://makibros-test.vercel.app/api/webhooks/mercadopago' : `${baseUrl}/api/webhooks/mercadopago`;
 
     // 2. Procesar pago en Mercado Pago (Checkout API)
     const payment = new Payment(client);
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
         transaction_amount: Number(orderData.totalPrice),
         external_reference: orderId,
         description: `Pedido de ${orderData.customerName} - MakiBros`,
-        notification_url: `${baseUrl}/api/webhooks/mercadopago`,
+        notification_url: notificationUrl,
       },
     });
 
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: false,
-      error: 'Error interno procesando el pago', 
+      error: mpError || String(error), 
       details: mpError || String(error) 
     }, { status: 500 });
   }
