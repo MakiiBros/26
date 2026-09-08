@@ -112,7 +112,7 @@ export default function NosotrosPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://wa.me/51987654321?text=Hola%20MakiBros!%20Deseo%20hacer%20un%20pedido."
+                href="https://wa.me/51970725307?text=Hola%20MakiBros!%20Deseo%20hacer%20un%20pedido."
                 target="_blank"
                 rel="noreferrer"
                 className="btn-press inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-bold rounded-full transition-all text-sm border border-emerald-500/30"

@@ -68,7 +68,7 @@ function RegisterForm() {
               id="phone"
               name="phone"
               type="tel"
-              placeholder="987654321"
+              placeholder="970725307"
               error={state.fieldErrors?.phone?.[0]}
               className="bg-[#1a1a1a] border-[#2a2a2a] text-white h-12 placeholder:text-[#666]"
             />

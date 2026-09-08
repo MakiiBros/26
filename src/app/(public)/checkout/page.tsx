@@ -74,7 +74,7 @@ export default function CheckoutPage() {
       `\n¡Por favor confirmar mi pedido! Muchas gracias.`
 
     const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/51987654321?text=${encodedMessage}`
+    const whatsappUrl = `https://wa.me/51970725307?text=${encodedMessage}`
 
     // Clear cart and show success state
     clearCart()

@@ -44,8 +44,7 @@ export function HeroSection() {
 
             {/* Párrafo con esencia auténtica de MakiBros */}
             <p className="text-base sm:text-lg text-slate-300/90 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed text-pretty">
-              La disciplina del sushi japonés fusionada con el fuego y la pasión limeña. 
-              Pesca fresca seleccionada del día, el crunch dorado del panko y nuestras adictivas salsas acevichadas artesanales.
+              Maki en banderilla, hecho a mano en Comas. Ingredientes frescos, listo para pedir cuando se te antoje
             </p>
 
             {/* CTAs con física táctil de Emil Kowalski */}
@@ -79,7 +78,7 @@ export function HeroSection() {
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                 </div>
                 <span className="font-bold text-white">4.9 / 5.0</span>
-                <span className="text-slate-500">(+1,200 reseñas)</span>
+                <span className="text-slate-500">(+1,274 reseñas)</span>
               </div>
 
               <div className="flex items-center gap-1.5">
