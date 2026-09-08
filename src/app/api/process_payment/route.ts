@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants';
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-0000',
@@ -11,7 +12,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { orderData, paymentData } = body;
 
-    const supabase = (await createClient()) as any;
+    // Usar Service Role Key para saltarse RLS en el backend y poder actualizar la orden
+    // Si no hay service role, cae al anon key pero requerirá políticas públicas (no recomendado)
+    const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+    const supabase = createSupabaseClient(SUPABASE_URL, supabaseKey);
 
     // 1. Crear la orden pendiente
     const { data: dbOrder, error: dbError } = await supabase

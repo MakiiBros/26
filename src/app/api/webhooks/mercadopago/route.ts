@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants';
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-0000000000000000-000000-00000000000000000000000000000000-000000000',
@@ -19,7 +20,9 @@ export async function POST(request: Request) {
       if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
         // El pago fue aprobado
         const orderId = paymentInfo.external_reference;
-        const supabase = await createClient() as any;
+        
+        const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+        const supabase = createSupabaseClient(SUPABASE_URL, supabaseKey);
 
         // Si quisieras ser súper seguro, usarías la service role key aquí, 
         // pero la DB tiene políticas permisivas para modificar/ver órdenes o puedes usar RLS.
