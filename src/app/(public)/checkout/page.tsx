@@ -102,6 +102,7 @@ export default function CheckoutPage() {
       plin: 'Plin',
       card: 'Tarjeta (Visa/Mastercard)',
       cash: 'Efectivo',
+      online: 'Pago Online (MercadoPago)',
     }
 
     const message = `🍱 *¡HOLA MAKIBROS! NUEVO PEDIDO*\n\n` +
