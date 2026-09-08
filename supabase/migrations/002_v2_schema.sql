@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   is_open BOOLEAN NOT NULL DEFAULT true,
   open_days TEXT[] DEFAULT ARRAY['lunes','martes','miércoles','jueves','viernes','sábado'],
-  open_time TIME DEFAULT '12:00',
+  open_time TIME DEFAULT '17:30',
   close_time TIME DEFAULT '22:00',
   allows_reservations BOOLEAN DEFAULT true,
   delivery_enabled BOOLEAN DEFAULT true,

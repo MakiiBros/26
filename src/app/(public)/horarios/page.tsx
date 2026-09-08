@@ -117,7 +117,7 @@ export default function HorariosPage() {
               </div>
               <h3 className="text-lg font-bold text-white">Delivery Express</h3>
               <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
-                Envío a domicilio en toda la zona norte. Aceptamos pedidos hasta las 22:00 hrs. Comunícate al WhatsApp <strong className="text-white font-mono">+51 987 654 321</strong>.
+                Envío a domicilio en toda la zona norte. Aceptamos pedidos hasta las 22:00 hrs o agotar STOCK. Comunícate al WhatsApp <strong className="text-white font-mono">+51 987 654 321</strong>.
               </p>
             </div>
           </div>

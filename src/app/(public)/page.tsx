@@ -67,7 +67,7 @@ export default async function HomePage() {
     <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#e53e3e] selection:text-white">
       <StoreStatusBanner 
         isOpen={settings?.is_open ?? true}
-        openTime={settings?.open_time ?? '12:00'}
+        openTime={settings?.open_time ?? '17:30'}
         closeTime={settings?.close_time ?? '22:00'}
       />
       <Navbar />

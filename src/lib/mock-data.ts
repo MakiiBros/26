@@ -196,7 +196,7 @@ export const MOCK_STORE_SETTINGS: StoreSettings = {
   id: 'store-settings-default',
   is_open: true,
   open_days: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
-  open_time: '12:00',
+  open_time: '17:30',
   close_time: '22:00',
   allows_reservations: true,
   delivery_enabled: true,
