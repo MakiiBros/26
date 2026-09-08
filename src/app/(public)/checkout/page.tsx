@@ -1,7 +1,8 @@
 'use client'
 import { useRouter } from "next/navigation";
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Trash2, Plus, Minus, ShoppingBag, Send, CheckCircle2, Bike, Store, CreditCard, Banknote } from 'lucide-react'
@@ -23,7 +24,46 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<'yape' | 'plin' | 'card' | 'cash'>('yape')
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  const onSubmitBrick = async (formData: any) => {
+    setIsProcessing(true);
+    try {
+      const res = await fetch('/api/process_payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderData: {
+            items,
+            customerName,
+            customerPhone,
+            customerAddress,
+            deliveryType,
+            totalPrice: finalTotal,
+            paymentMethod: formData.payment_method_id,
+          },
+          paymentData: formData,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        router.push('/checkout/success');
+      } else {
+        toast('Error al procesar el pago: ' + (data.details || ''), 'error');
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Error de conexión', 'error');
+      setIsProcessing(false);
+    }
+  };
+
   const router = useRouter()
+
+  useEffect(() => {
+    initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c', { locale: 'es-PE' });
+  }, []);
+
 
   const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0
   const finalTotal = totalPrice + deliveryFee
@@ -46,33 +86,7 @@ export default function CheckoutPage() {
       return
     }
 
-    // MercadoPago Flow
-    if (paymentMethod === 'yape' || paymentMethod === 'plin' || paymentMethod === 'card') {
-      try {
-        setIsProcessing(true)
-        const res = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items,
-            customerName,
-            customerPhone,
-            customerAddress,
-            deliveryType,
-            totalPrice: finalTotal,
-            paymentMethod,
-          }),
-        })
-        const data = await res.json()
-        if (data.init_point) {
-          window.location.href = data.init_point
-          return
-        } else {
-          toast('Error al iniciar el pago', 'error')
-          setIsProcessing(false)
-          return
-        }
-      } catch (err) {
+          } catch (err) {
         console.error(err)
         toast('Error de conexión', 'error')
         setIsProcessing(false)
@@ -362,38 +376,39 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
+                    
                     <div>
                       <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
                         Método de Pago
                       </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {(
-                          [
-                            { id: 'yape', label: 'Yape', color: 'text-[#d946ef] bg-[#742284]/15 border-[#742284]/30', icon: null },
-                            { id: 'plin', label: 'Plin', color: 'text-[#00c8b3] bg-[#00c8b3]/15 border-[#00c8b3]/30', icon: null },
-                            { id: 'card', label: 'Tarjeta (POS)', color: 'text-neutral-200 bg-white/[0.04] border-white/10', icon: CreditCard },
-                            { id: 'cash', label: 'Efectivo', color: 'text-neutral-200 bg-white/[0.04] border-white/10', icon: Banknote },
-                          ] as const
-                        ).map((m) => {
-                          const Icon = m.icon;
-                          return (
-                            <button
-                              key={m.id}
-                              type="button"
-                              onClick={() => setPaymentMethod(m.id)}
-                              className={`btn-press py-2.5 px-3 rounded-xl border text-xs font-bold text-left transition-all flex items-center justify-between ${
-                                paymentMethod === m.id
-                                  ? 'border-[#e53e3e] bg-[#e53e3e]/15 text-white ring-1 ring-[#e53e3e]/50'
-                                  : `${m.color} hover:text-white`
-                              }`}
-                            >
-                              <span>{m.label}</span>
-                              {Icon && <Icon className="w-3.5 h-3.5 opacity-60" />}
-                            </button>
-                          );
-                        })}
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('online')}
+                          className={`btn-press py-2.5 px-3 rounded-xl border text-xs font-bold text-left transition-all flex items-center justify-between ${
+                            paymentMethod !== 'cash'
+                              ? 'border-[#e53e3e] bg-[#e53e3e]/15 text-white ring-1 ring-[#e53e3e]/50'
+                              : 'text-neutral-200 bg-white/[0.04] border-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span>Pagar Online (Tarjetas/Yape)</span>
+                          <CreditCard className="w-3.5 h-3.5 opacity-60" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('cash')}
+                          className={`btn-press py-2.5 px-3 rounded-xl border text-xs font-bold text-left transition-all flex items-center justify-between ${
+                            paymentMethod === 'cash'
+                              ? 'border-[#e53e3e] bg-[#e53e3e]/15 text-white ring-1 ring-[#e53e3e]/50'
+                              : 'text-neutral-200 bg-white/[0.04] border-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span>Efectivo (Pago al recibir)</span>
+                          <Banknote className="w-3.5 h-3.5 opacity-60" />
+                        </button>
                       </div>
                     </div>
+
 
                     <div>
                       <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
@@ -428,18 +443,50 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* WhatsApp Action Button */}
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="btn-press w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-full transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>{isProcessing ? 'Procesando...' : (paymentMethod === 'cash' ? 'Enviar Pedido por WhatsApp' : 'Pagar Ahora')}</span>
-                  </button>
+                  
+                  {/* MP Brick or WhatsApp Button */}
+                  {paymentMethod !== 'cash' ? (
+                    <div className="mt-6 pt-4 border-t border-white/[0.06]">
+                      {customerName && customerPhone && (deliveryType !== 'delivery' || customerAddress) ? (
+                        <div className="bg-[#1a1a1a] rounded-xl p-2">
+                          <Payment 
+                            initialization={{ amount: finalTotal }}
+                            customization={{
+                              paymentMethods: {
+                                ticket: "all",
+                                creditCard: "all",
+                                debitCard: "all",
+                                mercadoPago: "all",
+                              },
+                            }}
+                            onSubmit={onSubmitBrick}
+                            onError={(error) => console.error("Brick Error:", error)}
+                            onReady={() => console.log("Brick Ready")}
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-sm text-yellow-500 bg-yellow-500/10 p-4 rounded-xl border border-yellow-500/20 text-center">
+                          Completa tus datos (Nombre, Teléfono y Dirección si aplica) para habilitar el pago seguro online.
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="submit"
+                        disabled={isProcessing}
+                        className="btn-press w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-full transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>{isProcessing ? 'Procesando...' : 'Enviar Pedido por WhatsApp'}</span>
+                      </button>
 
-                  <p className="text-[11px] text-center text-neutral-500 leading-relaxed">
-                    Tu pedido se enviará directamente a nuestro WhatsApp oficial (<span className="text-neutral-400 font-mono">+51 987 654 321</span>) para confirmación inmediata.
-                  </p>
+                      <p className="text-[11px] text-center text-neutral-500 leading-relaxed">
+                        Tu pedido se enviará directamente a nuestro WhatsApp oficial (<span className="text-neutral-400 font-mono">+51 987 654 321</span>) para confirmación inmediata.
+                      </p>
+                    </>
+                  )}
+
                 </form>
               </div>
             </div>
