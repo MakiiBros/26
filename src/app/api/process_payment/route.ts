@@ -97,10 +97,22 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error('Error al procesar pago en Mercado Pago:', error);
+    
+    // Verifica si la llave es de prueba
+    if (process.env.MERCADOPAGO_ACCESS_TOKEN === undefined) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'El token de acceso de Mercado Pago no está configurado (.env).', 
+      }, { status: 500 });
+    }
+
+    // Extraer mensaje detallado de la SDK de MP
+    const mpError = error.cause || error.message;
+
     return NextResponse.json({ 
       success: false,
       error: 'Error interno procesando el pago', 
-      details: error?.message || String(error) 
+      details: mpError || String(error) 
     }, { status: 500 });
   }
 }

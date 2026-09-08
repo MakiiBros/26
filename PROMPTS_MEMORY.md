@@ -68,3 +68,10 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   * **Efectivo:** Flujo WhatsApp con resumen estructurado del pedido.
   * **Backend:** `POST /api/process_payment` ejecuta `Payment.create(...)` con el SDK de Mercado Pago, registrando la orden en Supabase y retornando mensajes de rechazo claros si el OTP o tarjeta no son válidos.
   * **Webhook:** `POST /api/webhooks/mercadopago` escucha notificaciones asíncronas de Mercado Pago para marcar órdenes pagadas en Supabase (`orders`).
+
+### Prompt 8: Error en Yape y configuración de entorno
+* **Usuario:** *"por que no me deja pagar?"*, *"hazlo tu mismo . yo te dare la key del token"*
+* **Acción:** 
+  1. Se analizó el error "Error interno procesando el pago" y se determinó que faltaban las credenciales de Mercado Pago en el entorno (`MERCADOPAGO_ACCESS_TOKEN`), provocando un error 401 que era ocultado por el SDK.
+  2. Se mejoró el manejo de errores en `src/app/api/process_payment/route.ts` para devolver mensajes claros si falta el token o si Mercado Pago rechaza la petición.
+  3. Se creó el archivo `.env.local` con las credenciales de Producción/Test provistas por el usuario para solucionar el error de autenticación.
