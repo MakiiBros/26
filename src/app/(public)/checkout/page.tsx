@@ -1,11 +1,27 @@
 'use client'
-import { useRouter } from "next/navigation";
 
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
+import { loadMercadoPago } from '@mercadopago/sdk-js'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Trash2, Plus, Minus, ShoppingBag, Send, CheckCircle2, Bike, Store, CreditCard, Banknote } from 'lucide-react'
+import {
+  ArrowLeft,
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  Send,
+  CheckCircle2,
+  Bike,
+  Store,
+  CreditCard,
+  Banknote,
+  Smartphone,
+  ShieldCheck,
+  HelpCircle,
+  Lock,
+} from 'lucide-react'
 import { Navbar } from '@/components/public/navbar'
 import { Footer } from '@/components/public/footer'
 import { useCart } from '@/context/cart-context'
@@ -15,94 +31,328 @@ import { useToast } from '@/components/ui/toast'
 export default function CheckoutPage() {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart()
   const { toast } = useToast()
+  const router = useRouter()
 
+  // Entrega y datos del cliente
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
   const [customerAddress, setCustomerAddress] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash'>('online')
-  const [preferenceId, setPreferenceId] = useState<string | null>(null)
+
+  // Método de pago: Yape (Checkout API), Tarjeta (Checkout API) o Efectivo
+  const [paymentMethod, setPaymentMethod] = useState<'yape' | 'card' | 'cash'>('yape')
+
+  // Datos específicos para Yape
+  const [yapePhone, setYapePhone] = useState('')
+  const [yapeOtp, setYapeOtp] = useState('')
+  const [showYapeHelp, setShowYapeHelp] = useState(false)
+
+  // Datos específicos para Tarjeta
+  const [cardNumber, setCardNumber] = useState('')
+  const [cardholderName, setCardholderName] = useState('')
+  const [cardExp, setCardExp] = useState('')
+  const [cardCvv, setCardCvv] = useState('')
+  const [docType, setDocType] = useState<'DNI' | 'CE' | 'Pasaporte'>('DNI')
+  const [docNumber, setDocNumber] = useState('')
+
+  // Estados de proceso
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [mpLoaded, setMpLoaded] = useState(false)
 
-  
-  const handleGeneratePreference = async () => {
-    if (!customerName.trim() || !customerPhone.trim()) {
-      toast('Por favor, ingresa tu nombre y teléfono.', 'error')
-      return
-    }
-    if (deliveryType === 'delivery' && !customerAddress.trim()) {
-      toast('Por favor, ingresa la dirección.', 'error')
-      return
-    }
-
-    setIsProcessing(true);
-    try {
-      const res = await fetch('/api/create_preference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items,
-          customerName,
-          customerPhone,
-          customerAddress,
-          deliveryType,
-          totalPrice: finalTotal,
-        }),
-      });
-      const data = await res.json();
-      if (data.success && data.preferenceId) {
-        setPreferenceId(data.preferenceId);
-      } else {
-        toast('Error al generar el panel de pago', 'error');
-      }
-    } catch (e) {
-      toast('Error de conexión', 'error');
-    }
-    setIsProcessing(false);
-  };
-
-
-  
-  const onSubmitBrick = async (formData: any) => {
-    // Si se inicializó con preferenceId, el Brick ya envió el pago.
-    // Solo mostramos éxito:
-    return new Promise((resolve) => {
-      resolve(true);
-      router.push('/checkout/success');
-    });
-  };
-
-  const router = useRouter()
-
+  // Cargar SDK de Mercado Pago para Checkout API
   useEffect(() => {
-    initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c', { locale: 'es-PE' });
-  }, []);
+    let isMounted = true
+    const initMP = async () => {
+      try {
+        await loadMercadoPago()
+        const publicKey =
+          process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ||
+          'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c'
+        if (typeof window !== 'undefined' && (window as any).MercadoPago) {
+          new (window as any).MercadoPago(publicKey, { locale: 'es-PE' })
+          if (isMounted) setMpLoaded(true)
+        }
+      } catch (err) {
+        console.error('Error inicializando MercadoPago JS:', err)
+      }
+    }
+    initMP()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
+  // Sincronizar número de teléfono con Yape si está vacío
+  useEffect(() => {
+    if (!yapePhone && customerPhone) {
+      setYapePhone(customerPhone)
+    }
+  }, [customerPhone, yapePhone])
 
   const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0
   const finalTotal = totalPrice + deliveryFee
 
-  const handleSendWhatsAppOrder = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // Detección de franquicia de tarjeta
+  const getCardBrand = (number: string): string => {
+    const clean = number.replace(/\s+/g, '')
+    if (/^4/.test(clean)) return 'Visa'
+    if (/^(5[1-5]|2[2-7])/.test(clean)) return 'Mastercard'
+    if (/^3[47]/.test(clean)) return 'Amex'
+    if (/^(36|38)/.test(clean)) return 'Diners'
+    return ''
+  }
 
+  // Formateadores de inputs
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 16)
+    const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ')
+    setCardNumber(formatted)
+  }
+
+  const handleCardExpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
+    if (digits.length >= 3) {
+      setCardExp(`${digits.slice(0, 2)}/${digits.slice(2)}`)
+    } else {
+      setCardExp(digits)
+    }
+  }
+
+  const handleCardCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
+    setCardCvv(digits)
+  }
+
+  const handleYapeOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 6)
+    setYapeOtp(digits)
+  }
+
+  // Validación común de campos de contacto y entrega
+  const validateCommonFields = (): boolean => {
     if (!customerName.trim()) {
-      toast('Por favor, ingresa tu nombre.', 'error')
-      return
+      toast('Por favor, ingresa tu nombre completo.', 'error')
+      return false
     }
-
     if (!customerPhone.trim()) {
-      toast('Por favor, ingresa tu número de WhatsApp.', 'error')
-      return
+      toast('Por favor, ingresa tu número de teléfono / WhatsApp.', 'error')
+      return false
     }
-
     if (deliveryType === 'delivery' && !customerAddress.trim()) {
       toast('Por favor, ingresa la dirección de entrega.', 'error')
+      return false
+    }
+    return true
+  }
+
+  // Procesar Pago con YAPE (Checkout API de Mercado Pago)
+  const handlePayWithYape = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validateCommonFields()) return
+
+    const phoneToUse = yapePhone.trim() || customerPhone.trim()
+    const cleanOtp = yapeOtp.trim()
+
+    if (!phoneToUse) {
+      toast('Por favor ingresa tu celular registrado en Yape.', 'error')
       return
     }
 
-    // Build the WhatsApp message
+    if (cleanOtp.length !== 6) {
+      toast('El código de aprobación de Yape debe tener exactamente 6 dígitos.', 'error')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const cleanPhoneDigits = phoneToUse.replace(/\D/g, '')
+      const res = await fetch('/api/process_payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderData: {
+            customerName: customerName.trim(),
+            customerPhone: phoneToUse,
+            customerEmail: customerEmail.trim(),
+            customerAddress: customerAddress.trim(),
+            orderNotes: orderNotes.trim(),
+            deliveryType,
+            totalPrice: finalTotal,
+            items,
+            paymentMethod: 'yape',
+          },
+          paymentData: {
+            payment_method_id: 'yape',
+            token: cleanOtp,
+            payer: {
+              email:
+                customerEmail.trim() ||
+                `${cleanPhoneDigits || 'cliente'}@makibros.pe`,
+            },
+          },
+        }),
+      })
+
+      const data = await res.json()
+      if (data.success && data.status === 'approved') {
+        toast('¡Pago con Yape completado con éxito!', 'success')
+        clearCart()
+        router.push('/checkout/success')
+      } else {
+        const errorMsg =
+          data.message ||
+          data.error ||
+          'No se pudo procesar el pago con Yape. Por favor verifica tu código de aprobación o saldo.'
+        toast(errorMsg, 'error')
+      }
+    } catch (err) {
+      console.error('Error procesando pago Yape:', err)
+      toast('Error de conexión al procesar el pago con Yape.', 'error')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Procesar Pago con TARJETA (Checkout API de Mercado Pago)
+  const handlePayWithCard = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validateCommonFields()) return
+
+    const cleanCard = cardNumber.replace(/\s+/g, '')
+    if (cleanCard.length < 13) {
+      toast('Ingresa un número de tarjeta válido.', 'error')
+      return
+    }
+    if (!cardholderName.trim()) {
+      toast('Ingresa el nombre del titular de la tarjeta.', 'error')
+      return
+    }
+    if (!cardExp.includes('/') || cardExp.length < 5) {
+      toast('Ingresa la fecha de vencimiento (MM/AA).', 'error')
+      return
+    }
+    if (cardCvv.trim().length < 3) {
+      toast('Ingresa el código de seguridad (CVV).', 'error')
+      return
+    }
+    if (!docNumber.trim()) {
+      toast('Ingresa tu número de documento.', 'error')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const publicKey =
+        process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ||
+        'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c'
+
+      if (typeof window === 'undefined' || !(window as any).MercadoPago) {
+        throw new Error('El sistema de pago seguro está iniciando. Por favor, intenta de nuevo en unos segundos.')
+      }
+
+      const mp = new (window as any).MercadoPago(publicKey, { locale: 'es-PE' })
+      const [month, year] = cardExp.split('/')
+      const fullYear = year.trim().length === 2 ? `20${year.trim()}` : year.trim()
+
+      // Tokenizar tarjeta en el cliente de forma segura (PCI compliant)
+      const tokenResponse = await mp.createCardToken({
+        cardNumber: cleanCard,
+        cardholderName: cardholderName.trim(),
+        cardExpirationMonth: month.trim(),
+        cardExpirationYear: fullYear,
+        securityCode: cardCvv.trim(),
+        identificationType: docType,
+        identificationNumber: docNumber.trim(),
+      })
+
+      if (!tokenResponse || !tokenResponse.id) {
+        throw new Error('No se pudo validar la tarjeta. Revisa los datos ingresados.')
+      }
+
+      const cleanPhoneDigits = customerPhone.replace(/\D/g, '')
+      const res = await fetch('/api/process_payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderData: {
+            customerName: customerName.trim(),
+            customerPhone: customerPhone.trim(),
+            customerEmail: customerEmail.trim(),
+            customerAddress: customerAddress.trim(),
+            orderNotes: orderNotes.trim(),
+            deliveryType,
+            totalPrice: finalTotal,
+            items,
+            paymentMethod: 'card',
+          },
+          paymentData: {
+            token: tokenResponse.id,
+            installments: 1,
+            payer: {
+              email:
+                customerEmail.trim() ||
+                `${cleanPhoneDigits || 'cliente'}@makibros.pe`,
+              identification: {
+                type: docType,
+                number: docNumber.trim(),
+              },
+            },
+          },
+        }),
+      })
+
+      const data = await res.json()
+      if (data.success && data.status === 'approved') {
+        toast('¡Pago con tarjeta aprobado exitosamente!', 'success')
+        clearCart()
+        router.push('/checkout/success')
+      } else {
+        const errorMsg =
+          data.message ||
+          data.error ||
+          'El pago fue rechazado por el banco. Por favor intenta con otra tarjeta o con Yape.'
+        toast(errorMsg, 'error')
+      }
+    } catch (err: any) {
+      console.error('Error procesando pago con tarjeta:', err)
+      toast(err?.message || 'Ocurrió un error al procesar la tarjeta.', 'error')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Procesar Pedido en EFECTIVO (Vía WhatsApp)
+  const handleSendCashOrder = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validateCommonFields()) return
+
+    setIsProcessing(true)
+    try {
+      // Registrar orden en la base de datos como pendiente
+      await fetch('/api/process_payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderData: {
+            customerName: customerName.trim(),
+            customerPhone: customerPhone.trim(),
+            customerEmail: customerEmail.trim(),
+            customerAddress: customerAddress.trim(),
+            orderNotes: orderNotes.trim(),
+            deliveryType,
+            totalPrice: finalTotal,
+            items,
+            paymentMethod: 'cash',
+          },
+        }),
+      })
+    } catch (err) {
+      console.warn('Registro preliminar en BD falló, continuando con WhatsApp:', err)
+    }
+
     const orderLines = items
       .map((item) => {
         const isDiscounted = (item.dish.discount_percentage ?? 0) > 0
@@ -113,38 +363,32 @@ export default function CheckoutPage() {
       })
       .join('\n')
 
-    const paymentLabels = {
-      yape: 'Yape',
-      plin: 'Plin',
-      card: 'Tarjeta (Visa/Mastercard)',
-      cash: 'Efectivo',
-      online: 'Pago Online (MercadoPago)',
-    }
-
-    const message = `🍱 *¡HOLA MAKIBROS! NUEVO PEDIDO*\n\n` +
+    const message =
+      `🍱 *¡HOLA MAKIBROS! NUEVO PEDIDO*\n\n` +
       `👤 *Cliente:* ${customerName}\n` +
       `📱 *Teléfono:* ${customerPhone}\n` +
       `🛵 *Modalidad:* ${deliveryType === 'delivery' ? 'Delivery a domicilio' : 'Recojo en local'}\n` +
       (deliveryType === 'delivery' ? `📍 *Dirección:* ${customerAddress}\n` : '') +
-      `💳 *Método de Pago:* ${paymentLabels[paymentMethod]}\n\n` +
+      `💵 *Método de Pago:* Efectivo (Contraentrega)\n\n` +
       `📝 *Platos:* \n${orderLines}\n\n` +
       (deliveryType === 'delivery' ? `🛵 *Costo de envío:* ${formatPrice(deliveryFee)}\n` : '') +
-      `💰 *TOTAL:* ${formatPrice(finalTotal)}\n` +
+      `💰 *TOTAL A PAGAR:* ${formatPrice(finalTotal)}\n` +
       (orderNotes.trim() ? `\n📌 *Notas:* ${orderNotes}\n` : '') +
       `\n¡Por favor confirmar mi pedido! Muchas gracias.`
 
     const encodedMessage = encodeURIComponent(message)
     const whatsappUrl = `https://wa.me/51970725307?text=${encodedMessage}`
 
-    // Clear cart and show success state
     clearCart()
     setIsSubmitted(true)
+    setIsProcessing(false)
 
-    // Open WhatsApp in a new tab
     if (typeof window !== 'undefined') {
       window.open(whatsappUrl, '_blank')
     }
   }
+
+  const cardBrand = getCardBrand(cardNumber)
 
   return (
     <div className="min-h-screen bg-[#09090c] text-white flex flex-col selection:bg-[#e53e3e] selection:text-white">
@@ -152,7 +396,7 @@ export default function CheckoutPage() {
 
       <main className="flex-1 py-10 sm:py-16 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          {/* Header Back */}
+          {/* Botón Volver */}
           <div className="mb-8 sm:mb-10 space-y-2">
             <Link
               href="/#menu"
@@ -174,7 +418,7 @@ export default function CheckoutPage() {
               <div className="space-y-2">
                 <h2 className="text-2xl sm:text-3xl font-black text-white">¡Pedido Enviado!</h2>
                 <p className="text-neutral-400 text-sm leading-relaxed">
-                  Tu orden ha sido transferida a nuestro WhatsApp oficial (<strong className="text-white font-mono">+51 987 654 321</strong>). Nuestro chef ya está revisando tu pedido para meterle candela al soplete.
+                  Tu orden ha sido transferida a nuestro WhatsApp oficial (<strong className="text-white font-mono">+51 970 725 307</strong>). Nuestro chef ya está revisando tu pedido para meterle candela al soplete.
                 </p>
               </div>
               <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
@@ -214,7 +458,7 @@ export default function CheckoutPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Order Items List */}
+              {/* Lista de Platos en el Carrito */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="bg-[#121217] border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-xl shadow-black/40">
                   <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-4">
@@ -222,8 +466,9 @@ export default function CheckoutPage() {
                       Tus Platos (<span className="text-[#f59e0b] font-mono tabular-nums">{totalItems}</span>)
                     </h2>
                     <button
+                      type="button"
                       onClick={clearCart}
-                      className="text-xs text-neutral-400 hover:text-red-400 transition-colors font-mono"
+                      className="text-xs text-neutral-400 hover:text-red-400 transition-colors font-mono cursor-pointer"
                     >
                       Vaciar carrito
                     </button>
@@ -261,7 +506,7 @@ export default function CheckoutPage() {
                             </p>
                           </div>
 
-                          {/* Quantity controls */}
+                          {/* Controles de Cantidad */}
                           <div className="flex items-center bg-[#09090c] border border-white/10 rounded-full p-0.5">
                             <button
                               type="button"
@@ -291,7 +536,7 @@ export default function CheckoutPage() {
                           <button
                             type="button"
                             onClick={() => removeItem(dish.id)}
-                            className="btn-press p-2 text-neutral-500 hover:text-red-400 transition-colors"
+                            className="btn-press p-2 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
                             title="Eliminar plato"
                             aria-label={`Eliminar ${dish.name}`}
                           >
@@ -304,15 +549,12 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Delivery & WhatsApp Order Form */}
+              {/* Panel de Checkout: Entrega + Método de Pago API */}
               <div className="lg:col-span-5 space-y-4">
-                <form
-                  onSubmit={handleSendWhatsAppOrder}
-                  className="bg-[#121217] border border-white/[0.08] rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl shadow-black/40"
-                >
-                  <h2 className="font-black text-lg text-white">Detalles de Entrega</h2>
+                <div className="bg-[#121217] border border-white/[0.08] rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl shadow-black/40">
+                  <h2 className="font-black text-lg text-white">Detalles del Pedido</h2>
 
-                  {/* Delivery / Pickup switcher */}
+                  {/* Selector Delivery / Recojo */}
                   <div className="grid grid-cols-2 gap-2 bg-[#09090c] p-1.5 rounded-2xl border border-white/10">
                     <button
                       type="button"
@@ -340,9 +582,10 @@ export default function CheckoutPage() {
                     </button>
                   </div>
 
-                  <div className="space-y-3.5 text-sm">
+                  {/* Datos del Cliente */}
+                  <div className="space-y-3 text-sm">
                     <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
+                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
                         Tu Nombre Completo *
                       </label>
                       <input
@@ -350,28 +593,42 @@ export default function CheckoutPage() {
                         required
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="Ej. Juan Pérez"
-                        className="w-full bg-[#09090c] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm transition-all"
+                        placeholder="Ej. Carlos García"
+                        className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm transition-all"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
-                        Teléfono / WhatsApp *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        placeholder="Ej. 987 654 321"
-                        className="w-full bg-[#09090c] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono transition-all"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                          Teléfono / WhatsApp *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          value={customerPhone}
+                          onChange={(e) => setCustomerPhone(e.target.value)}
+                          placeholder="Ej. 987 654 321"
+                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                          Correo Electrónico
+                        </label>
+                        <input
+                          type="email"
+                          value={customerEmail}
+                          onChange={(e) => setCustomerEmail(e.target.value)}
+                          placeholder="cliente@ejemplo.com"
+                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm transition-all"
+                        />
+                      </div>
                     </div>
 
                     {deliveryType === 'delivery' && (
                       <div>
-                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
+                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
                           Dirección de Entrega y Referencia *
                         </label>
                         <input
@@ -379,62 +636,28 @@ export default function CheckoutPage() {
                           required
                           value={customerAddress}
                           onChange={(e) => setCustomerAddress(e.target.value)}
-                          placeholder="Ej. Av. Universitaria con Retablo, dpto 301"
-                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm transition-all"
+                          placeholder="Ej. Av. Universitaria 1420 dpto 302, frente al parque"
+                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm transition-all"
                         />
                       </div>
                     )}
 
-                    
                     <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
-                        Método de Pago
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod('online')}
-                          className={`btn-press py-2.5 px-3 rounded-xl border text-xs font-bold text-left transition-all flex items-center justify-between ${
-                            paymentMethod !== 'cash'
-                              ? 'border-[#e53e3e] bg-[#e53e3e]/15 text-white ring-1 ring-[#e53e3e]/50'
-                              : 'text-neutral-200 bg-white/[0.04] border-white/10 hover:text-white'
-                          }`}
-                        >
-                          <span>Pagar Online (Tarjetas/Yape)</span>
-                          <CreditCard className="w-3.5 h-3.5 opacity-60" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod('cash')}
-                          className={`btn-press py-2.5 px-3 rounded-xl border text-xs font-bold text-left transition-all flex items-center justify-between ${
-                            paymentMethod === 'cash'
-                              ? 'border-[#e53e3e] bg-[#e53e3e]/15 text-white ring-1 ring-[#e53e3e]/50'
-                              : 'text-neutral-200 bg-white/[0.04] border-white/10 hover:text-white'
-                          }`}
-                        >
-                          <span>Efectivo (Pago al recibir)</span>
-                          <Banknote className="w-3.5 h-3.5 opacity-60" />
-                        </button>
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1.5 font-medium">
+                      <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
                         Notas especiales (opcional)
                       </label>
                       <input
                         type="text"
                         value={orderNotes}
                         onChange={(e) => setOrderNotes(e.target.value)}
-                        placeholder="Ej. Salsa acevichada extra, sin palillo"
-                        className="w-full bg-[#09090c] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-xs transition-all"
+                        placeholder="Ej. Sin palillos, extra salsa acevichada"
+                        className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-xs transition-all"
                       />
                     </div>
                   </div>
 
-                  {/* Pricing breakdown */}
-                  <div className="pt-4 border-t border-white/[0.06] space-y-2 text-sm font-mono">
+                  {/* Resumen de Costos */}
+                  <div className="pt-3 border-t border-white/[0.06] space-y-1.5 text-sm font-mono">
                     <div className="flex justify-between text-neutral-400">
                       <span>Subtotal</span>
                       <span className="text-white font-medium tabular-nums">{formatPrice(totalPrice)}</span>
@@ -445,64 +668,280 @@ export default function CheckoutPage() {
                         <span className="text-white font-medium tabular-nums">{formatPrice(deliveryFee)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-base font-bold text-white pt-2.5 border-t border-white/[0.06]">
+                    <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-white/[0.06]">
                       <span>Total a Pagar</span>
                       <span className="text-[#f59e0b] text-xl tabular-nums">{formatPrice(finalTotal)}</span>
                     </div>
                   </div>
 
-                  {/* WhatsApp Action Button */}
-                  
-                  
-                  {/* MP Brick or WhatsApp Button */}
-                  {paymentMethod !== 'cash' ? (
-                    <div className="mt-6 pt-4 border-t border-white/[0.06]">
-                      {!preferenceId ? (
-                        <button
-                          type="button"
-                          onClick={handleGeneratePreference}
-                          disabled={isProcessing}
-                          className="btn-press w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full transition-all flex items-center justify-center disabled:opacity-50"
-                        >
-                          {isProcessing ? 'Cargando panel seguro...' : 'Generar Panel de Pago Seguro'}
-                        </button>
-                      ) : (
-                        <div className="bg-[#1a1a1a] rounded-xl p-2">
-                          <Payment 
-                            initialization={{ amount: finalTotal, preferenceId }}
-                            customization={{
-                              paymentMethods: {
-                                ticket: "all",
-                                creditCard: "all",
-                                debitCard: "all",
-                                mercadoPago: "all",
-                              },
-                            }}
-                            onSubmit={onSubmitBrick}
-                            onError={(error) => console.error("Brick Error:", error)}
-                            onReady={() => console.log("Brick Ready")}
+                  {/* Selector de Métodos de Pago */}
+                  <div className="pt-3 border-t border-white/[0.06]">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-2 font-medium">
+                      Elige tu Método de Pago
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {/* Opción Yape */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('yape')}
+                        className={`btn-press p-2.5 rounded-xl border text-xs font-bold text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                          paymentMethod === 'yape'
+                            ? 'border-[#732282] bg-[#732282]/20 text-white ring-1 ring-[#a332b8]'
+                            : 'text-neutral-400 bg-white/[0.03] border-white/10 hover:text-white hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        <span className="w-5 h-5 rounded-full bg-[#732282] text-white flex items-center justify-center font-black text-[11px]">
+                          Y
+                        </span>
+                        <span>Yape</span>
+                      </button>
+
+                      {/* Opción Tarjeta */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('card')}
+                        className={`btn-press p-2.5 rounded-xl border text-xs font-bold text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                          paymentMethod === 'card'
+                            ? 'border-[#e53e3e] bg-[#e53e3e]/20 text-white ring-1 ring-[#e53e3e]/60'
+                            : 'text-neutral-400 bg-white/[0.03] border-white/10 hover:text-white hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        <CreditCard className="w-5 h-5 text-[#e53e3e]" />
+                        <span>Tarjeta</span>
+                      </button>
+
+                      {/* Opción Efectivo */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('cash')}
+                        className={`btn-press p-2.5 rounded-xl border text-xs font-bold text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                          paymentMethod === 'cash'
+                            ? 'border-emerald-500 bg-emerald-500/20 text-white ring-1 ring-emerald-500/60'
+                            : 'text-neutral-400 bg-white/[0.03] border-white/10 hover:text-white hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        <Banknote className="w-5 h-5 text-emerald-400" />
+                        <span>Efectivo</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* FORMULARIO: PAGO CON YAPE (Checkout API) */}
+                  {paymentMethod === 'yape' && (
+                    <form onSubmit={handlePayWithYape} className="space-y-4 pt-2">
+                      <div className="bg-[#732282]/10 border border-[#732282]/30 rounded-2xl p-3.5 text-xs text-neutral-300 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 font-bold text-white">
+                            <span className="w-4 h-4 rounded-full bg-[#732282] text-white flex items-center justify-center text-[10px]">
+                              Y
+                            </span>
+                            <span>Pago Inmediato con Yape</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setShowYapeHelp(!showYapeHelp)}
+                            className="text-[#a332b8] hover:text-purple-300 flex items-center gap-1 cursor-pointer"
+                          >
+                            <HelpCircle className="w-3.5 h-3.5" />
+                            <span>¿Dónde veo el código?</span>
+                          </button>
+                        </div>
+
+                        {showYapeHelp && (
+                          <div className="pt-2 border-t border-[#732282]/20 text-[11px] text-neutral-300 space-y-1 bg-black/40 p-2.5 rounded-xl">
+                            <p>1. Abre tu aplicación <strong>Yape</strong> en tu celular.</p>
+                            <p>2. En el menú superior o barra lateral, presiona <strong>&quot;Código de aprobación&quot;</strong>.</p>
+                            <p>3. Copia el código de <strong>6 dígitos</strong> y escríbelo aquí abajo (es válido por 90 segundos).</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                            Celular Yape *
+                          </label>
+                          <input
+                            type="tel"
+                            required
+                            value={yapePhone}
+                            onChange={(e) => setYapePhone(e.target.value)}
+                            placeholder="Ej. 987 654 321"
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#732282] focus:ring-1 focus:ring-[#732282]/50 text-sm font-mono transition-all"
                           />
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <>
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium flex items-center justify-between">
+                            <span>Código de Aprobación *</span>
+                            <span className="text-[10px] text-purple-400 lowercase">6 dígitos</span>
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            required
+                            maxLength={6}
+                            value={yapeOtp}
+                            onChange={handleYapeOtpChange}
+                            placeholder="000000"
+                            className="w-full bg-[#09090c] border border-[#732282]/40 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#a332b8] focus:ring-2 focus:ring-[#732282]/50 text-base font-mono font-bold tracking-[0.25em] text-center transition-all"
+                          />
+                        </div>
+                      </div>
+
                       <button
                         type="submit"
                         disabled={isProcessing}
-                        className="btn-press w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-full transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
+                        className="btn-press w-full py-3.5 bg-gradient-to-r from-[#732282] to-[#912d9b] hover:from-[#822792] hover:to-[#a332b8] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#732282]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
                       >
-                        <Send className="w-4 h-4" />
-                        <span>{isProcessing ? 'Procesando...' : 'Enviar Pedido por WhatsApp'}</span>
+                        <Smartphone className="w-4 h-4" />
+                        <span>{isProcessing ? 'Verificando con Yape...' : `Pagar ${formatPrice(finalTotal)} con Yape`}</span>
                       </button>
-
-                      <p className="text-[11px] text-center text-neutral-500 leading-relaxed">
-                        Tu pedido se enviará directamente a nuestro WhatsApp oficial (<span className="text-neutral-400 font-mono">+51 987 654 321</span>) para confirmación inmediata.
-                      </p>
-                    </>
+                    </form>
                   )}
 
-                </form>
+                  {/* FORMULARIO: PAGO CON TARJETA (Checkout API) */}
+                  {paymentMethod === 'card' && (
+                    <form onSubmit={handlePayWithCard} className="space-y-3.5 pt-2">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium flex items-center justify-between">
+                          <span>Número de Tarjeta *</span>
+                          {cardBrand && (
+                            <span className="text-[10px] font-bold text-[#f59e0b] uppercase font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                              {cardBrand}
+                            </span>
+                          )}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            required
+                            value={cardNumber}
+                            onChange={handleCardNumberChange}
+                            placeholder="4000 1234 5678 9010"
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl pl-3.5 pr-10 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono tracking-wider transition-all"
+                          />
+                          <CreditCard className="w-4 h-4 text-neutral-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                          Nombre del Titular de la Tarjeta *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={cardholderName}
+                          onChange={(e) => setCardholderName(e.target.value.toUpperCase())}
+                          placeholder="COMO APARECE EN LA TARJETA"
+                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-xs font-mono uppercase transition-all"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                            Vencimiento *
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            required
+                            maxLength={5}
+                            value={cardExp}
+                            onChange={handleCardExpChange}
+                            placeholder="MM/AA"
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono text-center transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                            CVV / CVC *
+                          </label>
+                          <input
+                            type="password"
+                            inputMode="numeric"
+                            required
+                            maxLength={4}
+                            value={cardCvv}
+                            onChange={handleCardCvvChange}
+                            placeholder="123"
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono text-center tracking-widest transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                            Doc.
+                          </label>
+                          <select
+                            value={docType}
+                            onChange={(e) => setDocType(e.target.value as any)}
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-2.5 py-2 text-white text-xs font-mono focus:outline-none focus:border-[#e53e3e] transition-all cursor-pointer"
+                          >
+                            <option value="DNI">DNI</option>
+                            <option value="CE">C.E.</option>
+                            <option value="Pasaporte">PAS</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2">
+                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
+                            Nro de Documento *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={docNumber}
+                            onChange={(e) => setDocNumber(e.target.value)}
+                            placeholder="Número de DNI"
+                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-1 text-[11px] text-neutral-400">
+                        <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Pago cifrado y procesado de forma segura por Mercado Pago.</span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isProcessing}
+                        className="btn-press w-full py-3.5 bg-[#e53e3e] hover:bg-[#c53030] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#e53e3e]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>{isProcessing ? 'Validando con el banco...' : `Pagar ${formatPrice(finalTotal)}`}</span>
+                      </button>
+                    </form>
+                  )}
+
+                  {/* FORMULARIO: PAGO EN EFECTIVO (WhatsApp) */}
+                  {paymentMethod === 'cash' && (
+                    <form onSubmit={handleSendCashOrder} className="space-y-4 pt-2">
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 text-xs text-neutral-300 space-y-1.5">
+                        <p className="font-bold text-white flex items-center gap-2">
+                          <Banknote className="w-4 h-4 text-emerald-400" />
+                          <span>Pago Contraentrega en Efectivo</span>
+                        </p>
+                        <p className="text-neutral-400 leading-relaxed text-[11px]">
+                          Pagarás en efectivo al recibir tu pedido en tu puerta o al recogerlo en nuestro local. Al presionar el botón se abrirá WhatsApp con el resumen de tu pedido.
+                        </p>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isProcessing}
+                        className="btn-press w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-xl transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>{isProcessing ? 'Enviando...' : 'Confirmar Pedido por WhatsApp'}</span>
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -513,4 +952,3 @@ export default function CheckoutPage() {
     </div>
   )
 }
-
