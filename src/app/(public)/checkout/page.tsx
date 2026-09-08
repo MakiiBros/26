@@ -469,7 +469,7 @@ export default function CheckoutPage() {
                       ) : (
                         <div className="bg-[#1a1a1a] rounded-xl p-2">
                           <Payment 
-                            initialization={{ preferenceId }}
+                            initialization={{ amount: finalTotal, preferenceId }}
                             customization={{
                               paymentMethods: {
                                 ticket: "all",
@@ -483,13 +483,6 @@ export default function CheckoutPage() {
                             onReady={() => console.log("Brick Ready")}
                           />
                         </div>
-                      )}
-                    </div>
-                  ) : (
-
-                        <p className="text-sm text-yellow-500 bg-yellow-500/10 p-4 rounded-xl border border-yellow-500/20 text-center">
-                          Completa tus datos (Nombre, Teléfono y Dirección si aplica) para habilitar el pago seguro online.
-                        </p>
                       )}
                     </div>
                   ) : (
