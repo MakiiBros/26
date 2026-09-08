@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MakiBros — Fusión Peruano-Japonesa",
-    description: "Los mejores makis, rolls especiales, ceviches y tiraditos.",
+    description: "Los mejores makis en banderilla. Pide online y recibe en tu puerta o recoge en local.",
   },
   robots: {
     index: true,
