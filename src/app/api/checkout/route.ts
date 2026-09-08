@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error('Error insertando orden en Supabase:', dbError);
-      return NextResponse.json({ error: 'Error al crear la orden.' }, { status: 500 });
+      return NextResponse.json({ error: 'Error al crear la orden.', details: dbError }, { status: 500 });
     }
 
     const orderId = orderData.id;
@@ -88,6 +88,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error al procesar el checkout:', error);
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    return NextResponse.json({ error: 'Error interno del servidor', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
