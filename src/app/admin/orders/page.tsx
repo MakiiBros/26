@@ -10,7 +10,7 @@ export const metadata = {
 export const revalidate = 0; 
 
 export default async function AdminOrdersPage() {
-  const supabase = await createClient();
+  const supabase = await createClient() as any;
   
   const { data: orders, error } = await supabase
     .from('orders')

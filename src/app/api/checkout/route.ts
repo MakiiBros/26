@@ -12,10 +12,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { items, customerName, customerPhone, customerAddress, deliveryType, totalPrice, paymentMethod } = body;
 
-    const supabase = await createClient();
+    const supabase = await createClient() as any;
 
     // 1. Guardar la orden en Supabase como "pending"
     const { data: orderData, error: dbError } = await supabase
+      // @ts-ignore
       .from('orders')
       .insert({
         customer_name: customerName,
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
     // 3. Actualizar la orden con el preference_id
     if (preferenceResult.id) {
       await supabase
+      // @ts-ignore
         .from('orders')
         .update({ preference_id: preferenceResult.id })
         .eq('id', orderId);

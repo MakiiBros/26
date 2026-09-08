@@ -19,12 +19,13 @@ export async function POST(request: Request) {
       if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
         // El pago fue aprobado
         const orderId = paymentInfo.external_reference;
-        const supabase = await createClient();
+        const supabase = await createClient() as any;
 
         // Si quisieras ser súper seguro, usarías la service role key aquí, 
         // pero la DB tiene políticas permisivas para modificar/ver órdenes o puedes usar RLS.
         // Asumiendo que el cliente por defecto tiene acceso:
         const { error } = await supabase
+      // @ts-ignore
           .from('orders')
           .update({ payment_status: 'paid' })
           .eq('id', orderId);
