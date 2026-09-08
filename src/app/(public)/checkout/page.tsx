@@ -86,14 +86,6 @@ export default function CheckoutPage() {
       return
     }
 
-          } catch (err) {
-        console.error(err)
-        toast('Error de conexión', 'error')
-        setIsProcessing(false)
-        return
-      }
-    }
-
     // Build the WhatsApp message
     const orderLines = items
       .map((item) => {
