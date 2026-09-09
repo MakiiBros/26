@@ -22,7 +22,7 @@ export const dishSchema = z.object({
     .multipleOf(0.01, 'El precio puede tener máximo 2 decimales'),
   category_id: z
     .string()
-    .uuid('Categoría inválida'),
+    .min(1, 'Categoría inválida'),
   is_available: z.coerce.boolean().default(true),
   video_360_url: z
     .string()
