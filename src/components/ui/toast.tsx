@@ -16,24 +16,25 @@ interface ToastContextValue {
   toast: (message: string, type?: ToastType) => void
 }
 
-const TOAST_DURATION_MS = 4000
+// Reducimos el tiempo para que no hagan tanto spam
+const TOAST_DURATION_MS = 2500
 const EXIT_ANIMATION_MS = 300
 
 const toastStyles: Record<ToastType, string> = {
-  success: 'border-green-200 bg-green-50 text-green-800',
-  error: 'border-red-200 bg-red-50 text-red-800',
-  info: 'border-blue-200 bg-blue-50 text-blue-800',
+  success: 'border-green-500/30 bg-green-950/80 text-green-200 backdrop-blur-md',
+  error: 'border-red-500/30 bg-red-950/80 text-red-200 backdrop-blur-md',
+  info: 'border-blue-500/30 bg-blue-950/80 text-blue-200 backdrop-blur-md',
 }
 
 const toastIcons: Record<ToastType, React.ReactNode> = {
   success: (
-    <svg className="h-5 w-5 flex-shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+    <svg className="h-5 w-5 flex-shrink-0 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
   ),
   error: (
-    <svg className="h-5 w-5 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    <svg className="h-5 w-5 flex-shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
   ),
   info: (
-    <svg className="h-5 w-5 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <svg className="h-5 w-5 flex-shrink-0 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
   ),
 }
 
@@ -58,7 +59,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleAdd = (t: ToastItem) => {
-      setToasts((prev) => [...prev, t]);
+      setToasts((prev) => {
+        // Limitar a máximo 3 toasts al mismo tiempo para no tapar la pantalla
+        const newToasts = [...prev, t]
+        return newToasts.slice(-3)
+      });
       setTimeout(() => {
         removeToast(t.id);
       }, TOAST_DURATION_MS);
@@ -73,13 +78,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {toasts.length > 0 && (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2" aria-live="polite">
+        <div className="fixed top-24 right-4 sm:right-6 z-[60] flex flex-col gap-2" aria-live="polite">
           {toasts.map((item) => (
-            <div key={item.id} className={cn('flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg min-w-[280px] max-w-[420px] transition-all duration-300 ease-in-out', item.isExiting ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100', toastStyles[item.type])}>
+            <div key={item.id} className={cn('flex items-center gap-3 rounded-xl border px-4 py-3 shadow-2xl min-w-[280px] max-w-[350px] transition-all duration-300 ease-in-out', item.isExiting ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100', toastStyles[item.type])}>
               {toastIcons[item.type]}
-              <p className="flex-1 text-sm font-medium">{item.message}</p>
-              <button type="button" onClick={() => removeToast(item.id)} className="flex-shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <p className="flex-1 text-sm font-semibold tracking-tight">{item.message}</p>
+              <button type="button" onClick={() => removeToast(item.id)} className="flex-shrink-0 rounded-md p-1 opacity-50 transition-opacity hover:opacity-100 focus:outline-none">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
           ))}
