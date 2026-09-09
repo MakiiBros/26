@@ -154,3 +154,10 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
 
 
 
+
+### Prompt 14: Instalación selectiva del catálogo rmyndharis/antigravity-skills
+* **Usuario:** *"instala esta skills y agentes , igual como el anterior , lo essencial sin saturar el proyecto. https://github.com/rmyndharis/antigravity-skills"*
+* **Acción:** 
+  1. Se analizó el catálogo usando `antigravity-skills-manager` (`npx @rmyndharis/antigravity-skills list`).
+  2. Se seleccionaron e instalaron 13 skills estratégicas para no saturar el proyecto: `ui-ux-designer`, `ui-visual-validator`, `api-design-principles`, `github-actions-templates`, `error-diagnostics-smart-debug`, `error-detective`, `performance-engineer`, `dx-optimizer`, `seo-structure-architect`, `database-optimizer`, `code-refactoring-tech-debt`, `context-manager`, y `frontend-developer`.
+  3. Se confirmó la instalación y se actualizó el repositorio local para mantener todo sincronizado en la máquina actual sin hacer push automático.
