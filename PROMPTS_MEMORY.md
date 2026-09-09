@@ -40,6 +40,24 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
 15. **`frontend-security-coder`**: Prevención de vulnerabilidades frontend (XSS, inyección, sanitización).
 16. **`code-reviewer`**: Revisión experta de código, detección de antipatrones y optimizaciones.
 
+### Suite de Escalamiento, 3D, Pagos y Conversión (`sickn33/agentic-awesome-skills`):
+17. **`threejs-skills`**: Renderizado 3D, geometrías, materiales, iluminación y optimización WebGL.
+18. **`3d-web-experience`**: Experiencias web 3D interactivas de alto impacto visual.
+19. **`nextjs-best-practices`**: Buenas prácticas de producción para Next.js App Router, caching y Turbopack.
+20. **`nextjs-supabase-auth`**: Integración segura de Auth de Supabase con SSR y cookies en Next.js.
+21. **`supabase-postgres-best-practices`**: Diseño de esquemas PostgreSQL, RLS, índices y queries de alta velocidad.
+22. **`payment-integration`**: Integración segura de pasarelas de pago, flujos de checkout, webhooks y PCI compliance.
+23. **`frontend-design`**: Principios modernos de UI/UX, microinteracciones, jerarquía visual y responsive design.
+24. **`react-best-practices`**: Optimización de ciclo de vida, memoización y rendimiento en React 19.
+25. **`fixing-motion-performance`**: Optimización de animaciones Framer Motion para lograr 60 FPS estables en móviles.
+26. **`performance-optimization`**: Core Web Vitals, reducción de bundle y carga ultra-rápida de la aplicación.
+27. **`nextjs-seo-indexing`**: SEO técnico, metadatos dinámicos Open Graph y Schema.org estructurado para gastronomía.
+28. **`page-cro`**: Optimización de la tasa de conversión (CRO) para páginas de productos y carta.
+29. **`form-cro`**: Optimización de formularios de conversión y checkout (reducción de carritos abandonados).
+30. **`senior-fullstack`**: Arquitectura fullstack senior, manejo resiliente de errores y patrones de escalabilidad.
+31. **`systematic-debugging`**: Metodología de diagnóstico sistemático de errores basados en evidencias.
+
+
 
 ---
 
@@ -124,6 +142,14 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   2. Se limpiaron imports no utilizados (`PromoCarousel`) y variables huérfanas (`dbPromos`, `promoDishes`).
   3. La complejidad ciclomática del componente principal cayó a un nivel mínimo (cc < 3).
   4. Se validó con `npm run build` exitoso.
+
+### Prompt 13: Instalación de 15 skills esenciales de sickn33 para escalar la web
+* **Usuario:** *"instala este agente y skills https://github.com/sickn33/agentic-awesome-skills se que tiene mas de 2000 agentes y skills , pero necesito mas de 5 que me haz instalado , lo mas essenciales para este proyecto, para poder seguir escalando mi web."*
+* **Acción:** 
+  1. Se seleccionó e instaló un set de 15 skills de alto impacto de `sickn33/agentic-awesome-skills` enfocadas en: Three.js/3D, Supabase, Performance, CRO/Conversión, Next.js Best Practices, Pagos y Diagnóstico.
+  2. El total de skills activas en `.agent/skills/` aumentó a 31 skills especializadas.
+  3. Se confirmó la instalación en Git localmente listo para sincronización.
+
 
 
 
