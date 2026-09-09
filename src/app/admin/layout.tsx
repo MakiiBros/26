@@ -54,6 +54,14 @@ export default function AdminLayout({
             Platos del Menú
           </Link>
 
+          <Link 
+            href="/admin/settings" 
+            className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
+          >
+            <Shield className="w-4 h-4 text-gray-400" />
+            Configuración
+          </Link>
+
           <div className="pt-4 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
             Acceso Rápido
           </div>
