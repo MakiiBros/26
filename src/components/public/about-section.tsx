@@ -43,12 +43,12 @@ export function AboutSection() {
               <FadeIn delay={0.1} className="space-y-4 sm:space-y-6 mt-8 sm:mt-12">
                 <div className="relative aspect-square rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
                   <Image 
-                    src="https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop" 
-                    alt="Preparación Sushi MakiBros" 
+                    src="/images/owner/founder-collage.jpg" 
+                    alt="Fundador de MakiBros" 
                     fill 
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
                   <Image 

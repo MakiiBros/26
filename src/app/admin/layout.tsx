@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { logout } from '@/actions/auth-actions';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, Utensils, Globe, LogOut, Shield, ShoppingBag } from 'lucide-react';
@@ -83,8 +84,13 @@ export default function AdminLayout({
         {/* Footer del sidebar */}
         <div className="p-4 border-t border-[#222222] bg-[#0d0d0d]">
           <div className="flex items-center gap-3 mb-3 px-1">
-            <div className="w-8 h-8 rounded-full bg-[#e53e3e]/20 border border-[#e53e3e]/40 flex items-center justify-center text-[#e53e3e] font-bold text-xs">
-              <Shield className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full border border-[#e53e3e]/40 overflow-hidden relative shrink-0">
+              <Image 
+                src="/images/owner/avatar.jpg" 
+                alt="Admin" 
+                fill 
+                className="object-cover"
+              />
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-semibold text-white truncate">Administrador</p>
