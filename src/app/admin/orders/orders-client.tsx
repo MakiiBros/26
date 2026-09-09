@@ -50,7 +50,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
   }
 
   const handleClearOld = async () => {
-    if (!confirm('Esto eliminará todas las órdenes "Pendientes" creadas hace más de 30 minutos. Esta acción no se puede deshacer.')) return
+    if (!confirm('Esto eliminará todas las órdenes "Pendientes" creadas hace más de 20 minutos. Esta acción no se puede deshacer.')) return
     setIsClearing(true)
     try {
       await clearOldPendingOrders()
