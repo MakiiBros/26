@@ -79,10 +79,6 @@ export default async function HomePage() {
           <PopularDishes dishes={popularDishes} />
         )}
 
-        {/* Promociones */}
-        {promoDishes.length > 0 && (
-          <PromoCarousel dishes={promoDishes} />
-        )}
 
         {/* Menú Completo Integrado */}
         <section id="menu" className="py-20 sm:py-28 px-4 sm:px-6 scroll-mt-20 border-t border-white/[0.06] relative">

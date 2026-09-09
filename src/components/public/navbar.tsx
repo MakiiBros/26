@@ -45,7 +45,7 @@ export function Navbar() {
           return;
         }
 
-        const sections = ['contacto', 'nosotros', 'menu', 'promociones'];
+        const sections = ['contacto', 'nosotros', 'menu'];
         const navOffset = 120;
 
         for (const id of sections) {
@@ -63,7 +63,7 @@ export function Navbar() {
 
     if (pathname === '/' && typeof window !== 'undefined' && window.location.hash) {
       const hash = window.location.hash.replace('#', '');
-      if (['inicio', 'menu', 'promociones', 'nosotros', 'contacto'].includes(hash)) {
+      if (['inicio', 'menu', 'nosotros', 'contacto'].includes(hash)) {
         setActiveSection(hash);
       }
     }
@@ -71,7 +71,7 @@ export function Navbar() {
     const handleHashChange = () => {
       if (pathname === '/') {
         const hash = window.location.hash.replace('#', '');
-        if (['inicio', 'menu', 'promociones', 'nosotros', 'contacto'].includes(hash)) {
+        if (['inicio', 'menu', 'nosotros', 'contacto'].includes(hash)) {
           setActiveSection(hash);
         }
       }
@@ -159,7 +159,6 @@ export function Navbar() {
   const navLinks = [
     { name: 'Inicio', href: '/', id: 'inicio' },
     { name: 'Menú', href: '/#menu', id: 'menu' },
-    { name: 'Promociones', href: '/#promociones', id: 'promociones' },
     { name: 'Nosotros', href: '/#nosotros', id: 'nosotros' },
     { name: 'Contacto', href: '/#contacto', id: 'contacto' },
   ];

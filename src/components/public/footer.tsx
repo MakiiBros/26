@@ -80,7 +80,6 @@ export function Footer() {
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs font-mono">Restaurante</h4>
             <ul className="space-y-2.5 text-neutral-400 text-sm">
               <li><Link href="/nosotros" className="hover:text-white transition-colors">Historia & Concepto</Link></li>
-              <li><Link href="/#promociones" className="hover:text-white transition-colors">Combos & Promociones</Link></li>
               <li><Link href="/horarios" className="hover:text-white transition-colors">Horarios de Atención</Link></li>
               <li><Link href="/privacidad" className="hover:text-white transition-colors">Políticas & Términos</Link></li>
             </ul>
