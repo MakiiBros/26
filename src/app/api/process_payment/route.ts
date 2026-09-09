@@ -85,6 +85,7 @@ export async function POST(request: Request) {
     const paymentResult = await payment.create({
       body: {
         ...paymentData,
+        installments: paymentData?.installments || 1,
         token: finalToken,
         payer: {
           ...paymentData?.payer,
