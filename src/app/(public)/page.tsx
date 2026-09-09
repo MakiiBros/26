@@ -119,7 +119,7 @@ export default async function HomePage() {
           <div className="max-w-3xl mx-auto relative z-10 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-mono">
               <Flame className="w-3.5 h-3.5 text-[#e53e3e]" />
-              <span>Lima Norte • Delivery & Salón</span>
+              <span>Lima Norte • Delivery & Local</span>
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
