@@ -18,9 +18,28 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
 ---
 
 ## ⚙️ 2. Skills Activas en el Workspace (`.agent/skills/`)
-1. **`antigravity-skills-manager`** (de `rmyndharis/antigravity-skills`): Gestor local y global para buscar e instalar skills del ecosistema Antigravity.
+### Meta-skills y Orquestación:
+1. **`antigravity-skills-manager`** (de `rmyndharis/antigravity-skills`): Gestor local y global para buscar e instalar skills del ecosistema Antigravity bajo demanda.
 2. **`antigravity-skill-orchestrator`** (de `sickn33/agentic-awesome-skills`): Meta-skill de orquestación inteligente que evalúa tareas y activa skills pertinentes.
 3. **`antigravity-workflows`** (de `sickn33/agentic-awesome-skills`): Flujos guiados para arquitectura, MVPs, QA y seguridad.
+
+### Colección Romin Irani (`rominirani/antigravity-skills`):
+4. **`git-commit-formatter`**: Convención Conventional Commits para mensajes de commit estandarizados.
+5. **`license-header-adder`**: Añade cabeceras de licencia Apache 2.0 a archivos de código.
+6. **`json-to-pydantic`**: Conversión de esquemas JSON a modelos Pydantic (Python).
+7. **`database-schema-validator`**: Validación automatizada de esquemas SQL con scripts Python.
+8. **`always-verify-gcp`**: Validación estricta de comandos e infraestructura en Google Cloud.
+
+### Suite Curada Fullstack & Next.js (`rmyndharis/antigravity-skills`):
+9. **`nextjs-app-router-patterns`**: Patrones y mejores prácticas para Next.js App Router, Server Components y streaming.
+10. **`react-state-management`**: Arquitectura de estado con Zustand, React Query y optimización de renderizado.
+11. **`tailwind-design-system`**: Sistemas de diseño y componentes escalables con Tailwind CSS.
+12. **`typescript-pro`**: Tipado estricto, genéricos avanzados y tipos condicionales en TypeScript.
+13. **`auth-implementation-patterns`**: Patrones de autenticación, JWT, OAuth y gestión de sesiones.
+14. **`javascript-testing-patterns`**: Estrategias de testing con Jest, Vitest y Testing Library.
+15. **`frontend-security-coder`**: Prevención de vulnerabilidades frontend (XSS, inyección, sanitización).
+16. **`code-reviewer`**: Revisión experta de código, detección de antipatrones y optimizaciones.
+
 
 ---
 
@@ -82,4 +101,12 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   1. Se removió `.agent/` de `.gitignore` para permitir el rastreo de skills por Git.
   2. Se reinstalaron las 3 meta-skills en `.agent/skills/` (`antigravity-skills-manager`, `antigravity-skill-orchestrator`, `antigravity-workflows`).
   3. Se sincronizó el repositorio mediante `git commit` y `git push` a `main` para que persistan automáticamente en cualquier máquina al clonar o hacer pull.
+
+### Prompt 10: Instalación de skills de rominirani y suite curada Fullstack
+* **Usuario:** *"estan instaladas estas skills y agentes? https://github.com/rominirani/antigravity-skills"*, *"si , para ya nunca mas estar instalando a cada rato. https://github.com/sickn33/agentic-awesome-skills https://github.com/rominirani/antigravity-skills https://github.com/rmyndharis/antigravity-skills"*
+* **Acción:** 
+  1. Se instalaron las 5 skills de `rominirani/antigravity-skills` (`git-commit-formatter`, `license-header-adder`, `json-to-pydantic`, `database-schema-validator`, `always-verify-gcp`).
+  2. Se seleccionó e instaló un paquete curado de skills Fullstack/Web (`nextjs-app-router-patterns`, `react-state-management`, `tailwind-design-system`, `typescript-pro`, `auth-implementation-patterns`, `javascript-testing-patterns`, `frontend-security-coder`, `code-reviewer`).
+  3. Se subieron a Git (`main`) para sincronización permanente sin sobrecargar el contexto.
+
 
