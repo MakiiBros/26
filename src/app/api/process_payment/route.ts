@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     // Si es Yape, debemos tokenizar el OTP antes de procesar el pago
     let finalToken = paymentData?.token;
     if (paymentData?.payment_method_id === 'yape') {
-      const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+      const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c';
       if (!publicKey) {
         return NextResponse.json({ success: false, error: 'Falta configurar NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY' }, { status: 500 });
       }
