@@ -109,4 +109,13 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   2. Se seleccionó e instaló un paquete curado de skills Fullstack/Web (`nextjs-app-router-patterns`, `react-state-management`, `tailwind-design-system`, `typescript-pro`, `auth-implementation-patterns`, `javascript-testing-patterns`, `frontend-security-coder`, `code-reviewer`).
   3. Se subieron a Git (`main`) para sincronización permanente sin sobrecargar el contexto.
 
+### Prompt 11: Eliminación de la sección "Los Más Populares"
+* **Usuario:** *"elimina la sesion \"lo mas popular\""*
+* **Acción:** 
+  1. Se removió la sección y llamada al componente `PopularDishes` en `src/app/(public)/page.tsx`.
+  2. Se redirigió el botón secundario del Hero en `src/components/public/hero-section.tsx` hacia `#menu` ("Explorar Menú") evitando un enlace roto.
+  3. Se eliminó el componente no utilizado `src/components/public/popular-dishes.tsx`.
+  4. Se verificó con `npm run build` compilando de forma exitosa todas las rutas.
+
+
 

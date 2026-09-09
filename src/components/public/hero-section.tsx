@@ -59,11 +59,11 @@ export function HeroSection() {
               </a>
 
               <a
-                href="#populares"
+                href="#menu"
                 className="w-full sm:w-auto px-7 py-4 text-slate-200 hover:text-white font-semibold text-sm sm:text-base border border-white/[0.12] bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/[0.25] rounded-xl transition-all btn-press flex items-center justify-center gap-2 cursor-pointer backdrop-blur-md"
               >
                 <Utensils className="w-4 h-4 text-[#f59e0b]" />
-                <span>Ver Platos Populares</span>
+                <span>Explorar Menú</span>
               </a>
             </div>
 

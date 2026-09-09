@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
 import { Navbar } from '@/components/public/navbar'
 import { HeroSection } from '@/components/public/hero-section'
-import { PopularDishes } from '@/components/public/popular-dishes'
 import { PromoCarousel } from '@/components/public/promo-carousel'
 import { AboutSection } from '@/components/public/about-section'
 import { Footer } from '@/components/public/footer'
@@ -58,8 +57,6 @@ export default async function HomePage() {
     settings = MOCK_STORE_SETTINGS
   }
   
-  const dbPopular = dishes.filter((d: Dish) => d.is_popular)
-  const popularDishes = dbPopular.length > 0 ? dbPopular : (dishes.length > 0 ? dishes.slice(0, 4) : MOCK_DISHES.filter(d => d.is_popular))
   const dbPromos = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
   const promoDishes = dbPromos.length > 0 ? dbPromos : MOCK_DISHES.filter(d => (d.discount_percentage ?? 0) > 0)
 
@@ -73,11 +70,6 @@ export default async function HomePage() {
       <Navbar />
       <main>
         <HeroSection />
-        
-        {/* Populares */}
-        {popularDishes.length > 0 && (
-          <PopularDishes dishes={popularDishes} />
-        )}
 
 
         {/* Menú Completo Integrado */}
