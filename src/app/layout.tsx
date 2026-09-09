@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { CartProvider } from "@/context/cart-context";
+import { FloatingCart } from "@/components/public/floating-cart";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,6 +44,7 @@ export default function RootLayout({
         <CartProvider>
           <ToastProvider>
             {children}
+            <FloatingCart />
           </ToastProvider>
         </CartProvider>
       </body>
