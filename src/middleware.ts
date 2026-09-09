@@ -15,11 +15,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // If someone tries to access admin but they are not the admin email
+  // (Optional extra security, assuming the admin uses admin@makibros.me)
+  if (isAdminRoute && user && user.email !== 'admin@makibros.me') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
   // If the user is logged in and accesses auth pages, redirect to /admin or /
   if (isAuthRoute && user) {
-    // Note: since this is an admin dashboard, we can redirect to /admin
     const url = request.nextUrl.clone()
-    url.pathname = '/admin/orders'
+    url.pathname = user.email === 'admin@makibros.me' ? '/admin/orders' : '/'
     return NextResponse.redirect(url)
   }
 
@@ -28,14 +35,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - api/webhooks (public webhooks)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|api/webhooks|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
