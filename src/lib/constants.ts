@@ -19,13 +19,13 @@ export const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 export const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAqJ3Mm_fCrOkgiTVlX9YUIt3B5GZTBd6g",
-  authDomain: "makibros-75b7b.firebaseapp.com",
-  projectId: "makibros-75b7b",
-  storageBucket: "makibros-75b7b.firebasestorage.app",
-  messagingSenderId: "927240760074",
-  appId: "1:927240760074:web:3577f579068fd017ec68f3",
-  measurementId: "G-FEH1BKX4R2"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAqJ3Mm_fCrOkgiTVlX9YUIt3B5GZTBd6g",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "makibros-75b7b.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "makibros-75b7b",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "makibros-75b7b.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "927240760074",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:927240760074:web:3577f579068fd017ec68f3",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-FEH1BKX4R2"
 } as const
 
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants';
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-0000',
@@ -11,17 +12,48 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { items, customerName, customerPhone, customerAddress, deliveryType, totalPrice } = body;
 
-    const supabase = (await createClient()) as any;
+    const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+    const supabase = createSupabaseClient(SUPABASE_URL, supabaseKey);
 
-    // 1. Guardar orden pendiente en DB
+    // 1. Validar precios reales desde la Base de Datos
+    const itemIds = items.map((item: any) => item.id);
+    const { data: dbDishes, error: dishesError } = await supabase
+      .from('dishes')
+      .select('id, price, discount_percentage')
+      .in('id', itemIds);
+
+    if (dishesError || !dbDishes) {
+      return NextResponse.json({ error: 'Error al consultar productos' }, { status: 500 });
+    }
+
+    let realTotalPrice = 0;
+    const validatedItems = items.map((clientItem: any) => {
+      const dbDish = dbDishes.find((d: any) => d.id === clientItem.id);
+      if (!dbDish) throw new Error(`Plato no encontrado: ${clientItem.id}`);
+      
+      const discount = dbDish.discount_percentage || 0;
+      const unitPrice = dbDish.price * (1 - discount / 100);
+      realTotalPrice += unitPrice * clientItem.quantity;
+      
+      return {
+        ...clientItem,
+        price: dbDish.price,
+        discount_percentage: discount
+      };
+    });
+
+    const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0;
+    realTotalPrice = Number((realTotalPrice + deliveryFee).toFixed(2));
+
+    // 2. Guardar orden pendiente en DB (con Service Role Key saltamos RLS público)
     const { data: dbOrder, error: dbError } = await supabase
       .from('orders')
       .insert({
         customer_name: customerName,
         customer_phone: customerPhone,
         customer_address: deliveryType === 'delivery' ? customerAddress : 'Recojo en tienda',
-        items: items,
-        total_price: totalPrice,
+        items: validatedItems,
+        total_price: realTotalPrice,
         payment_method: 'online',
         payment_status: 'pending',
       })
@@ -35,7 +67,7 @@ export async function POST(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${host}`;
 
-    // 2. Crear Preferencia en Mercado Pago
+    // 3. Crear Preferencia en Mercado Pago
     const preference = new Preference(client);
     const prefResult = await preference.create({
       body: {
@@ -44,7 +76,7 @@ export async function POST(request: Request) {
             id: 'makibros-pedido',
             title: `Pedido de ${customerName}`,
             quantity: 1,
-            unit_price: Number(totalPrice),
+            unit_price: realTotalPrice,
             currency_id: 'PEN',
           }
         ],

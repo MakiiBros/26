@@ -13,19 +13,53 @@ export async function POST(request: Request) {
     const { orderData, paymentData } = body;
 
     // Usar Service Role Key para saltarse RLS en el backend y poder actualizar la orden
-    // Si no hay service role, cae al anon key pero requerirá políticas públicas (no recomendado)
     const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
     const supabase = createSupabaseClient(SUPABASE_URL, supabaseKey);
 
-    // 1. Crear la orden pendiente
+    // 1. Validar precios reales desde la Base de Datos
+    const itemIds = orderData.items.map((item: any) => item.id);
+    const { data: dbDishes, error: dishesError } = await supabase
+      .from('dishes')
+      .select('id, price, discount_percentage')
+      .in('id', itemIds);
+
+    if (dishesError || !dbDishes) {
+      return NextResponse.json({ error: 'Error al consultar productos' }, { status: 500 });
+    }
+
+    let realTotalPrice = 0;
+    const validatedItems = orderData.items.map((clientItem: any) => {
+      const dbDish = dbDishes.find(d => d.id === clientItem.id);
+      if (!dbDish) {
+        throw new Error(`Plato no encontrado: ${clientItem.id}`);
+      }
+      const discount = dbDish.discount_percentage || 0;
+      const unitPrice = dbDish.price * (1 - discount / 100);
+      realTotalPrice += unitPrice * clientItem.quantity;
+      
+      return {
+        ...clientItem,
+        price: dbDish.price,
+        discount_percentage: discount
+      };
+    });
+
+    const deliveryFee = orderData.deliveryType === 'delivery' ? 5.0 : 0.0;
+    realTotalPrice = Number((realTotalPrice + deliveryFee).toFixed(2));
+
+    if (Math.abs(realTotalPrice - orderData.totalPrice) > 0.1) {
+      console.warn(`[Seguridad] Discrepancia de precios. Cliente: ${orderData.totalPrice}, Servidor: ${realTotalPrice}`);
+    }
+
+    // 2. Crear la orden pendiente
     const { data: dbOrder, error: dbError } = await supabase
       .from('orders')
       .insert({
         customer_name: orderData.customerName,
         customer_phone: orderData.customerPhone,
         customer_address: orderData.deliveryType === 'delivery' ? orderData.customerAddress : 'Recojo en tienda',
-        items: orderData.items,
-        total_price: orderData.totalPrice,
+        items: validatedItems,
+        total_price: realTotalPrice,
         payment_method: paymentData?.payment_method_id || orderData.paymentMethod || 'unknown',
         payment_status: 'pending',
       })
@@ -71,7 +105,7 @@ export async function POST(request: Request) {
           otp: finalToken, // el frontend envía el código OTP aquí
           phoneNumber: cleanPhone,
           email: payerEmail,
-          totalAmount: Number(orderData.totalPrice)
+          totalAmount: realTotalPrice
         })
       });
       
@@ -91,7 +125,7 @@ export async function POST(request: Request) {
           ...paymentData?.payer,
           email: payerEmail,
         },
-        transaction_amount: Number(orderData.totalPrice),
+        transaction_amount: realTotalPrice,
         external_reference: orderId,
         description: `Pedido de ${orderData.customerName} - MakiBros`,
         notification_url: notificationUrl,
