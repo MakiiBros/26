@@ -30,7 +30,8 @@ export default function AdminLayout({
           </div>
           
           <Link 
-            href="/admin" 
+            href="/admin"
+            prefetch={true} 
             className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
             <LayoutDashboard className="w-4 h-4 text-gray-400" />
@@ -39,7 +40,8 @@ export default function AdminLayout({
 
 
           <Link 
-            href="/admin/orders" 
+            href="/admin/orders"
+            prefetch={true} 
             className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
             <ShoppingBag className="w-4 h-4 text-gray-400" />
@@ -47,7 +49,8 @@ export default function AdminLayout({
           </Link>
 
           <Link 
-            href="/admin/dishes" 
+            href="/admin/dishes"
+            prefetch={true} 
             className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
             <Utensils className="w-4 h-4 text-gray-400" />
@@ -55,7 +58,8 @@ export default function AdminLayout({
           </Link>
 
           <Link 
-            href="/admin/settings" 
+            href="/admin/settings"
+            prefetch={true} 
             className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
             <Shield className="w-4 h-4 text-gray-400" />
@@ -67,7 +71,8 @@ export default function AdminLayout({
           </div>
 
           <Link 
-            href="/" 
+            href="/"
+            prefetch={true} 
             className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
             <Globe className="w-4 h-4 text-gray-400" />
@@ -115,15 +120,24 @@ export default function AdminLayout({
           <div className="flex items-center gap-2">
             <Link 
               href="/admin/orders"
+              prefetch={true}
               className="text-xs text-gray-300 hover:text-white px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-[#2a2a2a]"
             >
               Órdenes
             </Link>
             <Link 
               href="/admin/dishes"
+              prefetch={true}
               className="text-xs text-gray-300 hover:text-white px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-[#2a2a2a]"
             >
               Platos
+            </Link>
+            <Link 
+              href="/admin/settings"
+              prefetch={true}
+              className="text-xs text-gray-300 hover:text-white px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-[#2a2a2a]"
+            >
+              Config
             </Link>
             <form action={logout}>
               <Button type="submit" variant="destructive" size="sm" className="h-8 text-xs px-2.5">
