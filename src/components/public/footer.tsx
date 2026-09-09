@@ -85,7 +85,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <p>© {currentYear} MakiBros. Todos los derechos reservados.</p>
           <p className="flex items-center gap-1.5 text-slate-500">
-            Hecho con <Heart className="w-3 h-3 text-[#e53e3e] fill-[#e53e3e]" /> por <a href="https://sickn33.com" className="text-slate-400 hover:text-white transition-colors">Sickn33</a>
+            Hecho con <Heart className="w-3 h-3 text-[#e53e3e] fill-[#e53e3e]" /> por <a href="https://github.com/MakiiBros/26" className="text-slate-400 hover:text-white transition-colors">Angel</a>
           </p>
         </div>
       </FadeIn>

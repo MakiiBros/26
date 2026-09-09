@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CACHE_TAGS } from '@/lib/constants'
 
 export async function getStoreSettings() {
-  const supabase = (await createClient()) as any
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('store_settings')
     .select('*')
@@ -19,7 +19,7 @@ export async function getStoreSettings() {
 }
 
 export async function updateStoreSettings(formData: FormData) {
-  const supabase = (await createClient()) as any
+  const supabase = await createClient()
   
   const id = formData.get('id') as string
   const is_open = formData.get('is_open') === 'true'
@@ -37,18 +37,16 @@ export async function updateStoreSettings(formData: FormData) {
   let error;
 
   if (id) {
-    // @ts-ignore: Supabase types might be outdated locally
     const { error: updateError } = await supabase
       .from('store_settings')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
     error = updateError
   } else {
     // Si no hay id, insertar primera fila
-    // @ts-ignore: Supabase types might be outdated locally
     const { error: insertError } = await supabase
       .from('store_settings')
-      .insert([updates])
+      .insert([updates as any])
     error = insertError
   }
 

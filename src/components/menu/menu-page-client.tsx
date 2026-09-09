@@ -57,7 +57,7 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
         
         {/* Sidebar */}
         <aside className="w-full md:w-64 lg:w-72 shrink-0">
-          <div className="sticky top-24 space-y-3">
+          <div className="sticky top-20 md:top-24 space-y-3 z-20 bg-[#09090c] pt-2 md:bg-transparent md:pt-0 md:z-0 -mx-4 px-4 md:mx-0 md:px-0">
             <CategoryTabs 
               categories={categories}
               selectedCategoryId={selectedCategoryId}
