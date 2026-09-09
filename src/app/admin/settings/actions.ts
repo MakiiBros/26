@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CACHE_TAGS } from '@/lib/constants'
 
 export async function getStoreSettings() {
-  const supabase = await createClient()
+  const supabase = (await createClient()) as any
   const { data, error } = await supabase
     .from('store_settings')
     .select('*')
@@ -19,7 +19,7 @@ export async function getStoreSettings() {
 }
 
 export async function updateStoreSettings(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = (await createClient()) as any
   
   const id = formData.get('id') as string
   const is_open = formData.get('is_open') === 'true'
