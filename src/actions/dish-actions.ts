@@ -96,12 +96,12 @@ export async function createDish(
 
     if (imageFile && imageFile.size > 0) {
       const fileName = generateFileName(imageFile.name)
-      
-      
+      const arrayBuffer = await imageFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
 
       const { error: uploadError } = await supabase.storage
         .from(STORAGE.BUCKET)
-        .upload(fileName, imageFile, {
+        .upload(fileName, buffer, {
           contentType: imageFile.type || 'image/jpeg',
           upsert: true,
         })
@@ -137,12 +137,12 @@ export async function createDish(
       }
 
       const videoFileName = `video-360-${generateFileName(videoFile.name)}`
-      
-      
+      const arrayBuffer = await videoFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
 
       const { error: videoUploadError } = await supabase.storage
         .from(STORAGE.BUCKET)
-        .upload(videoFileName, videoFile, {
+        .upload(videoFileName, buffer, {
           contentType: videoFile.type || 'video/mp4',
           upsert: true,
         })
@@ -282,12 +282,12 @@ export async function updateDish(
 
     if (imageFile && imageFile.size > 0) {
       const fileName = generateFileName(imageFile.name)
-      
-      
+      const arrayBuffer = await imageFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
 
       const { error: uploadError } = await supabase.storage
         .from(STORAGE.BUCKET)
-        .upload(fileName, imageFile, {
+        .upload(fileName, buffer, {
           contentType: imageFile.type || 'image/jpeg',
           upsert: true,
         })
@@ -322,12 +322,12 @@ export async function updateDish(
       }
 
       const videoFileName = `video-360-${generateFileName(videoFile.name)}`
-      
-      
+      const arrayBuffer = await videoFile.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
 
       const { error: videoUploadError } = await supabase.storage
         .from(STORAGE.BUCKET)
-        .upload(videoFileName, videoFile, {
+        .upload(videoFileName, buffer, {
           contentType: videoFile.type || 'video/mp4',
           upsert: true,
         })
