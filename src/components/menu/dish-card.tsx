@@ -5,6 +5,7 @@ import { ShoppingCart, RotateCw, Flame, Plus } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/context/cart-context'
 import { useToast } from '@/components/ui/toast'
+import { TiltCard } from '@/components/ui/motion-wrappers'
 import type { Dish } from '@/types'
 
 export function DishCard({ 
@@ -23,6 +24,7 @@ export function DishCard({
   const discountedPrice = isDiscounted ? dish.price * (1 - dish.discount_percentage / 100) : dish.price;
   
   return (
+    <TiltCard className="h-full">
     <div 
       onClick={onClick}
       className="group relative bg-[#121217] rounded-2xl overflow-hidden border border-white/[0.08] hover:border-[#e53e3e]/40 transition-all duration-300 cursor-pointer flex flex-col h-full shadow-lg shadow-black/40 hover:shadow-2xl hover:shadow-[#e53e3e]/10"
@@ -84,7 +86,7 @@ export function DishCard({
             src={dish.image_url} 
             alt={dish.name} 
             fill 
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
@@ -127,7 +129,7 @@ export function DishCard({
               addItem(dish, 1)
               toast(`¡${dish.name} agregado al pedido!`, 'success')
             }}
-            className="btn-press inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e53e3e] hover:bg-[#c53030] text-white text-xs font-bold shadow-md shadow-[#e53e3e]/20 transition-all"
+            className="btn-press inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e53e3e] hover:bg-[#c53030] text-white text-xs font-bold shadow-md shadow-[#e53e3e]/20 transition-all hover:scale-105"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
             <span>Pedir</span>
@@ -135,6 +137,7 @@ export function DishCard({
         </div>
       </div>
     </div>
+    </TiltCard>
   )
 }
 

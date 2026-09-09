@@ -1,109 +1,137 @@
-import Link from 'next/link';
+'use client';
+
 import Image from 'next/image';
-import { Flame, Sparkles, Award, ArrowRight } from 'lucide-react';
+import { Flame, Clock, Award, Leaf } from 'lucide-react';
+import { SlideUp, FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/motion-wrappers';
 
 export function AboutSection() {
+  const features = [
+    {
+      icon: <Flame className="w-6 h-6 text-[#e53e3e]" />,
+      title: 'Banderillas Crocantes',
+      description: 'El equilibrio perfecto entre panko artesanal y nuestro relleno exclusivo. Frito al instante.'
+    },
+    {
+      icon: <Award className="w-6 h-6 text-[#f59e0b]" />,
+      title: 'Calidad Premium',
+      description: 'Cortes frescos del día y salsas caseras como nuestra acevichada brava.'
+    },
+    {
+      icon: <Clock className="w-6 h-6 text-emerald-500" />,
+      title: 'Rapidez Extrema',
+      description: 'Tu pedido listo en tiempo récord para que el flow no se detenga.'
+    },
+    {
+      icon: <Leaf className="w-6 h-6 text-teal-400" />,
+      title: 'Auténtico y Fresco',
+      description: 'Ingredientes seleccionados cada mañana en el mercado central.'
+    }
+  ];
+
   return (
-    <section id="nosotros" className="relative py-24 sm:py-32 bg-[#09090c] border-y border-white/[0.06] overflow-hidden">
-      {/* Background glow ambiance */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-96 h-96 bg-[#e53e3e]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#f59e0b]/10 rounded-full blur-3xl pointer-events-none" />
+    <section id="nosotros" className="py-24 sm:py-32 relative bg-[#09090c] overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#e53e3e]/5 to-transparent pointer-events-none" />
+      <div className="absolute -left-32 top-1/4 w-96 h-96 bg-[#f59e0b]/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           
-          {/* Image Showcase Side */}
-          <div className="w-full lg:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-md aspect-square rounded-3xl p-3 bg-gradient-to-b from-white/[0.1] to-white/[0.02] border border-white/[0.08] shadow-2xl shadow-black/80">
-              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#121218]">
-                <Image
-                  src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1000&auto=format&fit=crop"
-                  alt="MakiBros Experiencia Gastronómica "
-                  fill
-                  className="object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-out"
-                  sizes="(max-width: 768px) 100vw, 500px"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#09090c] via-transparent to-black/30" />
-
-                {/* Floating Japanese Seal */}
-                <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#e53e3e] animate-pulse" />
-                  <span className="text-[11px] font-mono tracking-widest text-[#f59e0b] uppercase font-semibold">
-                    伝統と革新
-                  </span>
+          {/* Images Grid */}
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 relative z-10">
+              <FadeIn delay={0.1} className="space-y-4 sm:space-y-6 mt-8 sm:mt-12">
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
+                  <Image 
+                    src="https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop" 
+                    alt="Preparación Sushi MakiBros" 
+                    fill 
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
-
-                {/* Bottom Floating Badge */}
-                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 shadow-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] uppercase font-mono tracking-wider text-neutral-400">Filosofía de Cocina</p>
-                      <p className="text-sm font-bold text-white tracking-wide">Crunch Panko & Fuego </p>
-                    </div>
-                    <div className="w-10 h-10 rounded-lg bg-[#e53e3e]/20 border border-[#e53e3e]/30 flex items-center justify-center text-[#e53e3e]">
-                      <Flame className="w-5 h-5 fill-[#e53e3e]" />
-                    </div>
-                  </div>
+                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
+                  <Image 
+                    src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=800&auto=format&fit=crop" 
+                    alt="Detalle MakiBros" 
+                    fill 
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
-              </div>
+              </FadeIn>
+
+              <FadeIn delay={0.3} className="space-y-4 sm:space-y-6">
+                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
+                  <Image 
+                    src="https://images.unsplash.com/photo-1615361200141-f45040f367be?q=80&w=800&auto=format&fit=crop" 
+                    alt="Ingredientes MakiBros" 
+                    fill 
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                </div>
+                <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-[#e53e3e] to-[#dc2626] p-6 flex flex-col justify-center items-center text-center shadow-[0_8px_30px_rgba(229,62,62,0.3)]">
+                  <span className="text-5xl font-black text-white mb-2">+50k</span>
+                  <span className="text-white/90 font-bold text-sm uppercase tracking-wider">Pedidos Entregados</span>
+                </div>
+              </FadeIn>
+            </div>
+            
+            {/* Decal */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 text-white/5 animate-[spin_20s_linear_infinite] pointer-events-none hidden md:block">
+              <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
+                <path d="M50 0 C77.61 0 100 22.39 100 50 C100 77.61 77.61 100 50 100 C22.39 100 0 77.61 0 50 C0 22.39 22.39 0 50 0 Z" />
+              </svg>
             </div>
           </div>
 
-          {/* Text Content Side */}
-          <div className="w-full lg:w-1/2 space-y-7">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e53e3e]/10 border border-[#e53e3e]/20 text-[#e53e3e] text-xs font-mono uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5" />
-                Cocina Fusión Urbana
+          {/* Text Content */}
+          <div className="space-y-8 lg:pl-10">
+            <SlideUp>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-mono uppercase tracking-widest font-semibold mb-2">
+                <Flame className="w-3.5 h-3.5 text-[#e53e3e]" />
+                Nuestra Historia
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                El verdadero flow <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] via-red-500 to-[#f59e0b]">Peruano</span>
+              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1]">
+                No vendemos comida, <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">
+                  repartimos flow.
+                </span>
               </h2>
-              <p className="text-lg sm:text-xl text-[#f59e0b] font-medium italic">
-                &ldquo;Diseño Banderilla, Sabor Máximo&rdquo;
-              </p>
-            </div>
-            
-            <div className="space-y-4 text-neutral-300 text-sm sm:text-base leading-relaxed">
-              <p>
-                En <strong className="text-white font-semibold">MakiBros</strong> transformamos el concepto de sushi urbano. Nacimos para romper esquemas con nuestras innovadoras banderillas crocantes y rolls generosos bien taypá, fusionando el crujiente rebozado panko con las salsas acevichadas y chimichurris más bravos de Lima.
-              </p>
-              <p>
-                Sin poses ni rodeos: seleccionamos pesca fresca certificada, aplicamos soplete en vivo y montamos cada pieza al momento para garantizar temperatura, textura y adicción en cada mordisco.
-              </p>
-            </div>
+            </SlideUp>
 
-            {/* Craft Pillars */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#f59e0b]/15 flex items-center justify-center text-[#f59e0b] shrink-0">
-                  <Award className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white">Pesca del Día</p>
-                  <p className="text-[11px] text-neutral-400">100% seleccionada fresca</p>
-                </div>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#e53e3e]/15 flex items-center justify-center text-[#e53e3e] shrink-0">
-                  <Flame className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white">Sabor Ahumado</p>
-                  <p className="text-[11px] text-neutral-400">Flambeado al momento</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="pt-2">
-              <Link 
-                href="/nosotros" 
-                className="btn-press inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-white font-semibold text-sm border border-white/10 hover:border-white/20 transition-all duration-200 group"
+            <SlideUp delay={0.1}>
+              <p className="text-neutral-400 text-base sm:text-lg leading-relaxed">
+                MakiBros nació en las calles de Comas con una misión clara: democratizar el buen maki. Combinamos la precisión japonesa con la sazón y porciones generosas que el barrio exige.
+              </p>
+            </SlideUp>
+
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
+              {features.map((feature, idx) => (
+                <StaggerItem key={idx} className="flex gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm mb-1">{feature.title}</h4>
+                    <p className="text-neutral-500 text-xs leading-relaxed">{feature.description}</p>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+
+            <SlideUp delay={0.3} className="pt-4">
+              <a 
+                href="#menu" 
+                className="btn-press inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]"
               >
-                <span>Conoce nuestra historia y cocina</span>
-                <ArrowRight className="w-4 h-4 text-[#f59e0b] transform group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
+                Probar la Experiencia
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </SlideUp>
           </div>
 
         </div>
@@ -111,4 +139,3 @@ export function AboutSection() {
     </section>
   );
 }
-

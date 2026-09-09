@@ -6,6 +6,7 @@ import { CategoryTabs } from './category-tabs'
 import { DishCard } from './dish-card'
 import { DishDetailModal } from './dish-detail-modal'
 import { Search, X, UtensilsCrossed, Sparkles } from 'lucide-react'
+import { StaggerContainer, StaggerItem } from '@/components/ui/motion-wrappers'
 import type { Category, Dish } from '@/types'
 
 export function MenuPageClient({ categories, dishes }: { categories: Category[], dishes: Dish[] }) {
@@ -115,15 +116,16 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
           </div>
 
           {/* Dishes Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredDishes.length > 0 ? (
               filteredDishes.map(dish => (
-                <DishCard 
-                  key={dish.id} 
-                  dish={dish} 
-                  onClick={() => handleOpenDish(dish, 'photo')} 
-                  onView360={() => handleOpenDish(dish, '360')}
-                />
+                <StaggerItem key={dish.id}>
+                  <DishCard 
+                    dish={dish} 
+                    onClick={() => handleOpenDish(dish, 'photo')} 
+                    onView360={() => handleOpenDish(dish, '360')}
+                  />
+                </StaggerItem>
               ))
             ) : (
               <div className="col-span-full py-16 px-4 text-center rounded-3xl bg-[#121217] border border-white/[0.06] flex flex-col items-center justify-center space-y-4">
@@ -145,7 +147,7 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
                 </button>
               </div>
             )}
-          </div>
+          </StaggerContainer>
         </div>
       </div>
 

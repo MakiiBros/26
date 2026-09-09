@@ -202,12 +202,18 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        'sticky top-0 w-full z-50 transition-all duration-300',
+        'fixed w-full z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]',
         scrolled
-          ? 'bg-[#09090c]/85 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.5)]'
-          : 'bg-[#09090c]/40 backdrop-blur-md border-b border-white/[0.04]'
+          ? 'top-4 px-4 sm:px-6 md:px-8 max-w-7xl left-1/2 -translate-x-1/2'
+          : 'top-0 px-0 left-0'
       )}
     >
+      <div className={cn(
+        "transition-all duration-500 mx-auto",
+        scrolled
+          ? "bg-[#09090c]/80 backdrop-blur-2xl border border-white/[0.1] shadow-[0_20px_40px_rgba(0,0,0,0.4)] rounded-3xl"
+          : "bg-[#09090c]/40 backdrop-blur-md border-b border-white/[0.04]"
+      )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo con sello */}
@@ -347,6 +353,7 @@ export function Navbar() {
             </button>
           </div>
         </div>
+      </div>
       </div>
 
       {/* Mobile Menu Drawer */}
