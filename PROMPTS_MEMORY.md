@@ -117,5 +117,14 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   3. Se eliminó el componente no utilizado `src/components/public/popular-dishes.tsx`.
   4. Se verificó con `npm run build` compilando de forma exitosa todas las rutas.
 
+### Prompt 12: Refactorización de complejidad ciclomática en HomePage (CodeScene cc=19)
+* **Usuario:** *Diagnóstico de CodeScene: Complex Method (cc = 19) en `src/app/(public)/page.tsx:17`*
+* **Acción:** 
+  1. Se extrajo la obtención de datos y manejo de fallbacks a una función auxiliar `getHomePageData()`.
+  2. Se limpiaron imports no utilizados (`PromoCarousel`) y variables huérfanas (`dbPromos`, `promoDishes`).
+  3. La complejidad ciclomática del componente principal cayó a un nivel mínimo (cc < 3).
+  4. Se validó con `npm run build` exitoso.
+
+
 
 

@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
 import { Navbar } from '@/components/public/navbar'
 import { HeroSection } from '@/components/public/hero-section'
-import { PromoCarousel } from '@/components/public/promo-carousel'
 import { AboutSection } from '@/components/public/about-section'
 import { Footer } from '@/components/public/footer'
 import { StoreStatusBanner } from '@/components/public/store-status-banner'
@@ -14,51 +13,47 @@ import type { Category, Dish, StoreSettings } from '@/types'
 
 export const revalidate = 0
 
-export default async function HomePage() {
-  let dishes: Dish[] = []
-  let categories: Category[] = []
-  let settings: StoreSettings | null = null
-
+async function getHomePageData(): Promise<{
+  dishes: Dish[]
+  categories: Category[]
+  settings: StoreSettings
+}> {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    // Fetch data in parallel
     const [dishesRes, categoriesRes, settingsRes] = await Promise.all([
       supabase.from('dishes').select('*, categories(*)').eq('is_available', true).order('sort_order'),
       supabase.from('categories').select('*').order('sort_order', { ascending: true }),
       supabase.from('store_settings').select('*').limit(1).maybeSingle(),
     ])
 
-    if (dishesRes.data && dishesRes.data.length > 0) {
-      dishes = (dishesRes.data as any[]).map((d) => ({
-        ...d,
-        category: d.category || d.categories || null,
-        categories: d.categories || d.category || null,
-      })) as Dish[]
-    }
-    if (categoriesRes.data && categoriesRes.data.length > 0) {
-      categories = categoriesRes.data as Category[]
-    }
-    if (settingsRes.data) {
-      settings = settingsRes.data as StoreSettings
-    }
+    const dishes: Dish[] = (dishesRes.data && dishesRes.data.length > 0)
+      ? (dishesRes.data as any[]).map((d) => ({
+          ...d,
+          category: d.category || d.categories || null,
+          categories: d.categories || d.category || null,
+        }))
+      : MOCK_DISHES
+
+    const categories: Category[] = (categoriesRes.data && categoriesRes.data.length > 0)
+      ? (categoriesRes.data as Category[])
+      : MOCK_CATEGORIES
+
+    const settings: StoreSettings = settingsRes.data || MOCK_STORE_SETTINGS
+
+    return { dishes, categories, settings }
   } catch (err) {
     console.warn('[HomePage] Database query failed, using fallback data:', err)
+    return {
+      dishes: MOCK_DISHES,
+      categories: MOCK_CATEGORIES,
+      settings: MOCK_STORE_SETTINGS,
+    }
   }
+}
 
-  // Fallback to sample seed data if database is unconfigured or empty
-  if (dishes.length === 0) {
-    dishes = MOCK_DISHES
-  }
-  if (categories.length === 0) {
-    categories = MOCK_CATEGORIES
-  }
-  if (!settings) {
-    settings = MOCK_STORE_SETTINGS
-  }
-  
-  const dbPromos = dishes.filter((d: Dish) => (d.discount_percentage ?? 0) > 0)
-  const promoDishes = dbPromos.length > 0 ? dbPromos : MOCK_DISHES.filter(d => (d.discount_percentage ?? 0) > 0)
+export default async function HomePage() {
+  const { dishes, categories, settings } = await getHomePageData()
 
   return (
     <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#e53e3e] selection:text-white">
