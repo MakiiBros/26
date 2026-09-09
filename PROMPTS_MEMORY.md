@@ -75,3 +75,11 @@ Este archivo sirve como **memoria persistente** de las instrucciones del usuario
   1. Se analizó el error "Error interno procesando el pago" y se determinó que faltaban las credenciales de Mercado Pago en el entorno (`MERCADOPAGO_ACCESS_TOKEN`), provocando un error 401 que era ocultado por el SDK.
   2. Se mejoró el manejo de errores en `src/app/api/process_payment/route.ts` para devolver mensajes claros si falta el token o si Mercado Pago rechaza la petición.
   3. Se creó el archivo `.env.local` con las credenciales de Producción/Test provistas por el usuario para solucionar el error de autenticación.
+
+### Prompt 9: Persistencia de Skills en Git para múltiples entornos
+* **Usuario:** *"cuantas skills y agentes , tiene este proyecto?"*, *"yo uso varias pc y laptops para desarrollar , no quiero estar instalando skills o agentes cada vez que me cambie de entorno de trabajo, cuales son la solucion?"*, *"hazme la opcion 1"*
+* **Acción:** 
+  1. Se removió `.agent/` de `.gitignore` para permitir el rastreo de skills por Git.
+  2. Se reinstalaron las 3 meta-skills en `.agent/skills/` (`antigravity-skills-manager`, `antigravity-skill-orchestrator`, `antigravity-workflows`).
+  3. Se sincronizó el repositorio mediante `git commit` y `git push` a `main` para que persistan automáticamente en cualquier máquina al clonar o hacer pull.
+
