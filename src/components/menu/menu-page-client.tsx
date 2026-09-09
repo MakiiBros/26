@@ -51,7 +51,7 @@ export function MenuPageClient({ categories, dishes }: { categories: Category[],
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="w-full">
       <div className="flex flex-col md:flex-row gap-8 lg:gap-10">
         
         {/* Sidebar */}

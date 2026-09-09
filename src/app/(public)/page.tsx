@@ -83,7 +83,7 @@ export default async function HomePage() {
         {/* Menú Completo Integrado */}
         <section id="menu" className="py-20 sm:py-28 px-4 sm:px-6 scroll-mt-20 border-t border-white/[0.06] relative">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-12 text-center sm:text-left space-y-3">
+            <div className="mb-8 text-center sm:text-left space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e53e3e]/10 border border-[#e53e3e]/20 text-[#e53e3e] text-xs font-mono uppercase tracking-widest font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
                 Carta Completa Digital
