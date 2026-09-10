@@ -221,11 +221,11 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-2 group" aria-label="MakiBros — Inicio">
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 transition-transform duration-300 group-hover:scale-[1.06]">
                 <Image
-                  src="/images/brand/logo.jpg"
+                  src="/images/brand/logo.png"
                   alt="MakiBros logo"
                   fill
                   sizes="48px"
-                  className="object-contain rounded-full"
+                  className="object-contain"
                   priority
                 />
               </div>

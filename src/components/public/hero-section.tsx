@@ -43,7 +43,7 @@ export function HeroSection() {
               <div className="flex justify-center lg:justify-start">
                 <div className="relative w-52 h-52 sm:w-60 sm:h-60 lg:w-72 lg:h-72 drop-shadow-[0_0_60px_rgba(229,62,62,0.4)]">
                   <Image
-                    src="/images/brand/logo.jpg"
+                    src="/images/brand/logo.png"
                     alt="MakiBros — Una Vez No Basta"
                     fill
                     priority

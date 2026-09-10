@@ -23,11 +23,11 @@ export function Footer() {
             <Link href="/" className="inline-flex items-center gap-3 group">
               <div className="relative w-12 h-12 shrink-0">
                 <Image
-                  src="/images/brand/logo.jpg"
+                  src="/images/brand/logo.png"
                   alt="MakiBros logo"
                   fill
                   sizes="48px"
-                  className="object-contain rounded-full"
+                  className="object-contain"
                 />
               </div>
               <span className="text-2xl font-black tracking-tight text-white group-hover:scale-[1.02] transition-transform">

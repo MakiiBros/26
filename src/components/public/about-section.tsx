@@ -39,55 +39,73 @@ export function AboutSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
-          {/* Grilla de imágenes — imágenes reales del cliente */}
+          {/* Showcase visual del Chef y la Marca — Presentación Editorial */}
           <div className="relative">
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 relative z-10">
-              <FadeIn delay={0.1} className="space-y-4 sm:space-y-6 mt-8 sm:mt-12">
-                {/* Logo grande */}
-                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group bg-black">
-                  <Image
-                    src="/images/brand/logo.jpg"
-                    alt="Logo MakiBros — Una Vez No Basta"
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    loading="eager"
-                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                {/* Flyer promo */}
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
-                  <Image
-                    src="/images/brand/flyer-promo.jpg"
-                    alt="MakiBros — Horarios y contacto"
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-                </div>
-              </FadeIn>
+            <FadeIn delay={0.1} className="relative z-10">
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-[#161622] via-[#101017] to-[#0a0a0f] shadow-[0_20px_60px_rgba(0,0,0,0.6)] group">
+                {/* Resplandores ambientales de fondo */}
+                <div className="absolute -top-16 -right-16 w-64 h-64 bg-[#e53e3e]/20 rounded-full blur-[80px] pointer-events-none" />
+                <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#f59e0b]/15 rounded-full blur-[80px] pointer-events-none" />
 
-              <FadeIn delay={0.3} className="space-y-4 sm:space-y-6">
-                {/* Flyer menú */}
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
+                {/* Sello kanji artesanal tenue */}
+                <div className="absolute right-4 top-8 select-none pointer-events-none font-black text-white/[0.03] text-[140px] sm:text-[180px] leading-none z-0">
+                  巻
+                </div>
+
+                {/* Badge flotante superior izquierdo: Nuevo Isotipo MakiBros */}
+                <div className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20 flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#09090c]/85 border border-white/15 backdrop-blur-xl shadow-xl">
+                  <div className="relative w-8 h-8 shrink-0">
+                    <Image
+                      src="/images/brand/logo.png"
+                      alt="Logo MakiBros"
+                      fill
+                      sizes="32px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">MakiBros</p>
+                    <p className="text-[10px] font-semibold text-amber-400 tracking-wide">Receta Original</p>
+                  </div>
+                </div>
+
+                {/* Badge flotante superior derecho: Chip de calidad */}
+                <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#e53e3e]/90 text-white font-extrabold text-[10px] uppercase tracking-wider shadow-lg shadow-[#e53e3e]/30">
+                  <Flame className="w-3 h-3 fill-white" />
+                  <span>Maestro Maki</span>
+                </div>
+
+                {/* Retrato del Chef en tamaño de alto impacto */}
+                <div className="relative w-full h-[440px] sm:h-[520px] flex items-end justify-center pt-16">
                   <Image
-                    src="/images/brand/flyer-menu.jpg"
-                    alt="Menú MakiBros — Rolls y Precios"
+                    src="/images/brand/chef.png"
+                    alt="Chef MakiBros — Pasión y Sabor en Comas"
                     fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-contain object-bottom transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                  {/* Difuminado suave inferior para fusionar con el marco */}
+                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/60 to-transparent pointer-events-none" />
                 </div>
-                {/* Card de precio */}
-                <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-[#e53e3e] to-[#dc2626] p-6 flex flex-col justify-center items-center text-center shadow-[0_8px_30px_rgba(229,62,62,0.3)]">
-                  <span className="text-xs uppercase tracking-widest text-white/70 font-bold mb-1">Desde</span>
-                  <span className="text-5xl font-black text-white mb-1 tabular-nums leading-none">S/10</span>
-                  <span className="text-white/90 font-bold text-sm uppercase tracking-wider">c/u</span>
-                  <span className="text-white/60 text-xs mt-2">5 variedades</span>
+
+                {/* Tarjeta flotante inferior: Declaración de calidad artesanal */}
+                <div className="absolute bottom-4 inset-x-4 sm:bottom-5 sm:inset-x-5 z-20 p-4 rounded-2xl bg-[#121218]/90 border border-white/15 backdrop-blur-xl shadow-2xl space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-200 font-medium leading-snug italic">
+                    &ldquo;El crunch perfecto: panko artesanal frito al instante, porciones generosas y sazón nikkei que solo encuentras en Comas.&rdquo;
+                  </p>
+                  <div className="flex items-center justify-between pt-2 border-t border-white/[0.08] text-[11px]">
+                    <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      100% Hecho al Momento
+                    </span>
+                    <span className="font-extrabold text-[#f59e0b] tracking-wider uppercase">
+                      Desde S/ 10 c/u
+                    </span>
+                  </div>
                 </div>
-              </FadeIn>
-            </div>
+              </div>
+            </FadeIn>
           </div>
 
           {/* Contenido textual */}
