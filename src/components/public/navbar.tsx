@@ -216,14 +216,21 @@ export function Navbar() {
       )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo con sello */}
+          {/* Logo real Maki Bros */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-2xl font-black tracking-tight text-white transition-transform group-hover:scale-[1.02]">
-                MakiBr<span className="text-[#e53e3e] drop-shadow-[0_0_10px_rgba(229,62,62,0.7)]">o</span>s
-              </span>
-              <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest text-[#f59e0b]/90 bg-[#f59e0b]/10 border border-[#f59e0b]/20 px-1.5 py-0.5 rounded">
-                巻兄弟
+            <Link href="/" className="flex items-center gap-2 group" aria-label="MakiBros — Inicio">
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 transition-transform duration-300 group-hover:scale-[1.06]">
+                <Image
+                  src="/images/brand/logo.jpg"
+                  alt="MakiBros logo"
+                  fill
+                  sizes="48px"
+                  className="object-contain rounded-full"
+                  priority
+                />
+              </div>
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-white transition-transform group-hover:scale-[1.02]">
+                Maki<span className="text-[#e53e3e] drop-shadow-[0_0_10px_rgba(229,62,62,0.7)]">Bros</span>
               </span>
             </Link>
           </div>

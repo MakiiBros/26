@@ -73,13 +73,13 @@ export default async function HomePage() {
             <div className="mb-8 text-center sm:text-left space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e53e3e]/10 border border-[#e53e3e]/20 text-[#e53e3e] text-xs font-mono uppercase tracking-widest font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
-                Carta Completa Digital
+                Carta Digital
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
                 NUESTRO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MENÚ</span>
               </h2>
               <p className="text-neutral-400 text-sm sm:text-base max-w-2xl">
-                Filtra por categoría, visualiza cada roll en 3D 360° y arma tu pedido con la frescura que mereces.
+                5 variedades de makis en banderilla desde <span className="text-[#f59e0b] font-bold">S/ 10 c/u</span>. Elige tu favorito y pide al <span className="text-emerald-400 font-bold">924 336 957</span>.
               </p>
             </div>
             
@@ -99,22 +99,23 @@ export default async function HomePage() {
         {/* Sobre Nosotros */}
         <AboutSection />
 
-        {/* CTA final Gastronómico */}
+        {/* CTA final */}
         <section className="py-24 sm:py-32 px-4 sm:px-6 bg-gradient-to-b from-[#09090c] to-[#121217] text-center border-t border-white/[0.06] relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#e53e3e]/10 rounded-full blur-3xl pointer-events-none" />
           
           <div className="max-w-3xl mx-auto relative z-10 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-mono">
               <Flame className="w-3.5 h-3.5 text-[#e53e3e]" />
-              <span>Lima Norte • Delivery & Local</span>
+              <span>Av. El Retablo 115 · Comas · Lima Norte</span>
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-              ¿Listo para vivir la verdadera fiesta <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MakiBros</span>?
+              ¿Listo para la experiencia{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MakiBros</span>?
             </h2>
 
             <p className="text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-              Elige tus banderillas crocantes y makis favoritos. Te lo preparamos al instante con el mejor crunch de Lima.
+              Elige tus makis en banderilla favoritos desde S/ 10 c/u. Lun · Mié · Vie · Sáb desde las 5:30 PM, hasta agotar stock.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
@@ -122,18 +123,18 @@ export default async function HomePage() {
                 href="#menu" 
                 className="btn-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#e53e3e] hover:bg-[#c53030] text-white font-bold rounded-full transition-all shadow-xl shadow-[#e53e3e]/25 text-sm sm:text-base"
               >
-                <span>Explorar Carta</span>
+                <span>Ver Carta Completa</span>
                 <ArrowDown className="w-4 h-4" />
               </a>
 
               <a 
-                href="https://wa.me/51970725307?text=Hola%20MakiBros!%20Deseo%20hacer%20un%20pedido." 
+                href="https://wa.me/51924336957?text=Hola%20MakiBros!%20Quiero%20hacer%20un%20pedido." 
                 target="_blank"
                 rel="noreferrer"
                 className="btn-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold rounded-full transition-all text-sm sm:text-base"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Pedir por WhatsApp</span>
+                <span>WhatsApp · 924 336 957</span>
               </a>
             </div>
           </div>

@@ -11,13 +11,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MakiBros — El verdadero flow en cada bocado",
-  description: "Los mejores makis, rolls especiales, ceviches y banderillas crocantes en Lima. Pide online y recibe en tu puerta o recoge en local.",
-  keywords: ["makis", "sushi", "ceviche", "tiradito", "banderillas", "comida japonesa", "fusión peruano japonesa", "delivery lima", "MakiBros"],
+  title: "MakiBros — Una Vez No Basta",
+  description: "Los mejores makis en banderilla de Comas, Lima Norte. Pollo Crispy Hot, Salmón Furai, California Furai y más desde S/10. Pide al 924 336 957.",
+  keywords: ["makis", "sushi", "banderillas", "makis en banderilla", "comas", "lima norte", "maki bros", "pollo crispy hot", "salmón furai", "delivery comas"],
   metadataBase: new URL('https://makibros.pe'),
   openGraph: {
-    title: "MakiBros — Fusión Peruano-Japonesa",
-    description: "Los mejores makis y banderillas de Lima Norte. Pide online con flow.",
+    title: "MakiBros — Una Vez No Basta",
+    description: "Makis en banderilla desde S/10. Av. El Retablo 115, Comas. Pide al 924 336 957.",
     siteName: "MakiBros",
     type: "website",
     locale: "es_PE",
@@ -27,14 +27,14 @@ export const metadata: Metadata = {
         url: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1200&h=630&auto=format&fit=crop",
         width: 1200,
         height: 630,
-        alt: "MakiBros Especiales",
+        alt: "MakiBros — Makis en Banderilla",
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MakiBros — Fusión Peruano-Japonesa",
-    description: "Los mejores makis en banderilla. Pide online y recibe en tu puerta.",
+    title: "MakiBros — Una Vez No Basta",
+    description: "Makis en banderilla desde S/10. Comas, Lima Norte.",
     images: ["https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1200&h=630&auto=format&fit=crop"],
   },
   robots: {
@@ -47,20 +47,20 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Restaurant",
   "name": "MakiBros",
-  "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1200&h=630&auto=format&fit=crop",
-  "description": "Los mejores makis, rolls especiales, ceviches y banderillas crocantes en Lima.",
-  "servesCuisine": ["Sushi", "Japanese", "Peruvian Fusion"],
-  "priceRange": "$$",
+  "description": "Los mejores makis en banderilla de Comas. Pollo Crispy Hot, Salmón Furai, California Furai y más desde S/10.",
+  "slogan": "Una Vez No Basta",
+  "servesCuisine": ["Sushi", "Maki", "Fusión Peruano-Japonesa"],
+  "priceRange": "S/10",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Av. Principal 123",
-    "addressLocality": "Lima Norte",
-    "addressRegion": "LMA",
-    "postalCode": "15301",
+    "streetAddress": "Av. El Retablo 115",
+    "addressLocality": "Comas",
+    "addressRegion": "Lima",
     "addressCountry": "PE"
   },
-  "telephone": "+51970725307",
-  "menu": "https://makibros.pe/menu",
+  "telephone": "+51924336957",
+  "openingHours": ["Mo 17:30-22:00", "We 17:30-22:00", "Fr 17:30-22:00", "Sa 17:30-22:00"],
+  "menu": "https://makibros.pe/#menu",
   "acceptsReservations": "False"
 };
 

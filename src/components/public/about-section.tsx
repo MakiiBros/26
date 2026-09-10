@@ -1,30 +1,32 @@
 'use client';
 
 import Image from 'next/image';
-import { Flame, Clock, Award, Leaf } from 'lucide-react';
+import { Flame, Clock, Award, MapPin, MessageCircle } from 'lucide-react';
 import { SlideUp, FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/motion-wrappers';
+
+const WA_LINK = 'https://wa.me/51924336957?text=Hola%20MakiBros!%20Quiero%20hacer%20un%20pedido.';
 
 export function AboutSection() {
   const features = [
     {
       icon: <Flame className="w-6 h-6 text-[#e53e3e]" />,
-      title: 'Banderillas Crocantes',
-      description: 'El equilibrio perfecto entre panko artesanal y nuestro relleno exclusivo. Frito al instante.'
+      title: 'Makis en Banderilla',
+      description: 'El crunch perfecto entre el panko artesanal y nuestro relleno exclusivo. Frito al instante para máximo sabor.'
     },
     {
       icon: <Award className="w-6 h-6 text-[#f59e0b]" />,
-      title: 'Calidad Premium',
-      description: 'Cortes frescos del día y salsas caseras como nuestra acevichada brava.'
+      title: 'Desde S/ 10 c/u',
+      description: 'Precio justo, sabor premium. Cinco variedades: Crispy Hot, Salmón Furai, California Furai, Supremo y Fit.'
     },
     {
       icon: <Clock className="w-6 h-6 text-emerald-500" />,
-      title: 'Rapidez Extrema',
-      description: 'Tu pedido listo en tiempo récord para que el flow no se detenga.'
+      title: 'Lun · Mié · Vie · Sáb',
+      description: 'Abrimos desde las 5:30 PM hasta agotar stock. Llega temprano para no quedarte sin tu maki favorito.'
     },
     {
-      icon: <Leaf className="w-6 h-6 text-teal-400" />,
-      title: 'Auténtico y Fresco',
-      description: 'Ingredientes seleccionados cada mañana en el mercado central.'
+      icon: <MapPin className="w-6 h-6 text-teal-400" />,
+      title: 'Av. El Retablo 115, Comas',
+      description: 'Encuéntranos en el corazón de Comas, Lima Norte. ¡También pedidos por WhatsApp al 924 336 957!'
     }
   ];
 
@@ -36,25 +38,26 @@ export function AboutSection() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          
-          {/* Images Grid */}
+
+          {/* Grilla de imágenes — imágenes reales del cliente */}
           <div className="relative">
             <div className="grid grid-cols-2 gap-4 sm:gap-6 relative z-10">
               <FadeIn delay={0.1} className="space-y-4 sm:space-y-6 mt-8 sm:mt-12">
-                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
-                  <Image 
-                    src="/images/owner/founder-collage.jpg" 
-                    alt="Fundador de MakiBros" 
-                    fill 
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                {/* Logo grande */}
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group bg-black">
+                  <Image
+                    src="/images/brand/logo.jpg"
+                    alt="Logo MakiBros — Una Vez No Basta"
+                    fill
+                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
+                {/* Flyer promo */}
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=800&auto=format&fit=crop" 
-                    alt="Detalle MakiBros" 
-                    fill 
+                  <Image
+                    src="/images/brand/flyer-promo.jpg"
+                    alt="MakiBros — Horarios y contacto"
+                    fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
@@ -62,31 +65,28 @@ export function AboutSection() {
               </FadeIn>
 
               <FadeIn delay={0.3} className="space-y-4 sm:space-y-6">
+                {/* Flyer menú */}
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-white/10 group">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1615361200141-f45040f367be?q=80&w=800&auto=format&fit=crop" 
-                    alt="Ingredientes MakiBros" 
-                    fill 
+                  <Image
+                    src="/images/brand/flyer-menu.jpg"
+                    alt="Menú MakiBros — Rolls y Precios"
+                    fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
+                {/* Card de precio */}
                 <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-[#e53e3e] to-[#dc2626] p-6 flex flex-col justify-center items-center text-center shadow-[0_8px_30px_rgba(229,62,62,0.3)]">
-                  <span className="text-5xl font-black text-white mb-2">+50k</span>
-                  <span className="text-white/90 font-bold text-sm uppercase tracking-wider">Pedidos Entregados</span>
+                  <span className="text-xs uppercase tracking-widest text-white/70 font-bold mb-1">Desde</span>
+                  <span className="text-5xl font-black text-white mb-1 tabular-nums leading-none">S/10</span>
+                  <span className="text-white/90 font-bold text-sm uppercase tracking-wider">c/u</span>
+                  <span className="text-white/60 text-xs mt-2">5 variedades</span>
                 </div>
               </FadeIn>
             </div>
-            
-            {/* Decal */}
-            <div className="absolute -top-12 -right-12 w-32 h-32 text-white/5 animate-[spin_20s_linear_infinite] pointer-events-none hidden md:block">
-              <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
-                <path d="M50 0 C77.61 0 100 22.39 100 50 C100 77.61 77.61 100 50 100 C22.39 100 0 77.61 0 50 C0 22.39 22.39 0 50 0 Z" />
-              </svg>
-            </div>
           </div>
 
-          {/* Text Content */}
+          {/* Contenido textual */}
           <div className="space-y-8 lg:pl-10">
             <SlideUp>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-mono uppercase tracking-widest font-semibold mb-2">
@@ -94,7 +94,7 @@ export function AboutSection() {
                 Nuestra Historia
               </div>
               <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1]">
-                No vendemos comida, <br/>
+                No vendemos comida,{' '}<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">
                   repartimos flow.
                 </span>
@@ -103,7 +103,7 @@ export function AboutSection() {
 
             <SlideUp delay={0.1}>
               <p className="text-neutral-400 text-base sm:text-lg leading-relaxed">
-                MakiBros nació en las calles de Comas con una misión clara: democratizar el buen maki. Combinamos la precisión japonesa con la sazón y porciones generosas que el barrio exige.
+                MakiBros nació en las calles de Comas con una misión clara: democratizar el buen maki. Combinamos la precisión japonesa con la sazón y las porciones generosas que el barrio exige. Encuentra la diferencia en cada mordida.
               </p>
             </SlideUp>
 
@@ -121,15 +121,24 @@ export function AboutSection() {
               ))}
             </StaggerContainer>
 
-            <SlideUp delay={0.3} className="pt-4">
-              <a 
-                href="#menu" 
-                className="btn-press inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            <SlideUp delay={0.3} className="pt-4 flex flex-col sm:flex-row gap-3">
+              <a
+                href="#menu"
+                className="btn-press inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]"
               >
-                Probar la Experiencia
+                Ver Nuestra Carta
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
+              </a>
+              <a
+                href={WA_LINK}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-press inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-sm hover:bg-emerald-600/30 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                924 336 957
               </a>
             </SlideUp>
           </div>
