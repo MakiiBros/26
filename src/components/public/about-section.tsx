@@ -49,6 +49,8 @@ export function AboutSection() {
                     src="/images/brand/logo.jpg"
                     alt="Logo MakiBros — Una Vez No Basta"
                     fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    loading="eager"
                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -58,6 +60,7 @@ export function AboutSection() {
                     src="/images/brand/flyer-promo.jpg"
                     alt="MakiBros — Horarios y contacto"
                     fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
@@ -71,6 +74,7 @@ export function AboutSection() {
                     src="/images/brand/flyer-menu.jpg"
                     alt="Menú MakiBros — Rolls y Precios"
                     fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />

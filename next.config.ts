@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '60mb',
     },
   },
+  allowedDevOrigins: [
+    '127.0.0.1',
+    'localhost',
+    '.github.dev',
+    '.app.github.dev'
+  ],
 };
 
 export default nextConfig;

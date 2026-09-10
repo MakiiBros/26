@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Clock, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,13 +26,18 @@ function getNextOpenDay(currentDay: number): string {
 
 export function StoreStatusBanner({ isOpen }: StoreStatusBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const day = new Date().getDay(); // 0=Dom, 1=Lun, …, 6=Sáb
   const isOpenDay = OPEN_DAYS.includes(day);
   const effectivelyOpen = isOpen && isOpenDay;
   const nextOpenDay = getNextOpenDay(day);
 
-  if (!isVisible) return null;
+  if (!isVisible || !mounted) return null;
 
   return (
     <aside
