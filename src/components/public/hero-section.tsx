@@ -128,11 +128,11 @@ export function HeroSection() {
 
               {/* Tarjeta del producto estrella */}
               <div className="relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/[0.12] group">
-                {/* Imagen del flyer promo con los rolls reales */}
+                {/* Imagen de los rolls reales */}
                 <div className="relative h-[420px] sm:h-[500px] w-full overflow-hidden bg-black">
                   <Image
-                    src="/images/brand/flyer-menu.jpg"
-                    alt="Menú MakiBros — Rolls en Banderilla"
+                    src="/images/brand/hero-makis.jpg"
+                    alt="Makis en Banderilla Crocantes — MakiBros"
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
