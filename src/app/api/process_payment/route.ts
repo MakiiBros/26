@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const itemIds = orderData.items.map((item: any) => item.id);
     const { data: dbDishes, error: dishesError } = await supabase
       .from('dishes')
-      .select('id, price, discount_percentage')
+      .select('id, name, price, discount_percentage')
       .in('id', itemIds);
 
     if (dishesError || !dbDishes) {
@@ -34,17 +34,15 @@ export async function POST(request: Request) {
       
       return {
         ...clientItem,
+        name: dbDish.name,
         price: dbDish.price,
-        discount_percentage: discount
+        discount_percentage: discount,
+        unitPrice
       };
     });
 
     const deliveryFee = orderData.deliveryType === 'delivery' ? 5.0 : 0.0;
     realTotalPrice = Number((realTotalPrice + deliveryFee).toFixed(2));
-
-    if (Math.abs(realTotalPrice - orderData.totalPrice) > 0.1) {
-      console.warn(`[Seguridad] Discrepancia de precios. Cliente: ${orderData.totalPrice}, Servidor: ${realTotalPrice}`);
-    }
 
     // 2. Crear la orden pendiente
     const { data: dbOrder, error: dbError } = await supabase
@@ -55,7 +53,7 @@ export async function POST(request: Request) {
         customer_address: orderData.deliveryType === 'delivery' ? orderData.customerAddress : 'Recojo en tienda',
         items: validatedItems,
         total_price: realTotalPrice,
-        payment_method: orderData.paymentMethod || 'unknown',
+        payment_method: orderData.paymentMethod || 'yape_qr',
         payment_status: 'pending',
       })
       .select('id')
@@ -66,15 +64,47 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Error al crear orden en BD', details: dbError }, { status: 500 });
     }
 
-    // Retornamos éxito de inmediato, ya que el flujo continúa por WhatsApp
-    return NextResponse.json({ success: true, status: 'pending', orderId: dbOrder.id });
+    // 3. Generar el mensaje de WhatsApp (usando el backend asegura precios exactos)
+    const { data: settings } = await supabase.from('store_settings').select('whatsapp').single();
+    const adminPhone = settings?.whatsapp || '51970725307';
+    
+    let text = `*NUEVO PEDIDO MAKI BROS* 🍣\n\n`;
+    text += `*Cliente:* ${orderData.customerName}\n`;
+    text += `*Teléfono:* ${orderData.customerPhone}\n`;
+    text += `*Tipo:* ${orderData.deliveryType === 'delivery' ? 'Delivery 🛵' : 'Recojo en Tienda 🏪'}\n`;
+    if (orderData.deliveryType === 'delivery') text += `*Dirección:* ${orderData.customerAddress}\n`;
+    text += `*Método de Pago:* ${orderData.paymentMethod === 'yape' ? 'Yape (QR)' : 'Efectivo'}\n\n`;
+    
+    text += `*Detalle:* \n`;
+    validatedItems.forEach((item: any) => {
+      text += `- ${item.quantity}x ${item.name} (S/ ${item.unitPrice.toFixed(2)})\n`;
+    });
+    
+    if (orderData.deliveryType === 'delivery') {
+      text += `\nDelivery: S/ 5.00\n`;
+    }
+    
+    if (orderData.orderNotes) {
+      text += `\n*Notas:* ${orderData.orderNotes}\n`;
+    }
+    
+    text += `\n*TOTAL A PAGAR: S/ ${realTotalPrice.toFixed(2)}*`;
+
+    if (orderData.paymentMethod === 'yape') {
+        text += `\n\n_Te adjunto la captura del pago por Yape!_`;
+    }
+
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${adminPhone}&text=${encodeURIComponent(text)}`;
+
+    return NextResponse.json({ 
+      success: true, 
+      status: 'pending', 
+      orderId: dbOrder.id,
+      whatsappUrl 
+    });
 
   } catch (error: any) {
-    console.error('Error al procesar orden:', error);
-    return NextResponse.json({ 
-      success: false,
-      error: error.message || String(error), 
-      details: error.message || String(error) 
-    }, { status: 500 });
+    console.error('Proceso de pedido error:', error);
+    return NextResponse.json({ success: false, error: error.message || 'Error al procesar el pedido' }, { status: 500 });
   }
 }
