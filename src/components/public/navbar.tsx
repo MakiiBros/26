@@ -19,63 +19,51 @@ interface UserProfile {
   isAdmin: boolean;
 }
 
-export function Navbar() {
-  const { totalItems } = useCart();
-  const [isOpen, setIsOpen] = useState(false);
+function useNavbarScroll(pathname: string) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('inicio');
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      if (pathname === '/') {
-        if (window.scrollY < 200) {
-          setActiveSection('inicio');
+      if (pathname !== '/') return;
+
+      if (window.scrollY < 200) {
+        setActiveSection('inicio');
+        return;
+      }
+
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
+        setActiveSection('contacto');
+        return;
+      }
+
+      const sections = ['contacto', 'nosotros', 'menu'];
+      const navOffset = 120;
+
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= navOffset && rect.bottom > navOffset) {
+          setActiveSection(id);
           return;
-        }
-
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
-          setActiveSection('contacto');
-          return;
-        }
-
-        const sections = ['contacto', 'nosotros', 'menu'];
-        const navOffset = 120;
-
-        for (const id of sections) {
-          const el = document.getElementById(id);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (rect.top <= navOffset && rect.bottom > navOffset) {
-              setActiveSection(id);
-              return;
-            }
-          }
         }
       }
     };
 
-    if (pathname === '/' && typeof window !== 'undefined' && window.location.hash) {
+    const handleHashChange = () => {
+      if (pathname !== '/') return;
       const hash = window.location.hash.replace('#', '');
       if (['inicio', 'menu', 'nosotros', 'contacto'].includes(hash)) {
         setActiveSection(hash);
       }
-    }
-
-    const handleHashChange = () => {
-      if (pathname === '/') {
-        const hash = window.location.hash.replace('#', '');
-        if (['inicio', 'menu', 'nosotros', 'contacto'].includes(hash)) {
-          setActiveSection(hash);
-        }
-      }
     };
+
+    if (pathname === '/' && typeof window !== 'undefined' && window.location.hash) {
+      handleHashChange();
+    }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('hashchange', handleHashChange);
@@ -87,15 +75,11 @@ export function Navbar() {
     };
   }, [pathname]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setUserDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  return { scrolled, activeSection, setActiveSection };
+}
+
+function useNavbarAuth() {
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
@@ -118,29 +102,55 @@ export function Navbar() {
             avatar: user.user_metadata?.avatar_url || undefined,
             isAdmin: user.email === 'admin@makibros.me',
           });
-        } else {
-          try {
-            const cached = localStorage.getItem('makibros_customer');
-            if (cached) {
-              const parsed = JSON.parse(cached);
-              setCurrentUser({
-                name: parsed.displayName || parsed.email?.split('@')[0] || 'Cliente',
-                email: parsed.email || '',
-                avatar: parsed.photoURL || undefined,
-                isAdmin: parsed.email === 'admin@makibros.me',
-              });
-              return;
-            }
-          } catch {
-            // Ignorar error de parsing en localStorage
-          }
-          setCurrentUser(null);
+          return;
         }
+        
+        try {
+          const cached = localStorage.getItem('makibros_customer');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            setCurrentUser({
+              name: parsed.displayName || parsed.email?.split('@')[0] || 'Cliente',
+              email: parsed.email || '',
+              avatar: parsed.photoURL || undefined,
+              isAdmin: parsed.email === 'admin@makibros.me',
+            });
+            return;
+          }
+        } catch {
+          // Ignorar error de parsing en localStorage
+        }
+        setCurrentUser(null);
       });
     });
 
     return () => unsubscribe();
   }, []);
+
+  return { currentUser, setCurrentUser };
+}
+
+export function Navbar() {
+  const { totalItems } = useCart();
+  const [isOpen, setIsOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const { scrolled, activeSection, setActiveSection } = useNavbarScroll(pathname);
+  const { currentUser, setCurrentUser } = useNavbarAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
 
   const handleLogout = async () => {
     try { await signOut(auth); } catch {}
@@ -174,29 +184,27 @@ export function Navbar() {
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: (typeof navLinks)[0]) => {
-    if (pathname === '/') {
-      if (link.id === 'inicio') {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        window.history.pushState(null, '', '/');
-        setActiveSection('inicio');
-      } else {
-        const targetElement = document.getElementById(link.id);
-        if (targetElement) {
-          e.preventDefault();
-          const navHeight = 75;
-          const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
-          const offsetPosition = elementPosition - navHeight;
+    if (pathname !== '/') return;
 
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth',
-          });
-          window.history.pushState(null, '', link.href);
-          setActiveSection(link.id);
-        }
-      }
+    if (link.id === 'inicio') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.history.pushState(null, '', '/');
+      setActiveSection('inicio');
+      return;
     }
+
+    const targetElement = document.getElementById(link.id);
+    if (!targetElement) return;
+
+    e.preventDefault();
+    const navHeight = 75;
+    const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+    const offsetPosition = elementPosition - navHeight;
+
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    window.history.pushState(null, '', link.href);
+    setActiveSection(link.id);
   };
 
   return (
