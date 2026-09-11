@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { loadMercadoPago } from '@mercadopago/sdk-js'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -15,12 +14,7 @@ import {
   CheckCircle2,
   Bike,
   Store,
-  CreditCard,
   Banknote,
-  Smartphone,
-  ShieldCheck,
-  HelpCircle,
-  Lock,
 } from 'lucide-react'
 import { Navbar } from '@/components/public/navbar'
 import { Footer } from '@/components/public/footer'
@@ -41,95 +35,15 @@ export default function CheckoutPage() {
   const [customerAddress, setCustomerAddress] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
 
-  // Método de pago: Yape (Checkout API), Tarjeta (Checkout API) o Efectivo
-  const [paymentMethod, setPaymentMethod] = useState<'yape' | 'card' | 'cash'>('yape')
-
-  // Datos específicos para Yape
-  const [yapePhone, setYapePhone] = useState('')
-  const [yapeOtp, setYapeOtp] = useState('')
-  const [showYapeHelp, setShowYapeHelp] = useState(false)
-
-  // Datos específicos para Tarjeta
-  const [cardNumber, setCardNumber] = useState('')
-  const [cardholderName, setCardholderName] = useState('')
-  const [cardExp, setCardExp] = useState('')
-  const [cardCvv, setCardCvv] = useState('')
-  const [docType, setDocType] = useState<'DNI' | 'CE' | 'Pasaporte'>('DNI')
-  const [docNumber, setDocNumber] = useState('')
+  // Método de pago: Yape o Efectivo
+  const [paymentMethod, setPaymentMethod] = useState<'yape' | 'cash'>('yape')
 
   // Estados de proceso
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [mpLoaded, setMpLoaded] = useState(false)
-
-  // Cargar SDK de Mercado Pago para Checkout API
-  useEffect(() => {
-    let isMounted = true
-    const initMP = async () => {
-      try {
-        await loadMercadoPago()
-        const publicKey =
-          process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ||
-          'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c'
-        if (typeof window !== 'undefined' && (window as any).MercadoPago) {
-          new (window as any).MercadoPago(publicKey, { locale: 'es-PE' })
-          if (isMounted) setMpLoaded(true)
-        }
-      } catch (err) {
-        console.error('Error inicializando MercadoPago JS:', err)
-      }
-    }
-    initMP()
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  // Sincronizar número de teléfono con Yape si está vacío
-  useEffect(() => {
-    if (!yapePhone && customerPhone) {
-      setYapePhone(customerPhone)
-    }
-  }, [customerPhone, yapePhone])
 
   const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0
   const finalTotal = totalPrice + deliveryFee
-
-  // Detección de franquicia de tarjeta
-  const getCardBrand = (number: string): string => {
-    const clean = number.replace(/\s+/g, '')
-    if (/^4/.test(clean)) return 'Visa'
-    if (/^(5[1-5]|2[2-7])/.test(clean)) return 'Mastercard'
-    if (/^3[47]/.test(clean)) return 'Amex'
-    if (/^(36|38)/.test(clean)) return 'Diners'
-    return ''
-  }
-
-  // Formateadores de inputs
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 16)
-    const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ')
-    setCardNumber(formatted)
-  }
-
-  const handleCardExpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
-    if (digits.length >= 3) {
-      setCardExp(`${digits.slice(0, 2)}/${digits.slice(2)}`)
-    } else {
-      setCardExp(digits)
-    }
-  }
-
-  const handleCardCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
-    setCardCvv(digits)
-  }
-
-  const handleYapeOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 6)
-    setYapeOtp(digits)
-  }
 
   // Validación común de campos de contacto y entrega
   const validateCommonFields = (): boolean => {
@@ -148,184 +62,8 @@ export default function CheckoutPage() {
     return true
   }
 
-  // Procesar Pago con YAPE (Checkout API de Mercado Pago)
-  const handlePayWithYape = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateCommonFields()) return
-
-    const phoneToUse = yapePhone.trim() || customerPhone.trim()
-    const cleanOtp = yapeOtp.trim()
-
-    if (!phoneToUse) {
-      toast('Por favor ingresa tu celular registrado en Yape.', 'error')
-      return
-    }
-
-    if (cleanOtp.length !== 6) {
-      toast('El código de aprobación de Yape debe tener exactamente 6 dígitos.', 'error')
-      return
-    }
-
-    setIsProcessing(true)
-    try {
-      const cleanPhoneDigits = phoneToUse.replace(/\D/g, '')
-      const res = await fetch('/api/process_payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderData: {
-            customerName: customerName.trim(),
-            customerPhone: phoneToUse,
-            customerEmail: customerEmail.trim(),
-            customerAddress: customerAddress.trim(),
-            orderNotes: orderNotes.trim(),
-            deliveryType,
-            totalPrice: finalTotal,
-            items,
-            paymentMethod: 'yape',
-          },
-          paymentData: {
-            payment_method_id: 'yape',
-            token: cleanOtp,
-            payer: {
-              email:
-                customerEmail.trim() ||
-                `${cleanPhoneDigits || 'cliente'}@makibros.pe`,
-            },
-          },
-        }),
-      })
-
-      const data = await res.json()
-      if (data.success && data.status === 'approved') {
-        toast('¡Pago con Yape completado con éxito!', 'success')
-        clearCart()
-        router.push('/checkout/success')
-      } else {
-        const errorMsg =
-          data.message ||
-          data.error ||
-          'No se pudo procesar el pago con Yape. Por favor verifica tu código de aprobación o saldo.'
-        toast(errorMsg, 'error')
-      }
-    } catch (err) {
-      console.error('Error procesando pago Yape:', err)
-      toast('Error de conexión al procesar el pago con Yape.', 'error')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  // Procesar Pago con TARJETA (Checkout API de Mercado Pago)
-  const handlePayWithCard = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateCommonFields()) return
-
-    const cleanCard = cardNumber.replace(/\s+/g, '')
-    if (cleanCard.length < 13) {
-      toast('Ingresa un número de tarjeta válido.', 'error')
-      return
-    }
-    if (!cardholderName.trim()) {
-      toast('Ingresa el nombre del titular de la tarjeta.', 'error')
-      return
-    }
-    if (!cardExp.includes('/') || cardExp.length < 5) {
-      toast('Ingresa la fecha de vencimiento (MM/AA).', 'error')
-      return
-    }
-    if (cardCvv.trim().length < 3) {
-      toast('Ingresa el código de seguridad (CVV).', 'error')
-      return
-    }
-    if (!docNumber.trim()) {
-      toast('Ingresa tu número de documento.', 'error')
-      return
-    }
-
-    setIsProcessing(true)
-    try {
-      const publicKey =
-        process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ||
-        'APP_USR-26ff591d-42da-41ae-b199-b0bc0d63536c'
-
-      if (typeof window === 'undefined' || !(window as any).MercadoPago) {
-        throw new Error('El sistema de pago seguro está iniciando. Por favor, intenta de nuevo en unos segundos.')
-      }
-
-      const mp = new (window as any).MercadoPago(publicKey, { locale: 'es-PE' })
-      const [month, year] = cardExp.split('/')
-      const fullYear = year.trim().length === 2 ? `20${year.trim()}` : year.trim()
-
-      // Tokenizar tarjeta en el cliente de forma segura (PCI compliant)
-      const tokenResponse = await mp.createCardToken({
-        cardNumber: cleanCard,
-        cardholderName: cardholderName.trim(),
-        cardExpirationMonth: month.trim(),
-        cardExpirationYear: fullYear,
-        securityCode: cardCvv.trim(),
-        identificationType: docType,
-        identificationNumber: docNumber.trim(),
-      })
-
-      if (!tokenResponse || !tokenResponse.id) {
-        throw new Error('No se pudo validar la tarjeta. Revisa los datos ingresados.')
-      }
-
-      const cleanPhoneDigits = customerPhone.replace(/\D/g, '')
-      const res = await fetch('/api/process_payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderData: {
-            customerName: customerName.trim(),
-            customerPhone: customerPhone.trim(),
-            customerEmail: customerEmail.trim(),
-            customerAddress: customerAddress.trim(),
-            orderNotes: orderNotes.trim(),
-            deliveryType,
-            totalPrice: finalTotal,
-            items,
-            paymentMethod: 'card',
-          },
-          paymentData: {
-            token: tokenResponse.id,
-            installments: 1,
-            payer: {
-              email:
-                customerEmail.trim() ||
-                `${cleanPhoneDigits || 'cliente'}@makibros.pe`,
-              identification: {
-                type: docType,
-                number: docNumber.trim(),
-              },
-            },
-          },
-        }),
-      })
-
-      const data = await res.json()
-      if (data.success && data.status === 'approved') {
-        toast('¡Pago con tarjeta aprobado exitosamente!', 'success')
-        clearCart()
-        router.push('/checkout/success')
-      } else {
-        const errorMsg =
-          data.message ||
-          data.error ||
-          'El pago fue rechazado por el banco. Por favor intenta con otra tarjeta o con Yape.'
-        toast(errorMsg, 'error')
-      }
-    } catch (err: any) {
-      console.error('Error procesando pago con tarjeta:', err)
-      toast(err?.message || 'Ocurrió un error al procesar la tarjeta.', 'error')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  // Procesar Pedido en EFECTIVO (Vía WhatsApp)
-  const handleSendCashOrder = async (e: React.FormEvent) => {
+  // Procesar Pedido (WhatsApp)
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateCommonFields()) return
 
@@ -345,7 +83,7 @@ export default function CheckoutPage() {
             deliveryType,
             totalPrice: finalTotal,
             items,
-            paymentMethod: 'cash',
+            paymentMethod,
           },
         }),
       })
@@ -363,13 +101,15 @@ export default function CheckoutPage() {
       })
       .join('\n')
 
+    const paymentText = paymentMethod === 'yape' ? 'Yape (Transferencia manual)' : 'Efectivo (Contraentrega)'
+
     const message =
       `🍱 *¡HOLA MAKIBROS! NUEVO PEDIDO*\n\n` +
       `👤 *Cliente:* ${customerName}\n` +
       `📱 *Teléfono:* ${customerPhone}\n` +
       `🛵 *Modalidad:* ${deliveryType === 'delivery' ? 'Delivery a domicilio' : 'Recojo en local'}\n` +
       (deliveryType === 'delivery' ? `📍 *Dirección:* ${customerAddress}\n` : '') +
-      `💵 *Método de Pago:* Efectivo (Contraentrega)\n\n` +
+      `💵 *Método de Pago:* ${paymentText}\n\n` +
       `📝 *Platos:* \n${orderLines}\n\n` +
       (deliveryType === 'delivery' ? `🛵 *Costo de envío:* ${formatPrice(deliveryFee)}\n` : '') +
       `💰 *TOTAL A PAGAR:* ${formatPrice(finalTotal)}\n` +
@@ -387,8 +127,6 @@ export default function CheckoutPage() {
       window.open(whatsappUrl, '_blank')
     }
   }
-
-  const cardBrand = getCardBrand(cardNumber)
 
   return (
     <div className="min-h-screen bg-[#09090c] text-white flex flex-col selection:bg-[#e53e3e] selection:text-white">
@@ -549,7 +287,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Panel de Checkout: Entrega + Método de Pago API */}
+              {/* Panel de Checkout: Entrega + Método de Pago */}
               <div className="lg:col-span-5 space-y-4">
                 <div className="bg-[#121217] border border-white/[0.08] rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl shadow-black/40">
                   <h2 className="font-black text-lg text-white">Detalles del Pedido</h2>
@@ -679,7 +417,7 @@ export default function CheckoutPage() {
                     <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-2 font-medium">
                       Elige tu Método de Pago
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       {/* Opción Yape */}
                       <button
                         type="button"
@@ -694,20 +432,6 @@ export default function CheckoutPage() {
                           Y
                         </span>
                         <span>Yape</span>
-                      </button>
-
-                      {/* Opción Tarjeta */}
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod('card')}
-                        className={`btn-press p-2.5 rounded-xl border text-xs font-bold text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                          paymentMethod === 'card'
-                            ? 'border-[#e53e3e] bg-[#e53e3e]/20 text-white ring-1 ring-[#e53e3e]/60'
-                            : 'text-neutral-400 bg-white/[0.03] border-white/10 hover:text-white hover:bg-white/[0.06]'
-                        }`}
-                      >
-                        <CreditCard className="w-5 h-5 text-[#e53e3e]" />
-                        <span>Tarjeta</span>
                       </button>
 
                       {/* Opción Efectivo */}
@@ -726,221 +450,55 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* FORMULARIO: PAGO CON YAPE (Checkout API) */}
-                  {paymentMethod === 'yape' && (
-                    <form onSubmit={handlePayWithYape} className="space-y-4 pt-2">
-                      <div className="bg-[#732282]/10 border border-[#732282]/30 rounded-2xl p-3.5 text-xs text-neutral-300 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 font-bold text-white">
-                            <span className="w-4 h-4 rounded-full bg-[#732282] text-white flex items-center justify-center text-[10px]">
-                              Y
-                            </span>
-                            <span>Pago Inmediato con Yape</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setShowYapeHelp(!showYapeHelp)}
-                            className="text-[#a332b8] hover:text-purple-300 flex items-center gap-1 cursor-pointer"
-                          >
-                            <HelpCircle className="w-3.5 h-3.5" />
-                            <span>¿Dónde veo el código?</span>
-                          </button>
+                  {/* FORMULARIO: CONFIRMACIÓN YAPE Y EFECTIVO */}
+                  <form onSubmit={handleCheckoutSubmit} className="space-y-4 pt-2">
+                    {paymentMethod === 'yape' && (
+                      <div className="bg-[#732282]/10 border border-[#732282]/30 rounded-2xl p-4 text-xs text-neutral-300 space-y-3">
+                        <div className="flex items-center gap-2 font-bold text-white mb-2">
+                          <span className="w-4 h-4 rounded-full bg-[#732282] flex items-center justify-center text-[10px]">
+                            Y
+                          </span>
+                          <span>Escanea y Paga con Yape</span>
                         </div>
-
-                        {showYapeHelp && (
-                          <div className="pt-2 border-t border-[#732282]/20 text-[11px] text-neutral-300 space-y-1 bg-black/40 p-2.5 rounded-xl">
-                            <p>1. Abre tu aplicación <strong>Yape</strong> en tu celular.</p>
-                            <p>2. En el menú superior o barra lateral, presiona <strong>&quot;Código de aprobación&quot;</strong>.</p>
-                            <p>3. Copia el código de <strong>6 dígitos</strong> y escríbelo aquí abajo (es válido por 90 segundos).</p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                            Celular Yape *
-                          </label>
-                          <input
-                            type="tel"
-                            required
-                            value={yapePhone}
-                            onChange={(e) => setYapePhone(e.target.value)}
-                            placeholder="Ej. 987 654 321"
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#732282] focus:ring-1 focus:ring-[#732282]/50 text-sm font-mono transition-all"
+                        
+                        <div className="bg-white p-2 rounded-xl w-32 h-32 mx-auto relative shadow-lg">
+                          <Image 
+                            src="/images/qr-yape.svg" 
+                            alt="QR de Yape Makibros" 
+                            fill 
+                            className="object-contain p-1"
                           />
                         </div>
-                        <div>
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium flex items-center justify-between">
-                            <span>Código de Aprobación *</span>
-                            <span className="text-[10px] text-purple-400 lowercase">6 dígitos</span>
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            required
-                            maxLength={6}
-                            value={yapeOtp}
-                            onChange={handleYapeOtpChange}
-                            placeholder="000000"
-                            className="w-full bg-[#09090c] border border-[#732282]/40 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#a332b8] focus:ring-2 focus:ring-[#732282]/50 text-base font-mono font-bold tracking-[0.25em] text-center transition-all"
-                          />
+                        
+                        <div className="text-center space-y-1 mt-2 bg-black/40 p-2.5 rounded-xl">
+                          <p>1. Escanea el QR o yapea al <strong>970 725 307</strong></p>
+                          <p>2. Dale clic a <strong>Confirmar Pedido</strong></p>
+                          <p>3. Envía la <strong>captura del yapeo</strong> por WhatsApp</p>
                         </div>
                       </div>
+                    )}
 
-                      <button
-                        type="submit"
-                        disabled={isProcessing}
-                        className="btn-press w-full py-3.5 bg-gradient-to-r from-[#732282] to-[#912d9b] hover:from-[#822792] hover:to-[#a332b8] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#732282]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
-                      >
-                        <Smartphone className="w-4 h-4" />
-                        <span>{isProcessing ? 'Verificando con Yape...' : `Pagar ${formatPrice(finalTotal)} con Yape`}</span>
-                      </button>
-                    </form>
-                  )}
-
-                  {/* FORMULARIO: PAGO CON TARJETA (Checkout API) */}
-                  {paymentMethod === 'card' && (
-                    <form onSubmit={handlePayWithCard} className="space-y-3.5 pt-2">
-                      <div>
-                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium flex items-center justify-between">
-                          <span>Número de Tarjeta *</span>
-                          {cardBrand && (
-                            <span className="text-[10px] font-bold text-[#f59e0b] uppercase font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10">
-                              {cardBrand}
-                            </span>
-                          )}
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            required
-                            value={cardNumber}
-                            onChange={handleCardNumberChange}
-                            placeholder="4000 1234 5678 9010"
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl pl-3.5 pr-10 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono tracking-wider transition-all"
-                          />
-                          <CreditCard className="w-4 h-4 text-neutral-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                          Nombre del Titular de la Tarjeta *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={cardholderName}
-                          onChange={(e) => setCardholderName(e.target.value.toUpperCase())}
-                          placeholder="COMO APARECE EN LA TARJETA"
-                          className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-xs font-mono uppercase transition-all"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                            Vencimiento *
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            required
-                            maxLength={5}
-                            value={cardExp}
-                            onChange={handleCardExpChange}
-                            placeholder="MM/AA"
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono text-center transition-all"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                            CVV / CVC *
-                          </label>
-                          <input
-                            type="password"
-                            inputMode="numeric"
-                            required
-                            maxLength={4}
-                            value={cardCvv}
-                            onChange={handleCardCvvChange}
-                            placeholder="123"
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono text-center tracking-widest transition-all"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2">
-                        <div>
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                            Doc.
-                          </label>
-                          <select
-                            value={docType}
-                            onChange={(e) => setDocType(e.target.value as any)}
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-2.5 py-2 text-white text-xs font-mono focus:outline-none focus:border-[#e53e3e] transition-all cursor-pointer"
-                          >
-                            <option value="DNI">DNI</option>
-                            <option value="CE">C.E.</option>
-                            <option value="Pasaporte">PAS</option>
-                          </select>
-                        </div>
-                        <div className="col-span-2">
-                          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400 mb-1 font-medium">
-                            Nro de Documento *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={docNumber}
-                            onChange={(e) => setDocNumber(e.target.value)}
-                            placeholder="Número de DNI"
-                            className="w-full bg-[#09090c] border border-white/10 rounded-xl px-3.5 py-2 text-white placeholder-neutral-600 focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e]/30 text-sm font-mono transition-all"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 pt-1 text-[11px] text-neutral-400">
-                        <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Pago cifrado y procesado de forma segura por Mercado Pago.</span>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={isProcessing}
-                        className="btn-press w-full py-3.5 bg-[#e53e3e] hover:bg-[#c53030] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#e53e3e]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
-                      >
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>{isProcessing ? 'Validando con el banco...' : `Pagar ${formatPrice(finalTotal)}`}</span>
-                      </button>
-                    </form>
-                  )}
-
-                  {/* FORMULARIO: PAGO EN EFECTIVO (WhatsApp) */}
-                  {paymentMethod === 'cash' && (
-                    <form onSubmit={handleSendCashOrder} className="space-y-4 pt-2">
+                    {paymentMethod === 'cash' && (
                       <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 text-xs text-neutral-300 space-y-1.5">
                         <p className="font-bold text-white flex items-center gap-2">
                           <Banknote className="w-4 h-4 text-emerald-400" />
                           <span>Pago Contraentrega en Efectivo</span>
                         </p>
                         <p className="text-neutral-400 leading-relaxed text-[11px]">
-                          Pagarás en efectivo al recibir tu pedido en tu puerta o al recogerlo en nuestro local. Al presionar el botón se abrirá WhatsApp con el resumen de tu pedido.
+                          Pagarás en efectivo al recibir tu pedido. Al presionar el botón se abrirá WhatsApp con el resumen para confirmar.
                         </p>
                       </div>
+                    )}
 
-                      <button
-                        type="submit"
-                        disabled={isProcessing}
-                        className="btn-press w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black rounded-xl transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
-                      >
-                        <Send className="w-4 h-4" />
-                        <span>{isProcessing ? 'Enviando...' : 'Confirmar Pedido por WhatsApp'}</span>
-                      </button>
-                    </form>
-                  )}
+                    <button
+                      type="submit"
+                      disabled={isProcessing}
+                      className="btn-press w-full py-3.5 bg-gradient-to-r from-[#e53e3e] to-[#f59e0b] hover:from-[#c53030] hover:to-[#d97706] text-white font-black rounded-xl transition-all shadow-xl shadow-[#e53e3e]/20 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-50"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>{isProcessing ? 'Enviando...' : `Confirmar Pedido por WhatsApp`}</span>
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
