@@ -329,7 +329,7 @@ export default function CheckoutPage() {
                       <div key={item.dish.id} className="flex gap-4 bg-white/[0.02] p-3 rounded-2xl border border-white/5">
                         <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-[#1a1a24]">
                           {item.dish.image_url ? (
-                            <Image src={item.dish.image_url} alt={item.dish.name} fill className="object-cover" />
+                            <Image src={item.dish.image_url} alt={item.dish.name} fill sizes="64px" className="object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-xs text-gray-600">Sin img</div>
                           )}

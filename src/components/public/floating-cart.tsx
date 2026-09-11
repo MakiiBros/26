@@ -1,6 +1,7 @@
 'use client'
 
 import { useCart } from '@/context/cart-context'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -9,9 +10,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 export function FloatingCart() {
   const { totalItems, totalPrice } = useCart()
   const pathname = usePathname()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // No mostrar el carrito flotante en estas rutas
   if (
+    !isMounted ||
     pathname?.startsWith('/admin') ||
     pathname?.startsWith('/checkout') ||
     pathname?.startsWith('/auth')
