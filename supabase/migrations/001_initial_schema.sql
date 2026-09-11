@@ -138,6 +138,7 @@ $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION public.update_updated_at()
   IS 'Establece updated_at = now() automáticamente en cada UPDATE';
 
+DROP TRIGGER IF EXISTS trg_dishes_updated_at ON public.dishes;
 CREATE TRIGGER trg_dishes_updated_at
   BEFORE UPDATE ON public.dishes
   FOR EACH ROW
@@ -156,7 +157,8 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (id, role)
-  VALUES (NEW.id, 'user');
+  VALUES (NEW.id, 'user')
+  ON CONFLICT DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -164,6 +166,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 COMMENT ON FUNCTION public.handle_new_user()
   IS 'Crea un perfil con rol user al registrar un nuevo usuario';
 
+DROP TRIGGER IF EXISTS trg_on_auth_user_created ON auth.users;
 CREATE TRIGGER trg_on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
@@ -189,12 +192,14 @@ ALTER TABLE public.dishes     ENABLE ROW LEVEL SECURITY;
 -- ------------------------------------------------------------
 
 -- Lectura: cada usuario ve únicamente su perfil
+DROP POLICY IF EXISTS profiles_select_own ON public.profiles;
 CREATE POLICY profiles_select_own
   ON public.profiles
   FOR SELECT
   USING (auth.uid() = id);
 
 -- Actualización: cada usuario edita únicamente su perfil
+DROP POLICY IF EXISTS profiles_update_own ON public.profiles;
 CREATE POLICY profiles_update_own
   ON public.profiles
   FOR UPDATE
@@ -209,12 +214,14 @@ CREATE POLICY profiles_update_own
 -- ------------------------------------------------------------
 
 -- Lectura: acceso público sin restricciones
+DROP POLICY IF EXISTS categories_select_public ON public.categories;
 CREATE POLICY categories_select_public
   ON public.categories
   FOR SELECT
   USING (true);
 
 -- Inserción: solo administradores
+DROP POLICY IF EXISTS categories_insert_admin ON public.categories;
 CREATE POLICY categories_insert_admin
   ON public.categories
   FOR INSERT
@@ -226,6 +233,7 @@ CREATE POLICY categories_insert_admin
   );
 
 -- Actualización: solo administradores
+DROP POLICY IF EXISTS categories_update_admin ON public.categories;
 CREATE POLICY categories_update_admin
   ON public.categories
   FOR UPDATE
@@ -237,6 +245,7 @@ CREATE POLICY categories_update_admin
   );
 
 -- Eliminación: solo administradores
+DROP POLICY IF EXISTS categories_delete_admin ON public.categories;
 CREATE POLICY categories_delete_admin
   ON public.categories
   FOR DELETE
@@ -256,12 +265,14 @@ CREATE POLICY categories_delete_admin
 -- ------------------------------------------------------------
 
 -- Lectura: acceso público sin restricciones
+DROP POLICY IF EXISTS dishes_select_public ON public.dishes;
 CREATE POLICY dishes_select_public
   ON public.dishes
   FOR SELECT
   USING (true);
 
 -- Inserción: solo administradores
+DROP POLICY IF EXISTS dishes_insert_admin ON public.dishes;
 CREATE POLICY dishes_insert_admin
   ON public.dishes
   FOR INSERT
@@ -273,6 +284,7 @@ CREATE POLICY dishes_insert_admin
   );
 
 -- Actualización: solo administradores
+DROP POLICY IF EXISTS dishes_update_admin ON public.dishes;
 CREATE POLICY dishes_update_admin
   ON public.dishes
   FOR UPDATE
@@ -284,6 +296,7 @@ CREATE POLICY dishes_update_admin
   );
 
 -- Eliminación: solo administradores
+DROP POLICY IF EXISTS dishes_delete_admin ON public.dishes;
 CREATE POLICY dishes_delete_admin
   ON public.dishes
   FOR DELETE
@@ -310,7 +323,7 @@ VALUES (
   true,
   5242880,
   ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif']
-);
+) ON CONFLICT (id) DO NOTHING;
 
 
 -- ------------------------------------------------------------
@@ -323,12 +336,14 @@ VALUES (
 -- ------------------------------------------------------------
 
 -- Lectura pública de imágenes
+DROP POLICY IF EXISTS storage_dish_images_select_public ON storage.objects;
 CREATE POLICY storage_dish_images_select_public
   ON storage.objects
   FOR SELECT
   USING (bucket_id = 'dish-images');
 
 -- Subida de imágenes: solo administradores
+DROP POLICY IF EXISTS storage_dish_images_insert_admin ON storage.objects;
 CREATE POLICY storage_dish_images_insert_admin
   ON storage.objects
   FOR INSERT
@@ -341,6 +356,7 @@ CREATE POLICY storage_dish_images_insert_admin
   );
 
 -- Actualización de imágenes: solo administradores
+DROP POLICY IF EXISTS storage_dish_images_update_admin ON storage.objects;
 CREATE POLICY storage_dish_images_update_admin
   ON storage.objects
   FOR UPDATE
@@ -353,6 +369,7 @@ CREATE POLICY storage_dish_images_update_admin
   );
 
 -- Eliminación de imágenes: solo administradores
+DROP POLICY IF EXISTS storage_dish_images_delete_admin ON storage.objects;
 CREATE POLICY storage_dish_images_delete_admin
   ON storage.objects
   FOR DELETE
@@ -378,7 +395,8 @@ INSERT INTO public.categories (name, slug, sort_order) VALUES
   ('Ceviches',         'ceviches',         3),
   ('Tiraditos',        'tiraditos',        4),
   ('Bebidas',          'bebidas',          5),
-  ('Postres',          'postres',          6);
+  ('Postres',          'postres',          6)
+ON CONFLICT (name) DO NOTHING;
 
 
 -- ============================================================
