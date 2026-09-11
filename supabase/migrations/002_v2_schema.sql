@@ -35,15 +35,21 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
 -- RLS para store_settings
 ALTER TABLE public.store_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS store_settings_select_public ON public.store_settings;
 CREATE POLICY store_settings_select_public ON public.store_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS store_settings_insert_admin ON public.store_settings;
 CREATE POLICY store_settings_insert_admin ON public.store_settings FOR INSERT WITH CHECK (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
 );
+
+DROP POLICY IF EXISTS store_settings_update_admin ON public.store_settings;
 CREATE POLICY store_settings_update_admin ON public.store_settings FOR UPDATE USING (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
 );
 
 -- Trigger updated_at para store_settings
+DROP TRIGGER IF EXISTS trg_store_settings_updated_at ON public.store_settings;
 CREATE TRIGGER trg_store_settings_updated_at
   BEFORE UPDATE ON public.store_settings
   FOR EACH ROW
