@@ -227,6 +227,7 @@ export function Navbar() {
                   sizes="48px"
                   className="object-contain"
                   priority
+                  loading="eager"
                 />
               </div>
               <span className="text-xl sm:text-2xl font-black tracking-tight text-white transition-transform group-hover:scale-[1.02]">

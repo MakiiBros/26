@@ -47,6 +47,7 @@ export function HeroSection() {
                     alt="MakiBros — Una Vez No Basta"
                     fill
                     priority
+                    loading="eager"
                     sizes="(max-width: 640px) 208px, (max-width: 1024px) 240px, 288px"
                     className="object-contain"
                   />
