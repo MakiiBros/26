@@ -12,12 +12,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "MakiBros — Una Vez No Basta",
-  description: "Los mejores makis en banderilla de Comas, Lima Norte. Pollo Crispy Hot, Salmón Furai, California Furai y más desde S/10. Pide al 924 336 957.",
+  description: "Los mejores makis en banderilla de Comas, Lima Norte. Pollo Crispy Hot, Salmón Furai, California Furai y más desde S/10. Pide por WhatsApp.",
   keywords: ["makis", "sushi", "banderillas", "makis en banderilla", "comas", "lima norte", "maki bros", "pollo crispy hot", "salmón furai", "delivery comas"],
   metadataBase: new URL('https://makibros.pe'),
   openGraph: {
     title: "MakiBros — Una Vez No Basta",
-    description: "Makis en banderilla desde S/10. Av. El Retablo 115, Comas. Pide al 924 336 957.",
+    description: "Makis en banderilla desde S/10. Av. El Retablo 115, Comas. Pide por WhatsApp.",
     siteName: "MakiBros",
     type: "website",
     locale: "es_PE",

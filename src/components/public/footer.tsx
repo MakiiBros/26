@@ -103,8 +103,8 @@ export function Footer() {
               </li>
               <li className="flex gap-3">
                 <Phone className="w-5 h-5 text-[#e53e3e] shrink-0 mt-0.5" />
-                <a href="tel:+51924336957" className="hover:text-white transition-colors">
-                  924 336 957
+                <a href="https://wa.me/51924336957?text=Hola%20MakiBros!%20Quiero%20hacer%20un%20pedido." target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp
                 </a>
               </li>
               <li className="flex gap-3">
@@ -145,7 +145,7 @@ export function Footer() {
 
       <FadeIn delay={0.2} className="border-t border-white/[0.04] bg-[#030305]">
         <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <p>© {currentYear} MakiBros · Av. El Retablo 115, Comas · 924 336 957</p>
+          <p>© {currentYear} MakiBros · Av. El Retablo 115, Comas</p>
           <p className="flex items-center gap-1.5 text-slate-500">
             Hecho con <Heart className="w-3 h-3 text-[#e53e3e] fill-[#e53e3e]" /> por{' '}
             <a href="https://github.com/MakiiBros/26" className="text-slate-400 hover:text-white transition-colors">Angel</a>

@@ -91,7 +91,7 @@ export function HeroSection() {
                   className="w-full sm:w-auto px-7 py-4 text-emerald-300 hover:text-white font-semibold text-sm sm:text-base border border-emerald-500/30 bg-emerald-600/10 hover:bg-emerald-600/30 rounded-xl transition-all btn-press flex items-center justify-center gap-2 cursor-pointer backdrop-blur-md"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Pedir al 924 336 957</span>
+                  <span>Pedir por WhatsApp</span>
                 </a>
               </div>
             </StaggerItem>

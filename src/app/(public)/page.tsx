@@ -79,7 +79,7 @@ export default async function HomePage() {
                 NUESTRO <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e53e3e] to-[#f59e0b]">MENÚ</span>
               </h2>
               <p className="text-neutral-400 text-sm sm:text-base max-w-2xl">
-                5 variedades de makis en banderilla desde <span className="text-[#f59e0b] font-bold">S/ 10 c/u</span>. Elige tu favorito y pide al <span className="text-emerald-400 font-bold">924 336 957</span>.
+                5 variedades de makis en banderilla desde <span className="text-[#f59e0b] font-bold">S/ 10 c/u</span>. Elige tu favorito y haz tu pedido por <span className="text-emerald-400 font-bold">WhatsApp</span>.
               </p>
             </div>
             
@@ -134,7 +134,7 @@ export default async function HomePage() {
                 className="btn-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold rounded-full transition-all text-sm sm:text-base"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp · 924 336 957</span>
+                <span>Pedir por WhatsApp</span>
               </a>
             </div>
           </div>

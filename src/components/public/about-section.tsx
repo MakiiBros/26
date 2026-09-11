@@ -26,7 +26,7 @@ export function AboutSection() {
     {
       icon: <MapPin className="w-6 h-6 text-teal-400" />,
       title: 'Av. El Retablo 115, Comas',
-      description: 'Encuéntranos en el corazón de Comas, Lima Norte. ¡También pedidos por WhatsApp al 924 336 957!'
+      description: 'Encuéntranos en el corazón de Comas, Lima Norte. ¡También aceptamos pedidos por WhatsApp!'
     }
   ];
 
@@ -160,7 +160,7 @@ export function AboutSection() {
                 className="btn-press inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold text-sm hover:bg-emerald-600/30 transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
-                924 336 957
+                Pedir por WhatsApp
               </a>
             </SlideUp>
           </div>
