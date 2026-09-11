@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SlideUp, FadeIn } from '@/components/ui/motion-wrappers';
 
-import Lottie from 'lottie-react';
+import { Lottie } from 'lottie-react';
 import tiktokAnimation from '@/components/tiktok-lottie.json';
 
 const WA_LINK = 'https://wa.me/51924336957?text=Hola%20MakiBros!%20Quiero%20hacer%20un%20pedido.';

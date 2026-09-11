@@ -23,6 +23,7 @@ import {
 import { Navbar } from '@/components/public/navbar'
 import { Footer } from '@/components/public/footer'
 import { useCart } from '@/context/cart-context'
+import { AddressMapPicker } from '@/components/ui/address-map-picker'
 import { formatPrice } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast'
 
@@ -184,14 +185,17 @@ export default function CheckoutPage() {
                   {deliveryType === 'delivery' && (
                     <div>
                       <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Dirección de Entrega *</label>
-                      <input 
-                        type="text" 
-                        required
-                        value={customerAddress}
-                        onChange={(e) => setCustomerAddress(e.target.value)}
-                        placeholder="Av. Universitaria 123, Comas"
-                        className="w-full bg-[#1a1a24] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-all text-white placeholder-gray-500"
-                      />
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          required
+                          value={customerAddress}
+                          onChange={(e) => setCustomerAddress(e.target.value)}
+                          placeholder="Av. Universitaria 123, Comas"
+                          className="flex-1 w-full bg-[#1a1a24] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-all text-white placeholder-gray-500"
+                        />
+                        <AddressMapPicker onAddressSelect={setCustomerAddress} />
+                      </div>
                     </div>
                   )}
 
