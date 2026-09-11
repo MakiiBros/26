@@ -1,1 +1,5 @@
-// Archivo obsoleto - Eliminado por migración a Yape Manual
+import { NextResponse } from 'next/server';
+
+export async function POST() {
+  return NextResponse.json({ message: 'Obsoleto' });
+}

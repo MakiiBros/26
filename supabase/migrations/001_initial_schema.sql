@@ -32,7 +32,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 --   • 'admin' → administrador con acceso total al CRUD
 -- ------------------------------------------------------------
 
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id         UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   role       TEXT        NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -50,7 +50,7 @@ COMMENT ON COLUMN public.profiles.role IS 'Rol del usuario: user | admin';
 -- orden de visualización en el frontend.
 -- ------------------------------------------------------------
 
-CREATE TABLE public.categories (
+CREATE TABLE IF NOT EXISTS public.categories (
   id         UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
   name       TEXT        NOT NULL UNIQUE,
   slug       TEXT        NOT NULL UNIQUE,
@@ -72,7 +72,7 @@ COMMENT ON COLUMN public.categories.sort_order IS 'Orden de visualización (asce
 -- `updated_at` se actualiza automáticamente mediante trigger.
 -- ------------------------------------------------------------
 
-CREATE TABLE public.dishes (
+CREATE TABLE IF NOT EXISTS public.dishes (
   id           UUID         DEFAULT gen_random_uuid() PRIMARY KEY,
   category_id  UUID         NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
   name         TEXT         NOT NULL,
@@ -100,19 +100,19 @@ COMMENT ON COLUMN public.dishes.sort_order   IS 'Orden de visualización dentro 
 -- ============================================================
 
 -- Búsqueda de platillos por categoría
-CREATE INDEX idx_dishes_category_id  ON public.dishes (category_id);
+CREATE INDEX IF NOT EXISTS idx_dishes_category_id  ON public.dishes (category_id);
 
 -- Filtrado rápido por disponibilidad
-CREATE INDEX idx_dishes_is_available ON public.dishes (is_available);
+CREATE INDEX IF NOT EXISTS idx_dishes_is_available ON public.dishes (is_available);
 
 -- Ordenamiento de platillos dentro de una categoría
-CREATE INDEX idx_dishes_sort_order   ON public.dishes (sort_order);
+CREATE INDEX IF NOT EXISTS idx_dishes_sort_order   ON public.dishes (sort_order);
 
 -- Búsqueda de categoría por slug (resolución de URLs)
-CREATE INDEX idx_categories_slug       ON public.categories (slug);
+CREATE INDEX IF NOT EXISTS idx_categories_slug       ON public.categories (slug);
 
 -- Ordenamiento global de categorías
-CREATE INDEX idx_categories_sort_order ON public.categories (sort_order);
+CREATE INDEX IF NOT EXISTS idx_categories_sort_order ON public.categories (sort_order);
 
 
 -- ============================================================
