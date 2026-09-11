@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const supabase = createSupabaseClient(SUPABASE_URL, supabaseKey);
 
     // 1. Validar precios reales desde la Base de Datos
-    const itemIds = orderData.items.map((item: any) => item.id);
+    const itemIds = orderData.items.map((item: any) => item.dish.id);
     const { data: dbDishes, error: dishesError } = await supabase
       .from('dishes')
       .select('id, name, price, discount_percentage')
@@ -24,9 +24,9 @@ export async function POST(request: Request) {
 
     let realTotalPrice = 0;
     const validatedItems = orderData.items.map((clientItem: any) => {
-      const dbDish = dbDishes.find(d => d.id === clientItem.id);
+      const dbDish = dbDishes.find(d => d.id === clientItem.dish.id);
       if (!dbDish) {
-        throw new Error(`Plato no encontrado: ${clientItem.id}`);
+        throw new Error(`Plato no encontrado: ${clientItem.dish.id}`);
       }
       const discount = dbDish.discount_percentage || 0;
       const unitPrice = dbDish.price * (1 - discount / 100);
