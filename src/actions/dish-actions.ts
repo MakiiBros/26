@@ -1,3 +1,4 @@
+import { SUPABASE_SERVICE_ROLE_KEY } from '@/lib/server/secrets'
 'use server'
 
 import { updateTag, revalidatePath } from 'next/cache'
@@ -5,7 +6,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { dishSchema } from '@/schemas/dish'
-import { CACHE_TAGS, ROUTES, STORAGE, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } from '@/lib/constants'
+import { CACHE_TAGS, ROUTES, STORAGE, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
 import { generateFileName } from '@/lib/utils'
 import type { FormState } from '@/types'
 

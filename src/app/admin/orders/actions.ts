@@ -1,8 +1,9 @@
+import { SUPABASE_SERVICE_ROLE_KEY } from '@/lib/server/secrets'
 'use server'
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
-import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants'
 
 // Usamos el cliente directamente con Service Role para saltar políticas RLS (Row Level Security)
 // Ya que el panel de administración no está usando un sistema de usuarios de Supabase Auth

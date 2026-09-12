@@ -1,6 +1,7 @@
+import { SUPABASE_SERVICE_ROLE_KEY } from '@/lib/server/secrets'
 import { NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/constants';
 
 export async function POST(request: Request) {
   try {

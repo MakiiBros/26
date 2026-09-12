@@ -6,7 +6,11 @@ import { X, Minus, Plus, Camera, RotateCw, Sparkles, ShoppingBag } from 'lucide-
 import Image from 'next/image'
 import { formatPrice } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Viewer360 } from './viewer-360'
+import dynamic from 'next/dynamic'
+const Viewer360 = dynamic(() => import('./viewer-360').then(mod => mod.Viewer360), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-[#09090c]"><div className="w-8 h-8 border-2 border-[#e53e3e] border-t-transparent rounded-full animate-spin"></div></div>
+})
 import { useCart } from '@/context/cart-context'
 import { useToast } from '@/components/ui/toast'
 import type { Dish, Category } from '@/types'

@@ -52,10 +52,12 @@ export function Footer() {
                 <MessageCircle className="w-4 h-4" />
               </a>
               <a href="https://tiktok.com/@makibros" target="_blank" rel="noreferrer"
-                className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#FE2C55]/20 hover:border-[#FE2C55]/50 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#FE2C55]/20 hover:border-[#FE2C55]/50 transition-colors relative overflow-hidden"
                 aria-label="TikTok MakiBros"
               >
-                <Lottie animationData={tiktokAnimation} loop={true} className="w-6 h-6" />
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <Lottie src={tiktokAnimation} loop={true} className="w-6 h-6" />
+                </div>
               </a>
               <a href="https://instagram.com" target="_blank" rel="noreferrer"
                 className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#E4405F] transition-colors"
