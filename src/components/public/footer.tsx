@@ -7,7 +7,10 @@ import { SlideUp, FadeIn } from '@/components/ui/motion-wrappers';
 import dynamic from 'next/dynamic';
 import tiktokAnimation from '@/components/tiktok-lottie.json';
 
-const Lottie = dynamic(() => import('lottie-react').then(mod => mod.Lottie), { ssr: false });
+const Lottie = dynamic(
+  () => import('lottie-react').then(mod => ({ default: mod.Lottie })),
+  { ssr: false }
+);
 
 const WA_LINK = 'https://wa.me/51924336957?text=Hola%20MakiBros!%20Quiero%20hacer%20un%20pedido.';
 
@@ -55,7 +58,7 @@ export function Footer() {
                 className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#FE2C55]/20 hover:border-[#FE2C55]/50 transition-colors"
                 aria-label="TikTok MakiBros"
               >
-                <Lottie animationData={tiktokAnimation} loop={true} className="w-6 h-6" />
+                <Lottie src={tiktokAnimation} loop={true} className="w-6 h-6" />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noreferrer"
                 className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#E4405F] transition-colors"
