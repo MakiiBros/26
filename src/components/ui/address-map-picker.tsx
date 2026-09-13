@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import { MapPin, X, Loader2 } from 'lucide-react';
+import { MapPin, X, Loader2, AlertTriangle } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 const containerStyle = {
@@ -23,6 +23,7 @@ export function AddressMapPicker({ onAddressSelect }: AddressMapPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(DEFAULT_CENTER);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [geocodeError, setGeoCodeError] = useState<string | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -32,11 +33,13 @@ export function AddressMapPicker({ onAddressSelect }: AddressMapPickerProps) {
   const onMapClick = useCallback((e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
       setMarkerPosition({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      setGeoCodeError(null);
     }
   }, []);
 
   const handleConfirm = async () => {
     setAddressLoading(true);
+    setGeoCodeError(null);
     try {
       const geocoder = new google.maps.Geocoder();
       const response = await geocoder.geocode({ location: markerPosition });
@@ -44,11 +47,20 @@ export function AddressMapPicker({ onAddressSelect }: AddressMapPickerProps) {
         onAddressSelect(response.results[0].formatted_address);
         setIsOpen(false);
       } else {
-        alert("No se pudo encontrar una dirección para esta ubicación.");
+        // Geocoder returned no results — use coordinates as fallback
+        const fallback = `Ubicación: ${markerPosition.lat.toFixed(6)}, ${markerPosition.lng.toFixed(6)}`;
+        onAddressSelect(fallback);
+        setIsOpen(false);
       }
-    } catch (error) {
-      console.error("Geocoding failed: ", error);
-      alert("Error al buscar la dirección.");
+    } catch {
+      // Geocoding failed (likely billing not enabled) — use coordinates as fallback
+      const fallback = `Comas, Lima (${markerPosition.lat.toFixed(5)}, ${markerPosition.lng.toFixed(5)})`;
+      setGeoCodeError(
+        'No se pudo obtener la dirección exacta (API de Geocoding no disponible). ' +
+        'Se usarán las coordenadas del pin.'
+      );
+      onAddressSelect(fallback);
+      setTimeout(() => setIsOpen(false), 1500);
     } finally {
       setAddressLoading(false);
     }
@@ -113,6 +125,14 @@ export function AddressMapPicker({ onAddressSelect }: AddressMapPickerProps) {
                 </GoogleMap>
               )}
             </div>
+
+            {/* Geocode Error Banner */}
+            {geocodeError && (
+              <div className="px-4 py-3 bg-amber-500/10 border-t border-amber-500/20 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-300 leading-relaxed">{geocodeError}</p>
+              </div>
+            )}
 
             {/* Footer */}
             <div className="p-4 border-t border-white/10 flex justify-end gap-3 bg-[#09090c]/50">
