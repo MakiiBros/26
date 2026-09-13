@@ -1,3 +1,4 @@
 {
-    "codescene.authToken": "pat_eyJpZCI6OTE0NTMsInJhbmQiOiJsa296QVpnUVV4SllHUU4zblJmbVNNQm1NbEVuckpzTiJ9"
+    "codescene.authToken": "pat_eyJpZCI6OTE0NTMsInJhbmQiOiJsa296QVpnUVV4SllHUU4zblJmbVNNQm1NbEVuckpzTiJ9",
+    "remote.autoForwardPortsFallback": 0
 }
