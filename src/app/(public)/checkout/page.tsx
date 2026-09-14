@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -23,7 +23,6 @@ import {
 import { Navbar } from '@/components/public/navbar'
 import { Footer } from '@/components/public/footer'
 import { useCart } from '@/context/cart-context'
-import { AddressMapPicker } from '@/components/ui/address-map-picker'
 import { formatPrice } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast'
 
@@ -44,9 +43,81 @@ export default function CheckoutPage() {
 
   // Estados de proceso
   const [isProcessing, setIsProcessing] = useState(false)
-
   const deliveryFee = deliveryType === 'delivery' ? 5.0 : 0.0
   const finalTotal = totalPrice + deliveryFee
+
+  useEffect(() => {
+    if (deliveryType !== 'delivery') return;
+    if (typeof window === 'undefined') return;
+
+    let mapInstance: any = null;
+
+    const initMap = () => {
+      // @ts-ignore
+      if (!window.L) {
+        setTimeout(initMap, 100);
+        return;
+      }
+      
+      // @ts-ignore
+      const L = window.L;
+      
+      const mapContainer = document.getElementById('miMapa');
+      if (!mapContainer || (mapContainer as any)._leaflet_id) {
+        return;
+      }
+      
+      const map = L.map('miMapa').setView([-11.9300, -77.0450], 15); // Comas, Lima
+      mapInstance = map;
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      
+      const marker = L.marker([-11.9300, -77.0450], { draggable: true }).addTo(map);
+      
+      const updateAddress = async (lat: number, lng: number) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+          const data = await res.json();
+          if (data && data.display_name) {
+             setCustomerAddress(data.display_name);
+          }
+        } catch (error) {
+          console.error('Error fetching address:', error);
+          setCustomerAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+        }
+      };
+
+      marker.on('dragend', function (e: any) {
+        const position = marker.getLatLng();
+        updateAddress(position.lat, position.lng);
+      });
+      
+      map.on('click', function(e: any) {
+        marker.setLatLng(e.latlng);
+        updateAddress(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Fetch initial address if not already set
+      if (!customerAddress) {
+        updateAddress(-11.9300, -77.0450);
+      }
+    };
+
+    initMap();
+
+    return () => {
+      if (mapInstance) {
+        mapInstance.remove();
+      } else {
+        const mapContainer = document.getElementById('miMapa');
+        if (mapContainer && (mapContainer as any)._leaflet_id) {
+          (mapContainer as any)._leaflet_id = null;
+        }
+      }
+    };
+  }, [deliveryType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -184,18 +255,17 @@ export default function CheckoutPage() {
 
                   {deliveryType === 'delivery' && (
                     <div>
-                      <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Dirección de Entrega *</label>
-                      <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          required
-                          value={customerAddress}
-                          onChange={(e) => setCustomerAddress(e.target.value)}
-                          placeholder="Av. Universitaria 123, Comas"
-                          className="flex-1 w-full bg-[#1a1a24] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#e53e3e] focus:ring-1 focus:ring-[#e53e3e] transition-all text-white placeholder-gray-500"
-                        />
-                        <AddressMapPicker onAddressSelect={setCustomerAddress} />
-                      </div>
+                      <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Ubica tu dirección en el mapa *</label>
+                      <div id="miMapa" style={{ height: '350px', width: '100%', borderRadius: '0.75rem', marginBottom: '1rem', zIndex: 1 }} className="border border-white/10"></div>
+                      <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Dirección Seleccionada</label>
+                      <input 
+                        type="text" 
+                        required
+                        readOnly
+                        value={customerAddress}
+                        placeholder="Mueve el pin en el mapa para ubicar tu dirección"
+                        className="w-full bg-[#1a1a24] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none text-white placeholder-gray-500 cursor-not-allowed opacity-80"
+                      />
                     </div>
                   )}
 
