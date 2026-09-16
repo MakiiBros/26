@@ -8,7 +8,6 @@ create table public.orders (
   total_price numeric not null,
   payment_method text not null,
   payment_status text not null default 'pending', -- 'pending', 'paid', 'failed'
-  preference_id text, -- ID from Mercado Pago
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 

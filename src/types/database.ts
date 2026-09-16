@@ -29,7 +29,6 @@ export interface Database {
           total_price: number
           payment_method: string
           payment_status: string
-          preference_id: string | null
           created_at: string
         }
         Insert: {
@@ -41,7 +40,6 @@ export interface Database {
           total_price: number
           payment_method: string
           payment_status?: string
-          preference_id?: string | null
           created_at?: string
         }
         Update: {
@@ -53,7 +51,6 @@ export interface Database {
           total_price?: number
           payment_method?: string
           payment_status?: string
-          preference_id?: string | null
           created_at?: string
         }
       }

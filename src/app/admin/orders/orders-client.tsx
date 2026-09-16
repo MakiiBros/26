@@ -367,14 +367,6 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                     <span className="text-neutral-400 text-sm">Método</span>
                     <span className="text-sm font-medium text-white">{getMethodLabel(selectedOrder.payment_method)}</span>
                   </div>
-                  {selectedOrder.preference_id && (
-                    <div className="flex flex-col gap-1 pt-2 border-t border-white/5 mt-2">
-                      <span className="text-neutral-500 text-xs">ID de Referencia (MercadoPago)</span>
-                      <span className="text-xs font-mono text-neutral-400 break-all bg-black/50 p-2 rounded border border-white/5">
-                        {selectedOrder.preference_id}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
 
