@@ -1,11 +1,37 @@
 import { NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants';
+
+const orderSchema = z.object({
+  deliveryType: z.enum(['delivery', 'pickup']),
+  customerName: z.string().trim().min(1).max(100),
+  customerPhone: z.string().trim().min(7).max(30),
+  customerAddress: z.string().trim().max(300),
+  orderNotes: z.string().trim().max(500),
+  paymentMethod: z.enum(['yape', 'cash']),
+  items: z.array(z.object({
+    dish: z.object({ id: z.string().min(1).max(100) }),
+    quantity: z.number().int().min(1).max(99),
+  })).min(1).max(50),
+}).superRefine((order, context) => {
+  if (order.deliveryType === 'delivery' && order.customerAddress.length === 0) {
+    context.addIssue({
+      code: 'custom',
+      path: ['customerAddress'],
+      message: 'La dirección es obligatoria para pedidos delivery',
+    });
+  }
+});
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { orderData } = body;
+    const parsedOrder = orderSchema.safeParse(body?.orderData);
+    if (!parsedOrder.success) {
+      return NextResponse.json({ error: 'Datos del pedido inválidos' }, { status: 400 });
+    }
+    const orderData = parsedOrder.data;
 
     // Usar Service Role Key para saltarse RLS en el backend y poder guardar la orden
     const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
