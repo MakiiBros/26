@@ -1,47 +1,60 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
+async function fetchUserRole(supabase: any, userId: string): Promise<string> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single()
+
+  return profile?.role ?? 'user'
+}
+
+function redirectTo(request: NextRequest, path: string): NextResponse {
+  const url = request.nextUrl.clone()
+  url.pathname = path
+  return NextResponse.redirect(url)
+}
+
+async function handleAdminRoute(
+  request: NextRequest,
+  user: { id: string } | null,
+  supabase: any,
+  supabaseResponse: NextResponse,
+): Promise<NextResponse> {
+  if (!user) {
+    return redirectTo(request, '/auth/login')
+  }
+
+  const role = await fetchUserRole(supabase, user.id)
+  return role === 'admin' ? supabaseResponse : redirectTo(request, '/')
+}
+
+async function handleAuthRoute(
+  request: NextRequest,
+  user: { id: string } | null,
+  supabase: any,
+  supabaseResponse: NextResponse,
+): Promise<NextResponse> {
+  if (!user) {
+    return supabaseResponse
+  }
+
+  const role = await fetchUserRole(supabase, user.id)
+  return redirectTo(request, role === 'admin' ? '/admin/orders' : '/')
+}
+
 export async function proxy(request: NextRequest) {
-  // Update the Supabase session
   const { user, supabaseResponse, supabase } = await updateSession(request)
+  const pathname = request.nextUrl.pathname
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-
-  // Variable to store user role if needed
-  let userRole = 'user'
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    
-    if (profile) {
-      userRole = profile.role
-    }
+  if (pathname.startsWith('/admin')) {
+    return handleAdminRoute(request, user, supabase, supabaseResponse)
   }
 
-  // If the user is accessing an admin route and is not logged in, redirect to login
-  if (isAdminRoute && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
-  }
-
-  // If someone tries to access admin but they do not have the admin role
-  if (isAdminRoute && user && userRole !== 'admin') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
-  }
-
-  // If the user is logged in and accesses auth pages, redirect to /admin or /
-  if (isAuthRoute && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = userRole === 'admin' ? '/admin/orders' : '/'
-    return NextResponse.redirect(url)
+  if (pathname.startsWith('/auth')) {
+    return handleAuthRoute(request, user, supabase, supabaseResponse)
   }
 
   return supabaseResponse
