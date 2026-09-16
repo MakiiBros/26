@@ -46,16 +46,16 @@ export async function updateStoreSettings(formData: FormData) {
   let error;
 
   if (id) {
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('store_settings')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id)
     error = updateError
   } else {
     // Si no hay id, insertar primera fila
-    const { error: insertError } = await supabase
+    const { error: insertError } = await (supabase as any)
       .from('store_settings')
-      .insert([updates as any])
+      .insert([updates])
     error = insertError
   }
 

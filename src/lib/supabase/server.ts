@@ -35,11 +35,13 @@ export async function verifyAdmin() {
     throw new Error('Unauthorized')
   }
 
-  const { data: profile, error: profileError } = await supabase
+  const { data, error: profileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
+
+  const profile = data as { role: string } | null;
 
   if (profileError || profile?.role !== 'admin') {
     throw new Error('Forbidden: Admin access required')
