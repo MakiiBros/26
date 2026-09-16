@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const supabaseUrl = 'https://usxhvlchkuzmbrqkgpqn.supabase.co';
-const serviceRoleKey = 'sb_secret_RRZavO895LZIsK0TGbIaSA_ezwZJinw';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://usxhvlchkuzmbrqkgpqn.supabase.co';
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const sqlPath = path.join(__dirname, 'supabase', 'migrations', '001_initial_schema.sql');
 
 async function runMigration() {

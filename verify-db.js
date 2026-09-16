@@ -1,5 +1,5 @@
-const url = 'https://usxhvlchkuzmbrqkgpqn.supabase.co';
-const key = 'sb_secret_RRZavO895LZIsK0TGbIaSA_ezwZJinw';
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://usxhvlchkuzmbrqkgpqn.supabase.co';
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 async function verify() {
   try {

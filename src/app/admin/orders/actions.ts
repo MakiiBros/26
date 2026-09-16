@@ -1,18 +1,10 @@
 'use server'
 
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
-import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY } from '@/lib/constants'
-
-// Usamos el cliente directamente con Service Role para saltar políticas RLS (Row Level Security)
-// Ya que el panel de administración no está usando un sistema de usuarios de Supabase Auth
-function getAdminSupabase() {
-  const supabaseKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY
-  return createSupabaseClient(SUPABASE_URL, supabaseKey)
-}
+import { verifyAdmin } from '@/lib/supabase/server'
 
 export async function deleteOrder(id: string) {
-  const supabase = getAdminSupabase()
+  const { supabase } = await verifyAdmin()
   
   const { error } = await supabase.from('orders').delete().eq('id', id)
   
@@ -21,7 +13,7 @@ export async function deleteOrder(id: string) {
 }
 
 export async function clearOldPendingOrders() {
-  const supabase = getAdminSupabase()
+  const { supabase } = await verifyAdmin()
   
   // 20 mins ago (ajustado según requerimiento)
   const limitDate = new Date(Date.now() - 20 * 60 * 1000).toISOString()

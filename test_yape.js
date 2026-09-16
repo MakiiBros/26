@@ -10,7 +10,7 @@ const data = JSON.stringify({
 const options = {
   hostname: 'api.mercadopago.com',
   port: 443,
-  path: '/platforms/pci/yape/v1/payment?public_key=APP_USR-a3aad7db-afac-4e07-8646-e27de28ddca2',
+  path: `/platforms/pci/yape/v1/payment?public_key=${process.env.MERCADO_PAGO_PUBLIC_KEY || ''}`,
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

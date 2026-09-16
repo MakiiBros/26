@@ -2,34 +2,18 @@
 
 import { updateTag, revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { verifyAdmin } from '@/lib/supabase/server'
 import { dishSchema } from '@/schemas/dish'
-import { CACHE_TAGS, ROUTES, STORAGE, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } from '@/lib/constants'
+import { CACHE_TAGS, ROUTES, STORAGE } from '@/lib/constants'
 import { generateFileName } from '@/lib/utils'
 import type { FormState } from '@/types'
 
 /**
- * Obtiene un cliente autenticado como administrador para asegurar que
- * las operaciones de Storage y BD del panel de administración nunca fallen por RLS.
+ * Validamos la sesión y autorización de administrador.
  */
 async function getAdminStorageClient() {
-  if (SUPABASE_SERVICE_ROLE_KEY && !SUPABASE_SERVICE_ROLE_KEY.startsWith('sb_secret_')) {
-    return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-  }
-  try {
-    const adminClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    const { data, error } = await adminClient.auth.signInWithPassword({
-      email: 'admin@makibros.me',
-      password: 'AdminMakisBros2026!',
-    })
-    if (!error && data?.session) {
-      return adminClient
-    }
-  } catch (e) {
-    console.warn('[dish-actions] Admin login fallback:', e)
-  }
-  return await createClient()
+  const { supabase } = await verifyAdmin()
+  return supabase
 }
 
 // ============================================================================

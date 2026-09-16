@@ -1,10 +1,19 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { verifyAdmin } from '@/lib/supabase/server'
 import { CACHE_TAGS } from '@/lib/constants'
 
 export async function getStoreSettings() {
-  const supabase = (await createClient()) as any
+  // Aquí podríamos permitir lectura pública si es necesario, pero si es admin:
+  const { supabase } = await verifyAdmin().catch(() => ({ supabase: null }));
+  if (!supabase) {
+      // Si no es admin y settings falla por RLS, creamos un cliente normal
+      const { createClient } = require('@/lib/supabase/server');
+      const normalSupabase = await createClient();
+      const { data, error } = await normalSupabase.from('store_settings').select('*').limit(1).maybeSingle();
+      if (error) return null;
+      return data;
+  }
   const { data, error } = await supabase
     .from('store_settings')
     .select('*')
@@ -19,7 +28,7 @@ export async function getStoreSettings() {
 }
 
 export async function updateStoreSettings(formData: FormData) {
-  const supabase = (await createClient()) as any
+  const { supabase } = await verifyAdmin()
   
   const id = formData.get('id') as string
   const is_open = formData.get('is_open') === 'true'

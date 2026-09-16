@@ -3,10 +3,25 @@ import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
   // Update the Supabase session
-  const { user, supabaseResponse } = await updateSession(request)
+  const { user, supabaseResponse, supabase } = await updateSession(request)
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
+
+  // Variable to store user role if needed
+  let userRole = 'user'
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    if (profile) {
+      userRole = profile.role
+    }
+  }
 
   // If the user is accessing an admin route and is not logged in, redirect to login
   if (isAdminRoute && !user) {
@@ -15,9 +30,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If someone tries to access admin but they are not the admin email
-  // (Optional extra security, assuming the admin uses admin@makibros.me)
-  if (isAdminRoute && user && user.email !== 'admin@makibros.me') {
+  // If someone tries to access admin but they do not have the admin role
+  if (isAdminRoute && user && userRole !== 'admin') {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
@@ -26,7 +40,7 @@ export async function middleware(request: NextRequest) {
   // If the user is logged in and accesses auth pages, redirect to /admin or /
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
-    url.pathname = user.email === 'admin@makibros.me' ? '/admin/orders' : '/'
+    url.pathname = userRole === 'admin' ? '/admin/orders' : '/'
     return NextResponse.redirect(url)
   }
 
