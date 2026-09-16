@@ -38,7 +38,6 @@ export default function CheckoutPage() {
   const [customerAddress, setCustomerAddress] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
 
-  // Método de pago: Yape Tradicional (QR) o Efectivo
   const [paymentMethod, setPaymentMethod] = useState<'yape' | 'cash'>('yape')
 
   // Estados de proceso
@@ -284,10 +283,9 @@ export default function CheckoutPage() {
 
               {/* Sección 2: Método de Pago */}
               <div className="bg-[#121217] p-6 rounded-3xl border border-white/5 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/5 blur-3xl pointer-events-none"></div>
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm">2</span>
-                  Pago Directo
+                  Método de pago
                 </h2>
                 
                 <div className="space-y-3 mb-6">
@@ -295,8 +293,8 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => setPaymentMethod('yape')}
                     className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                      paymentMethod === 'yape' 
-                        ? 'border-purple-500 bg-purple-500/10' 
+                      paymentMethod === 'yape'
+                        ? 'border-purple-500 bg-purple-500/10'
                         : 'border-white/5 bg-[#1a1a24] hover:bg-white/5'
                     }`}
                   >
@@ -316,8 +314,8 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => setPaymentMethod('cash')}
                     className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                      paymentMethod === 'cash' 
-                        ? 'border-emerald-500 bg-emerald-500/10' 
+                      paymentMethod === 'cash'
+                        ? 'border-emerald-500 bg-emerald-500/10'
                         : 'border-white/5 bg-[#1a1a24] hover:bg-white/5'
                     }`}
                   >
@@ -326,7 +324,7 @@ export default function CheckoutPage() {
                         <Banknote className="w-5 h-5" />
                       </div>
                       <div className="text-left">
-                        <div className="font-bold text-sm text-white">Pago en Efectivo</div>
+                        <div className="font-bold text-sm text-white">Pago en efectivo</div>
                         <div className="text-xs text-gray-400">Pagas al recibir tu pedido</div>
                       </div>
                     </div>
@@ -334,34 +332,33 @@ export default function CheckoutPage() {
                   </button>
                 </div>
 
-                {/* Yape Tradicional Info */}
                 {paymentMethod === 'yape' && (
-                  <div className="bg-[#1a1a24] p-5 rounded-2xl border border-purple-500/20 text-center animate-in slide-in-from-top-2 duration-300">
+                  <div className="bg-[#1a1a24] p-5 rounded-2xl border border-purple-500/20 text-center">
                     <div className="bg-white p-2 rounded-xl w-32 h-32 mx-auto relative shadow-lg mb-4">
-                      <Image 
-                        src="/images/qr-yape.svg" 
-                        alt="QR de Yape Makibros" 
-                        fill 
+                      <Image
+                        src="/images/qr-yape.svg"
+                        alt="QR de Yape Makibros"
+                        fill
                         className="object-contain p-1"
                       />
                     </div>
-                    <h3 className="font-bold text-white mb-2">Escanea y Paga con Yape</h3>
+                    <h3 className="font-bold text-white mb-2">Escanea y paga con Yape</h3>
                     <p className="text-xs text-gray-400 mb-4 px-4 leading-relaxed">
                       1. Escanea el código o yapea al <strong>970 725 307</strong>.<br/>
-                      2. Dale a "Confirmar Pedido".<br/>
-                      3. ¡Envíanos la captura del yapeo por WhatsApp!
+                      2. Dale a &quot;Confirmar Pedido&quot;.<br/>
+                      3. Envía la captura del yapeo por WhatsApp.
                     </p>
                     <div className="text-xs font-mono text-purple-400 bg-purple-500/10 py-1.5 px-3 rounded-lg inline-block border border-purple-500/20">
                       Rápido, fácil y sin comisiones.
                     </div>
                   </div>
                 )}
-                
+
                 {paymentMethod === 'cash' && (
-                  <div className="bg-[#1a1a24] p-4 rounded-2xl border border-emerald-500/20 flex items-start gap-3 animate-in slide-in-from-top-2 duration-300">
+                  <div className="bg-[#1a1a24] p-4 rounded-2xl border border-emerald-500/20 flex items-start gap-3">
                     <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                     <p className="text-xs text-gray-300 leading-relaxed">
-                      El repartidor llevará el cambio si lo necesitas. Por favor, asegúrate de tener el monto exacto o cercano para agilizar la entrega.
+                      El repartidor llevará el cambio si lo necesitas. Asegúrate de tener el monto exacto o cercano.
                     </p>
                   </div>
                 )}
