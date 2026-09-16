@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         customer_address: orderData.deliveryType === 'delivery' ? orderData.customerAddress : 'Recojo en tienda',
         items: validatedItems,
         total_price: realTotalPrice,
-        payment_method: orderData.paymentMethod || 'yape_qr',
+        payment_method: orderData.paymentMethod === 'yape' ? 'yape' : 'cash',
         payment_status: 'pending',
       })
       .select('id')
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     text += `\n*TOTAL A PAGAR: S/ ${realTotalPrice.toFixed(2)}*`;
 
     if (orderData.paymentMethod === 'yape') {
-        text += `\n\n_Te adjunto la captura del pago por Yape!_`;
+        text += `\n\n_Te adjunto la captura del pago por Yape._`;
     }
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${adminPhone}&text=${encodeURIComponent(text)}`;
